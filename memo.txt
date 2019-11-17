@@ -1,0 +1,12 @@
+2019/11/16 #js
+htmlエンティティをデコードはDOMを使うと簡単らしい。&amp;←こいうの。
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+
+JSZip.jsの読み込みに苦労うした。JsZipとタイポしてたから余計にきつかった。
+user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
+この場合、メインもreuireで読み込まなければ同じスコープにならない。
+commonjsのimportは対応してないぽい？

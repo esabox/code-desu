@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>await.html</title>
+    <script src="await.js"></script>
+    <script type="module">
+        // import fooFunction from "./module.js";
+        // let log = console.log
+        // log(1)
+        // //await new Promise((r) => setTimeout(r, 4500)); // sleep
+        // log(2)
+
+        // fooFunction();
+    </script>
+</head>
+
+<body>
+
+    //Promisコンストはnew直後→ 引数(fff,rrr)を呼び→ fff()されると成功、rrr()は失敗、
+    var p = new Promise(function(fulfill,reject){});
+
+    //5秒後にfff()され成功。p.then(seikou,sippai)→ seikou(result)される
+    var p = new Promise(function(fff,reject){
+    setTimeout(fff,5000);
+    });
+
+    setTimeout(()=>fff(hoge),5000); //とすればfff()しつつresult結果も渡せる。
+
+    p.then()の返り値はPromiseなのでp.then().then().then()とメソッドチェーン（間違い：関数チェーン）できる。
+
+    Promise.resolve(4)
+    //というのは、おおよそ次と同様です。
+    new Promise(function(fulfill,resolve){ fulfill(4); })
+</body>
+
+</html>

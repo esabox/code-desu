@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>jsを読み込んでデバッグ用</title>
+</head>
+
+<body>
+    <script>
+        let param = [...new URLSearchParams(location.search).entries()]
+            .reduce((obj, e) => ({...obj, [e[0]]: e[1]}), {});
+        //console.log(param.js)
+        if (param.js) {
+            document.title = param.js
+            let js_elm = document.createElement("script")
+            js_elm.src = param.js
+            document.body.appendChild(js_elm);
+        }
+    </script>
+    <a href="/">asfdad</a>
+    <button onclick="showSum()">Sum</button>
+</body>
+
+</html>

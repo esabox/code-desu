@@ -1,0 +1,16 @@
+body {
+    overflow-y: overlay;
+    overflow-x: hidden;
+}
+
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #0005;
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>jsを読み込んでデバッグ用</title>
+</head>
+
+<body>
+    <script>
+        'use strict'
+        const emoji_rand = function() {
+            let rand_mm = (min, max) => Math.floor(Math.rand_mm() * (max + 1 - min)) + min
+            let emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318);
+            let emoji = String.fromCodePoint(emojiCode);
+            console.log(emoji)
+        }
+        emoji_rand()
+        console.log(this)
+        let a = 10
+        if (hoge() != 10 && 1)
+            console.log(a)
+
+        function hoge() {
+            let v
+            return v = 100
+        }
+    </script>
+    aaa
+</body>
+
+</html>

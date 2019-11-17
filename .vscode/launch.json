@@ -1,0 +1,63 @@
+{
+    // 使用できる Node.js デバッグ属性を学ぶために、インテリセンスを使用してください。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        // ローカルにあるファイルをデバッグ
+        {
+            // デバッグ設定の名称
+            "name": "Launch local file",
+            // デバッグ種別を指定（chrome/node/monoなど）
+            "type": "chrome",
+            // lanunchまたはattachを指定
+            "request": "launch",
+            // 読み込むHTMLファイルを指定（プロジェクトからのパスを指定）
+            "file": "${workspaceRoot}/index.html"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}",
+            // ソースマップの有効・無効の指定（true/false）
+            "sourceMaps": true,
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": " Attach to Chrome2",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "att simple",
+            //"url": "http://localhost:8888",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            //一番シンプルだけれど、一番使いやすい
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "att localhost",
+            //"url": "http://localhost:8888/load_js.html?js=${fileBasename}",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "urlFilter": "http://localhost*"
+            //"preLaunchTask": "load_js.htmlでjs"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8888/load_js.html?js=${fileBasename}",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

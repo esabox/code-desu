@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>文書のタイトル</title>
+    <!--     <script type="ja" src="http://localhost:8888/lib/jszip.js"></script>
+ -->
+    <script type="text/javascript" src="http://localhost:8888/lib/jszip.js  "></script>
+    <script type="text/javascript" src="http://localhost:8888/lib/FileSaver.js  "></script>
+</head>
+
+<body>
+    <script>
+        console.log(1111)
+        //var zip = new JSZip();
+        //let zip = new JsZip;
+        let imgData = "R0lGODdhBQAFAIACAAAAAP/eACwAAAAABQAFAAACCIwPkWerClIBADs=";
+
+
+        console.log(JSZip)
+        let zip = new JSZip();
+        console.log(zip)
+        //var zip = new JSZip();
+
+        zip.file('Hello.txt', 'Hello World\n');
+        let img = zip.folder('images');
+        img.file('smile.gif', imgData, {base64: true});
+        zip.generateAsync({type: 'blob'})
+            .then(function(content) {
+                // see FileSaver.js
+                saveAs(content, 'example.zip');
+            });
+    </script>
+
+    <a href="/">asfdad</a>
+
+</body>
+
+</html>

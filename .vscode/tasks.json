@@ -1,0 +1,63 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "テキスト内の日付書き換え",
+            "type": "shell",
+            "command": "bash sh/ver.sh ${relativeFile}"
+        },
+        {
+            "label": "chromeで開く",
+            "type": "shell",
+            "command": "open http://localhost:8888",
+            "dependsOn": [
+                "テキスト内の日付書き換え"
+            ]
+        },
+        {
+            "label": "google",
+            "type": "shell",
+            "command": "open http://news.google.co.jp"
+        },
+        {
+            "label": "main",
+            "type": "shell",
+            "command": "pwd",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "chromeで開く"
+            ]
+        },
+        {
+            "label": "ffで開く",
+            "type": "shell",
+            "command": "open -a Firefox http://localhost:8888"
+        },
+        {
+            "label": "${relativeFile}js load form load_js.html",
+            "type": "shell",
+            "command": "open -g -a Google\\ Chrome.app http://localhost:8888/load_js.html?js=${relativeFile}",
+        },
+        {
+            "label": "chromeをデバッグで起動1",
+            "type": "shell",
+            // "command": "open -a /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --args --remote-debugging-port=9222",
+            "command": "open -a 'Google Chrome.app' --args --remote-debugging-port=9222",
+        },
+        {
+            "label": "chromeをデバッグで起動2",
+            "type": "shell",
+            // "command": "open -a /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --args --remote-debugging-port=9222",
+            "command": "open -a Google\\ Chrome.app --args --profile-directory='/Users/kazoku/Library/Application Support/Google/Chrome/Profile 4'",
+        },
+        //https://code.visualstudio.com/docs/editor/variables-reference
+        /*
+open -n -a '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --args --profile-directory='Profile 4' --remote-debugging-port=9222 
+         */
+    ]
+}
