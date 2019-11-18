@@ -1759,12 +1759,13 @@ body::-webkit-scrollbar-track {
                 ev.preventDefault();
                 log('◆これ◆' + ev.target.innerHTML)
                 if (ev.shiftKey) {
-                    _js_xhr(ev.target.href, ev.target.textContent, 'zip')
+                    _js_xhr(ev.target.href, ev.target.textContent)
+                    //_js_xhr(ev.target.href, ev.target.textContent, 'zip')
                     return
                 }
                 ev.altKey
                     ? _GM_xhr(ev.target.href, ev.target.textContent)
-                    : _js_xhr(ev.target.href, ev.target.textContent)
+                    : _dawnfun_only(ev.target.href, ev.target.textContent)
             }
         }, false);
 
@@ -1804,6 +1805,20 @@ body::-webkit-scrollbar-track {
             xhr.send()
             console.log(1212)
         }
+        //ダウンロードのみPromise＋
+        const _xhr_promise = function(url) {
+            const p = new Promise((resolve, reject) => {
+                //log('js_xhr')
+                let xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                //xhr.responseType = 'text';
+                xhr.onload = function() {
+                    resolve(xhr.response)
+                };
+                xhr.send()
+            });
+            return p;
+        }
         const make_links = function(arr, title) {
             //let els = arr
             title = title
@@ -1840,6 +1855,22 @@ body::-webkit-scrollbar-track {
 		 */
         const _kai_n_view = function(text, title, zip = false) {
             let url_arr = text_kaiseki(text)
+            let html = make_links(url_arr, title)
+            console.log(html)
+            log(html)
+            // ブラウザで圧縮ダウンロード完結、遅い・・・
+            if (zip) _url_arr_down(url_arr, title)
+        }
+        //1つの関数にまとめたい
+        /**
+         * クリック後の処理を一つの関数に、コールバック無し
+         * @param {*} url 
+         * @param {*} title 
+         * @param {*} zip 
+         */
+        const _dawnfun_only = async function(url, title, zip = false) {
+            let htmltext = await _xhr_promise(url)
+            let url_arr = text_kaiseki(htmltext)
             let html = make_links(url_arr, title)
             console.log(html)
             log(html)
@@ -1886,14 +1917,14 @@ body::-webkit-scrollbar-track {
                     saveAs(content, title + '.zip');
                 });
         }
-        //test用
-        //_js_xhr('https://manga314.com/c79-galaxist-blade-%e9%9b%b7%e7%b1%a0-%e3%83%84%e3%83%81%e3%83%8e%e3%82%ab%e3%82%b4-%e9%ad%94%e6%b3%95%e5%b0%91%e5%a5%b3%e3%83%aa%e3%83%aa%e3%82%ab%e3%83%ab%e3%81%aa%e3%81%ae%e3%81%af', 'asdf')
         function zipka(imgData) {
             console.log(zip)
 
             zip.file('blob_f.jpg', imgData, {blob: false});
 
         }
+        //test用
+        //_js_xhr('https://manga314.com/c79-galaxist-blade-%e9%9b%b7%e7%b1%a0-%e3%83%84%e3%83%81%e3%83%8e%e3%82%ab%e3%82%b4-%e9%ad%94%e6%b3%95%e5%b0%91%e5%a5%b3%e3%83%aa%e3%83%aa%e3%82%ab%e3%83%ab%e3%81%aa%e3%81%ae%e3%81%af', 'asdf')
 
         function atode_sakujo() {//画像のリンクを作る
             //document.querySelectorAll('img[original*="r18.dawnfun.com"]')
