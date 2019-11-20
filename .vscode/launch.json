@@ -56,7 +56,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:8888/load_js.html?js=${fileBasename}",
+            "url": "http://localhost:8888/js/load_js.html?js=${relativeFile}", //${relativeFile}
             "webRoot": "${workspaceFolder}"
         }
     ]

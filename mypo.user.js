@@ -121,30 +121,20 @@ temp.srl = function() {
         return elem;
     }
     //Utilityクラスを作ってみる？
+    const create_href = function(url, text = false) {
+        let a_elem = document.createElement('a')
+        a_elem.href = url
+        a_elem.textContent = text || url
+        return a_elem
+    }
 	/**あればClick
 	 * @param selector{string}
 	 */
     function arebaCli(selector, anzen_sec = 3, is_href = false) {
         const el = document.querySelector(selector);
-        // let aaa = GM_getValue('zenkai', Date.now() - 9999)
-        // let jisa = (Date.now() - aaa) / 1000
 
         log(`arebaCli ${selector}`)
         if (el !== null) {
-            // if (jisa < anzen_sec) {
-            // 	log(`ループしてる可能性、抜ける. jisa=${jisa}`)
-            // 	return false;
-            // }
-
-            // setTimeout(() => {
-            // 	GM_setValue('zenkai', Date.now());
-            // 	if (!href)
-            // 		el.click();
-            // 	else
-            // 		location.href = el.href
-            // 	return true
-            // }, 2000);
-
             let title = document.title;
             let countD_ms = anzen_sec * 1000
             let loop_ms = 100
@@ -162,12 +152,8 @@ temp.srl = function() {
                     //log(countD_ms);
                     document.title = countD_ms / 1000 + title
                     let stoID = setTimeout(f, loop_ms);
-
                 }
-
-
             }())
-
 
         } else {
             log('クリックする箇所無し @arebaCli ' + selector);
@@ -219,7 +205,7 @@ temp.srl = function() {
             ? 1
             : Number(sessionStorage.his) + 1;
     }
-    const video_top_play = function(video_elem, query = 'video') {
+    const video_top_play = function(video_elem=null, query = 'video') {
         //let playerDiv = document.querySelector('#player-embed')
 
         let elem = (video_elem)
@@ -240,7 +226,8 @@ temp.srl = function() {
 						/*bodyにwideやmagineあったりすると余白出来る対策*/
 						position: relative;
 						transform: translateX(-50%);
-						left: 50%;
+                        left: 50%;
+                        overflow: hidden;
 						`
             }
             //自動再生
@@ -248,31 +235,31 @@ temp.srl = function() {
                 elem.preload = true //これが無いと始まらないぽい
                 elem.autoplay = true  //こっちも同じようなもの
                 elem.controls = true
+                src=elem.src||elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
+                log(create_href( src))
+                //console.log(elem.children('source'))
                 //elm.play()
             }
             css_instant('saidcss', `
-body {
-    overflow-y: overlay;
-    overflow-x: hidden;
-}
+            body {
+                overflow-y: overlay;
+                overflow-x: hidden;
+            }
 
-body::-webkit-scrollbar {
-    width: 12px;
-}
+            body::-webkit-scrollbar {
+                width: 12px;
+            }
 
-body::-webkit-scrollbar-thumb {
-    background-color: #0005;
-}
+            body::-webkit-scrollbar-thumb {
+                background-color: #0005;
+            }
 
-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-		`)
-
+            body::-webkit-scrollbar-track {
+                background: transparent;
+            }`)
         }
     }
     const cookie_view_del = function() {
-
         const cookie_view = () => {
             const logo = '&#x1f36a;' //"🍪"
             log(logo + document.cookie.replace(/; /g, '\n' + logo))
@@ -328,7 +315,16 @@ body::-webkit-scrollbar-track {
     }
 
     //メッセージを表示するやつ、アラートの代わり
-    function my_alert(...msg) {
+    const my_alert = function(...msg) {
+        //無理やりプロパティでメソッド作った
+        my_alert.log_clear = function() {
+            console.log(wakuElm,this)
+            wakuElm.remove() //textContent = ''
+            // let button = button_tukuru('ログクリア', function(e) {
+            //     this.log_clear()
+            // })
+            //log(button)
+        }
         //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
 
         //これをcos log に置き換えるから、中でlogすると無限ループ、それ回避用
@@ -355,7 +351,7 @@ body::-webkit-scrollbar-track {
         }
 
 
-        let css_id = 'malert';
+        let css_id = 'my_alert_css';
         let css_el = document.getElementById(css_id);
         if (css_el === null) {
             css_el = document.createElement('style');
@@ -422,6 +418,7 @@ body::-webkit-scrollbar-track {
         //枠がなけりゃ作る
         if (wakuElm === null) {
             wakuElm = document.createElement('div')
+            //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
             wakuElm = Object.assign(wakuElm, {
                 id: waku_id,
                 onclick: function(e) {
@@ -438,30 +435,19 @@ body::-webkit-scrollbar-track {
 
             //非表示ボタン
             const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false);})
-            // const el_a0 = document.createElement('input')
-            wakuElm.appendChild(el_a0)
-            // el_a0.type = 'button'
-            // el_a0.value = 'ログ非表示'
-            // el_a0.onclick = function(e) {
-            // 	e.preventDefault(); //もう移動しない、ハッシュも無理、voidも必要ない
-            // 	log(this, '非表示')
-            // 	GM_setValue(flag_name, false);
-            // }
-
+           
             //消さないボタン
             const el_a = button_tukuru('消さない', (e) => {
                 log(e)
                 e.target.parentElement.onmouseleave = null;
                 e.target.parentElement.onclick = null;
             })
-            wakuElm.appendChild(el_a)
-            // el_a.type = 'button'
-            // el_a.value = '消さない'
-            // el_a.onclick = function(e) {
-            // 	e.preventDefault(); //もう移動しない、ハッシュも無理、voidも必要ない
-            // 	e.stopPropagation()
-            // 	this.parentElement.onmouseleave = null
-            // }
+            
+            let button = button_tukuru('ログクリア', function(e) {
+                my_alert.log_clear()
+                //my_alert(this)
+            })
+            my_alert(el_a0,el_a,button)
         }
         const div_every = true;//毎回div作るか、1つに追加するか
         let log_id = '17:30'
@@ -493,6 +479,7 @@ body::-webkit-scrollbar-track {
         // base.innerHTML = String.prototype.concat(...s)
         //base.innerHTML = s.toString()
     }
+
     /**日付関数 yyyy-MM-dd hh:mm:ss	 */
     function mydate(format, zerofill = 1) {
         let date = new Date();
@@ -963,13 +950,7 @@ body::-webkit-scrollbar-track {
 
 
     x('全部b', ['^http'], function() {
-        //log(1, 2, 3)
-        (async () => {
-            log('neru')
-            await sleep(2000)
-            //await sleep2(2000)
-            log('okita')
-        })()
+
 
         function fn_localStorage() {
             let count = `localStorage[${localStorage.length}]`
@@ -1286,12 +1267,23 @@ body::-webkit-scrollbar-track {
         location.href = url
     })
     //ビデオタグをハック。2019/11/03
-    x('kkビデオタグあったら全画面にして上に', ['^https://xn--icktho51ho02a0dc.com/*/', 'https://asianclub.tv/'], function() {
+    x('kkビデオタグあったら全画面にして上に', ['^https://xn--icktho51ho02a0dc.com/*/',
+        'https://asianclub.tv/',
+        'https://embed.media/',
+    ], function() {
 
 
         video_top_play()
-        log(button_tukuru('video再生', () => video_top_play()))
-        log(button_tukuru('video再生', video_top_play))
+        log(button_tukuru('video再生', video_top_play))//動かない？
+        log(button_tukuru('video再生arr',()=> video_top_play()))
+        log(button_tukuru('head saku', () => {
+            document.head.remove() //狂って酷いことに
+        }))
+        log(button_tukuru('videoのみ', () => {
+            let video = document.querySelector('video')
+            document.body.parentNode.remove()
+            document.appendChild(video)
+        }))
     })
     x('javmix大画面', ['^https://javmix.tv/video/*/'], function() {
         //let playerDiv = document.querySelector('#player-embed')
@@ -1300,11 +1292,16 @@ body::-webkit-scrollbar-track {
         //
         elm.sandbox = 'allow-scripts allow-same-origin'; //iframe制限して許可条件、popup防げるけど、相手が書き換えることも可能
         video_top_play(elm)
-        let link = document.createElement('a')
-        link.href = elm.src
-        link.textContent = elm.src
-        log(elm.src)
-        log(link)
+        /**
+         * urlでa elemを作る
+         * @param {*} url 
+         * @param {*} text 
+         */
+
+
+
+        //log(elm.src)
+        log(create_href(elm.src))
         //document.body.insertAdjacentElement('afterbegin', elm)
         // if (elm) {
         // 	elm.style = `
@@ -1318,7 +1315,7 @@ body::-webkit-scrollbar-track {
         // 			margin-right: -50vw; */
         // 			`
         // }
-        log(button_tukuru('moichi', kore))
+        //log(button_tukuru('moichi', kore))
 
         function sc_del() {
             let sc_elm = document.getElementsByTagName('script')

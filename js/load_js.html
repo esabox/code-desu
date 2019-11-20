@@ -13,7 +13,7 @@
         if (param.js) {
             document.title = param.js
             let js_elm = document.createElement("script")
-            js_elm.src = param.js
+            js_elm.src = location.origin + "/" + param.js
             document.body.appendChild(js_elm);
         }
     </script>
