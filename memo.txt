@@ -17,3 +17,5 @@ hoge.prototype.fn=function(){}
 console.log(hoge.fn) //undefined
 //const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
 けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
+
+2019/11/20 #js importする場合、scriptタグにtype="module"が必要。
