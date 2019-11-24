@@ -39,7 +39,7 @@ alert, confirm, console, Debug, opera, prompt,GM_registerMenuCommand
 
 
 
-'use strict';
+'use strict'
 
 //windowにネームスペースを作る、コンソールから使えるように。
 //GM_だとwindowとunsafe(本体）を入れ替えたりするから、それ対応。ifで書いてたけど、ブロックスコープなのでconst使えるよう変更。
@@ -47,42 +47,42 @@ alert, confirm, console, Debug, opera, prompt,GM_registerMenuCommand
 //constつけてたが外す、同じものリロードする為。GMだと失敗するはず。
 this.temp = (window.unsafeWindow)
     ? (window.unsafeWindow.winNS = {})
-    : (window.winNS = {});
+    : (window.winNS = {})
 //self reload
 temp.srl = function() {
     document.body.appendChild(Object.assign(document.createElement('script'), {
         src: 'http://localhost:8888/mypo.user.js'
-    }));
-};
+    }))
+}
 
 !(function() { //const log = console["log"];
-    let time = Date.now(); //時間測定
+    let time = Date.now() //時間測定
 
     async function loadself() {
-        let domID = 'loadSelfScript';
+        let domID = 'loadSelfScript'
         //log('スタート loadSelf');
-        const el = document.querySelector('#' + domID);
+        const el = document.querySelector('#' + domID)
         if (el === null) {
-            let url = 'http://localhost:8888/mypo.user.js?' + Date.now();
+            let url = 'http://localhost:8888/mypo.user.js?' + Date.now()
             //let url = 'http://localhost:8888/mm.js?'+Date.now();
-            log('読み込む→' + url);
-            let aasd = document.createElement('script');
+            log('読み込む→' + url)
+            let aasd = document.createElement('script')
             const aaa = await new Promise((resolve, reject) => {
-                aasd.onload = () => resolve(true);
-                aasd.onerror = () => resolve(false);
-                aasd.src = url;
+                aasd.onload = () => resolve(true)
+                aasd.onerror = () => resolve(false)
+                aasd.src = url
                 aasd.id = domID
                 document.body.appendChild(aasd)
             })
-            log('読み込み結果', aaa);
+            log('読み込み結果', aaa)
             if (aaa) {
                 log('localhostの読み込み成功、ブラウザ内蔵のスクリプトは終了')
-                return aaa;
+                return aaa
             } else {
                 log('ローカル読み込み失敗、インストールスクリプトを続ける')
             }
         } else {
-            log('既にscriptあるので作らない');
+            log('既にscriptあるので作らない')
         }
     }
 	/*/
@@ -103,22 +103,22 @@ temp.srl = function() {
 		}
 	}
 	/**/
-    let nsMiiya = {gamen() {} }; //オブジェクのプロパティは宣言しとかないとリファクタリングできない
+    let nsMiiya = {gamen() {} } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
     // ネームスペース
     // window.nsMiiya = {};
     /** ボタンを作る*/
     function mkEle(pElem, tag, obj, loca = 'beforeend') {
-        let elem = document.createElement(tag);
-        pElem.insertAdjacentElement(loca, elem); //appendChile
-        elem = Object.assign(elem, obj);
-        return elem;
+        let elem = document.createElement(tag)
+        pElem.insertAdjacentElement(loca, elem) //appendChile
+        elem = Object.assign(elem, obj)
+        return elem
     }
     //prototype汚染
     Node.prototype.proMk2 = function(tag, obj) {
-        let elem = document.createElement(tag);
-        this.appendChild(elem);
-        elem = Object.assign(elem, obj);
-        return elem;
+        let elem = document.createElement(tag)
+        this.appendChild(elem)
+        elem = Object.assign(elem, obj)
+        return elem
     }
     //Utilityクラスを作ってみる？
     const create_href = function(url, text = false) {
@@ -131,18 +131,18 @@ temp.srl = function() {
 	 * @param selector{string}
 	 */
     function arebaCli(selector, anzen_sec = 3, is_href = false) {
-        const el = document.querySelector(selector);
+        const el = document.querySelector(selector)
 
         log(`arebaCli ${selector}`)
         if (el !== null) {
-            let title = document.title;
+            let title = document.title
             let countD_ms = anzen_sec * 1000
             let loop_ms = 100
             !(function f() {
                 if (countD_ms <= 0) {
                     //clearTimeout(stoID)
                     if (!is_href)
-                        el.click();
+                        el.click()
                     else
                         location.href = el.href
                     return true
@@ -151,13 +151,13 @@ temp.srl = function() {
 
                     //log(countD_ms);
                     document.title = countD_ms / 1000 + title
-                    let stoID = setTimeout(f, loop_ms);
+                    let stoID = setTimeout(f, loop_ms)
                 }
             }())
 
         } else {
-            log('クリックする箇所無し @arebaCli ' + selector);
-            return false;
+            log('クリックする箇所無し @arebaCli ' + selector)
+            return false
         }
     }
     //スクリプトが動いてるか確認する目立たないもの、タイトルの一文字目を使う案も
@@ -185,7 +185,7 @@ temp.srl = function() {
                 await sleep(3000)
                 el.remove()
                 // do something...
-            })();
+            })()
         }
     }
     const session_fn = function() {
@@ -203,9 +203,9 @@ temp.srl = function() {
         // }
         sessionStorage.his = sessionStorage.his == 'NaN'
             ? 1
-            : Number(sessionStorage.his) + 1;
+            : Number(sessionStorage.his) + 1
     }
-    const video_top_play = function(video_elem=null, query = 'video') {
+    const video_top_play = function(video_elem = null, query = 'video') {
         //let playerDiv = document.querySelector('#player-embed')
 
         let elem = (video_elem)
@@ -235,8 +235,8 @@ temp.srl = function() {
                 elem.preload = true //これが無いと始まらないぽい
                 elem.autoplay = true  //こっちも同じようなもの
                 elem.controls = true
-                src=elem.src||elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
-                log(create_href( src))
+                src = elem.src || elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
+                log(create_href(src))
                 //console.log(elem.children('source'))
                 //elm.play()
             }
@@ -270,16 +270,16 @@ temp.srl = function() {
                 : document.cookie.split('; ').length
         }
         function deleteAll() {
-            const cookies = document.cookie.split('; ');
+            const cookies = document.cookie.split('; ')
 
             for (let cookie of cookies) {
-                const index = cookie.indexOf('=');
+                const index = cookie.indexOf('=')
 
                 const name = ~index //~-1==0
                     ? cookie.substr(0, index)
-                    : cookie;
+                    : cookie
 
-                document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+                document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
             }
 
         }
@@ -296,29 +296,29 @@ temp.srl = function() {
     }
     //css作って書き込む、あれば追記
     const css_instant = function(_css_id, css_text) {
-        let css_id = _css_id;
-        let css_el = document.getElementById(css_id);
+        let css_id = _css_id
+        let css_el = document.getElementById(css_id)
         if (css_el === null) {
-            css_el = document.createElement('style');
-            css_el.id = css_id;
-            document.head.appendChild(css_el);
+            css_el = document.createElement('style')
+            css_el.id = css_id
+            document.head.appendChild(css_el)
         }
-        css_el.insertAdjacentText('beforeend', css_text);
+        css_el.insertAdjacentText('beforeend', css_text)
         return css_el
     }
     //ランダムなEmojiを返す
     function emoji_rand() {
         //大部分コピペ、数字の範囲は文字コードを整数化したやつ。
         let rand_mm = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min
-        let emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318);
-        return String.fromCodePoint(emojiCode);
+        let emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
+        return String.fromCodePoint(emojiCode)
     }
 
     //メッセージを表示するやつ、アラートの代わり
     const my_alert = function(...msg) {
         //無理やりプロパティでメソッド作った
         my_alert.log_clear = function() {
-            console.log(wakuElm,this)
+            console.log(wakuElm, this)
             wakuElm.remove() //textContent = ''
             // let button = button_tukuru('ログクリア', function(e) {
             //     this.log_clear()
@@ -337,11 +337,11 @@ temp.srl = function() {
             let my_alert_f = GM_getValue(flag_name, false)
             //メニュー登録、一度だけ、そのためにプロパティ利用
             if (typeof my_alert.reg === 'undefined') {
-                my_alert.reg = 1;
+                my_alert.reg = 1
                 GM_registerMenuCommand('my_alert_f=' + my_alert_f, function() {
                     //alert('Put script\'s main function here');
-                    GM_setValue(flag_name, !my_alert_f);
-                }, 'r');
+                    GM_setValue(flag_name, !my_alert_f)
+                }, 'r')
                 //log('my_alertのアイコン内メニュー作った')
             }
             //表示の可否
@@ -351,12 +351,12 @@ temp.srl = function() {
         }
 
 
-        let css_id = 'my_alert_css';
-        let css_el = document.getElementById(css_id);
+        let css_id = 'my_alert_css'
+        let css_el = document.getElementById(css_id)
         if (css_el === null) {
-            css_el = document.createElement('style');
-            css_el.id = css_id;
-            document.head.appendChild(css_el);
+            css_el = document.createElement('style')
+            css_el.id = css_id
+            document.head.appendChild(css_el)
             css_el.insertAdjacentText('beforeend', ([`
 			.hoge{
 				background-color: rgba(255, 255, 255, 1);
@@ -409,7 +409,7 @@ temp.srl = function() {
 					visibility:hidden;
 				}
 			}`
-            ])[0]);
+            ])[0])
         }
 
 
@@ -422,41 +422,41 @@ temp.srl = function() {
             wakuElm = Object.assign(wakuElm, {
                 id: waku_id,
                 onclick: function(e) {
-                    this.parentNode.removeChild(this);
+                    this.parentNode.removeChild(this)
                 },
                 onmouseenter: function(e) {
-                    wakuElm.style.opacity = 1;
+                    wakuElm.style.opacity = 1
                 },
                 onmouseleave: function() {
-                    wakuElm.style.opacity = 0;
+                    wakuElm.style.opacity = 0
                 },
-            });
+            })
             document.body.appendChild(wakuElm)
 
             //非表示ボタン
-            const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false);})
-           
+            const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
+
             //消さないボタン
             const el_a = button_tukuru('消さない', (e) => {
                 log(e)
-                e.target.parentElement.onmouseleave = null;
-                e.target.parentElement.onclick = null;
+                e.target.parentElement.onmouseleave = null
+                e.target.parentElement.onclick = null
             })
-            
+
             let button = button_tukuru('ログクリア', function(e) {
                 my_alert.log_clear()
                 //my_alert(this)
             })
-            my_alert(el_a0,el_a,button)
+            my_alert(el_a0, el_a, button)
         }
-        const div_every = true;//毎回div作るか、1つに追加するか
+        const div_every = true//毎回div作るか、1つに追加するか
         let log_id = '17:30'
         let log_el = document.getElementById(log_id)
         if (div_every || log_el === null) {
             log_el = wakuElm.appendChild(Object.assign(document.createElement('div'), {
                 className: 'hoge',
                 id: log_id,
-            }));
+            }))
         }
         log_el = wakuElm
 
@@ -473,7 +473,7 @@ temp.srl = function() {
             }
         }
         //log_el.insertAdjacentHTML('beforeend', String.prototype.concat(...s) + '</br>')
-        wakuElm.scrollTop = wakuElm.scrollHeight;
+        wakuElm.scrollTop = wakuElm.scrollHeight
         //Promiseオブジェをstringにできずにエラー
         //log_el.insertAdjacentElement('beforeend', document.createElement('hr'))
         // base.innerHTML = String.prototype.concat(...s)
@@ -482,54 +482,54 @@ temp.srl = function() {
 
     /**日付関数 yyyy-MM-dd hh:mm:ss	 */
     function mydate(format, zerofill = 1) {
-        let date = new Date();
+        let date = new Date()
         let hi = {}
         //初期設定
-        format = format || 'yyyy-MM-dd hh:mm:ss';
-        hi.yyyy = date.getFullYear();
-        hi.MM = date.getMonth() + 1;
-        hi.dd = date.getDate();
-        hi.hh = date.getHours();
-        hi.mm = date.getMinutes();
-        hi.ss = date.getSeconds();
+        format = format || 'yyyy-MM-dd hh:mm:ss'
+        hi.yyyy = date.getFullYear()
+        hi.MM = date.getMonth() + 1
+        hi.dd = date.getDate()
+        hi.hh = date.getHours()
+        hi.mm = date.getMinutes()
+        hi.ss = date.getSeconds()
         for (let key in hi) {
             if (key !== 'yyyy' && zerofill) {
-                hi[key] = ('0' + hi[key]).slice(-2); //ゼロうめ
+                hi[key] = ('0' + hi[key]).slice(-2) //ゼロうめ
             }
-            format = format.replace(key, hi[key]); //フォーマット文字を置換
+            format = format.replace(key, hi[key]) //フォーマット文字を置換
         }
-        return format;
+        return format
     }
 
 	/**
 	 * cssを作って返す
 	 */
     function returnMyCss(cssId = 'miiyacss', cssText) {
-        const d = false;
-        d && log('cssつくっちゃう');
+        const d = false
+        d && log('cssつくっちゃう')
         let el = document.getElementById(cssId)
         //無ければ作る
         if (!el) {
-            el = document.createElement('style');
-            el.id = cssId;
-            document.head.appendChild(el);
+            el = document.createElement('style')
+            el.id = cssId
+            document.head.appendChild(el)
         }
         //styElem.sheet.insertRule(', 0); //オプション2は挿入インデックスaddされるから0で良いぽい
         //insertrだと1つづつしか出来ないぽい、初期化ならtextContentが良い、見えるし
         if (cssText)
-            el.insertAdjacentText('beforeEnd', cssText);
-        return el;
+            el.insertAdjacentText('beforeEnd', cssText)
+        return el
     }
     // 操作画面を作る
     nsMiiya.gamen = function() {
-        let elementId = 'miiyabase';
+        let elementId = 'miiyabase'
         // 既にあればリターン
-        let el = document.getElementById(elementId);
+        let el = document.getElementById(elementId)
         if (el) {
-            return el;
+            return el
         };
         //css 変数名がdomと違うから注意
-        let styElem = returnMyCss();
+        let styElem = returnMyCss()
         styElem.insertAdjacentText('afterbegin', `
 			#${elementId} {text-align:left;}
 			#${elementId} button {
@@ -558,7 +558,7 @@ temp.srl = function() {
 				font-size:10px; /* emだと安定しない */
 				border: 3px solid silver;
 			}
-		`);
+		`)
         const base = mkEle(document.body, 'div', {
             id: elementId,
             style: `
@@ -574,128 +574,128 @@ temp.srl = function() {
             onmouseenter: (e) => {
                 //log(e.target, e.relatedTarget, this, "mouse over");
                 //baseC.style = "display:block;"; //初期化される
-                baseC.style.display = 'block';
+                baseC.style.display = 'block'
             },
             onmouseleave: (event) => {
-                baseC.style.display = 'none';
+                baseC.style.display = 'none'
             },
-        });
+        })
         const baseC = mkEle(base, 'div', {
             style: 'width:300px;display:none',
             //style:'width:300px',
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: 'はっげ',
             onclick: () => log('えむ'),
-        });
+        })
         baseC.proMk2('button', {
             textContent: 'はっげ',
             onclick: () => log('えむ'),
-        });
+        })
         mkEle(baseC, 'span', {
             textContent: 'v' + ver,
             tyle: {fontSize: '8px'},
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: '上下',
             // style:{cssText:'all: initial;'},
             onclick: function() {
-                this.f = this.f ? 0 : 1;
+                this.f = this.f ? 0 : 1
                 if (!this.f) {
                     // this.textContent = '下';
-                    this.parentNode.style.bottom = 0;
-                    this.parentNode.style.top = '';
+                    this.parentNode.style.bottom = 0
+                    this.parentNode.style.top = ''
                 } else {
                     // this.textContent = '上';
-                    this.parentNode.style.bottom = '';
-                    this.parentNode.style.top = '0';
+                    this.parentNode.style.bottom = ''
+                    this.parentNode.style.top = '0'
                 }
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: '←→',
             // style:{cssText:'all: initial;'},
             onclick: function() {
-                this.f = this.f ? 0 : 1;
+                this.f = this.f ? 0 : 1
                 if (!this.f) {
-                    this.textContent = '←→';
-                    this.parentNode.style.left = 0;
-                    this.parentNode.style.right = '';
+                    this.textContent = '←→'
+                    this.parentNode.style.left = 0
+                    this.parentNode.style.right = ''
                 } else {
-                    this.textContent = '←→';
-                    this.parentNode.style.left = '';
-                    this.parentNode.style.right = '0';
+                    this.textContent = '←→'
+                    this.parentNode.style.left = ''
+                    this.parentNode.style.right = '0'
                 }
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: 'いーなびボタン',
             // style:{cssText:'all: initial;'},
             onclick: nsMiiya.fnc2,
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: '最小化2',
             // style:{cssText:'all: initial;'},
             onclick: function() {
-                this.parentNode.style.with = '300px';
-                this.parentNode.style.display = 'none';
-                nsMiiya.aloging('saisho');
+                this.parentNode.style.with = '300px'
+                this.parentNode.style.display = 'none'
+                nsMiiya.aloging('saisho')
             },
-        });
+        })
         mkEle(base, 'button', {
             textContent: '更新',
             type: 'button',
             onclick: function(event) {
-                location.reload();
+                location.reload()
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: '楽天毎日くじ',
             type: 'button',
             onclick: (event) => {
                 //alert(GM_getValue("raku"));
-                maiKuji(1);
+                maiKuji(1)
                 // GM_setValue("毎日くじ次へ", 1);
                 // location.href = "http://www.rakuten.co.jp/";
                 // //http://www.rakuten.co.jp/?l-id=header_global_logo
                 // //http://www.rakuten.co.jp/?l2-id=shop_header_logo
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: 'GM_変数追加',
             type: 'button',
             onclick: (event) => {
-                let rand = Math.floor(Math.random() * 10);
-                GM_setValue('日本語' + rand, '阿吽' + rand);
+                let rand = Math.floor(Math.random() * 10)
+                GM_setValue('日本語' + rand, '阿吽' + rand)
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: 'GM_変数表示',
             type: 'button',
             onclick: (event) => {
-                let vals = [];
-                let ob = {};
+                let vals = []
+                let ob = {}
                 for (let key of GM_listValues()) { //for of は実体を返す
                     //log(key)
                     vals.push(GM_getValue(key))
-                    ob[key] = GM_getValue(key);
+                    ob[key] = GM_getValue(key)
                 }
                 //log(vals);
                 log(ob)
                 //console.table(ob)
                 //log(GM_listValues());
             },
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: '小さくなる',
             // style:'all: initial;',
             // style: 'height:30px',
             // onclick:e=>{log(this);this.style.height="11px";},
             onclick: function() {
-                log(this); this.style.height = parseInt(this.style.height) - 1 + 'px';
+                log(this); this.style.height = parseInt(this.style.height) - 1 + 'px'
             },
             //e=>{},
-        });
+        })
         mkEle(baseC, 'button', {
             textContent: 'UA・Referer',
             onclick: function() {
@@ -704,45 +704,45 @@ temp.srl = function() {
 				 */
                 const changeUserAgent = (ua) => {
                     // Chrome, fx, IE11
-                    window.navigator.__defineGetter__('userAgent', () => ua);
+                    window.navigator.__defineGetter__('userAgent', () => ua)
                     // Safari
                     try {
                         // fxでsetterがないとエラーになるので
                         window.navigator = {
                             get userAgent() {
-                                return ua;
+                                return ua
                             }
-                        };
+                        }
                     } catch (e) {}
-                };
+                }
                 //changeUserAgent('Mozilla/5.0 (Macintosh; ...');
-                log(window.navigator.userAgent);
-                log(document.referrer);
+                log(window.navigator.userAgent)
+                log(document.referrer)
             },
             //e=>{},
-        });
+        })
         // logを表示する場所
         const logDisp = mkEle(baseC, 'div', {
             id: 'miiyalog',
             textContent: '',
             style: 'height:200px;overflow-y:  scroll;     height: 100px;  /*background-color: #CCF; */ border-style: ridge;',
-        });
+        })
         nsMiiya.aloging = function(s, kai = 1, num = 1) {
             // log("miiya log->"+s);
             // nsMiiya.alogingDisp.textContent+="\n"+s;
             // s=""+nsMiiya.aloging.count+s;
-            nsMiiya.aloging.count = nsMiiya.aloging.count ? nsMiiya.aloging.count + 1 : 1;
-            s = '[' + nsMiiya.aloging.count + '] ' + s;
+            nsMiiya.aloging.count = nsMiiya.aloging.count ? nsMiiya.aloging.count + 1 : 1
+            s = '[' + nsMiiya.aloging.count + '] ' + s
             if (kai) {
-                s += '<br />';
+                s += '<br />'
             }
-            logDisp.innerHTML += s;
-            logDisp.scrollTop = logDisp.scrollHeight;
-            logDisp.scrollLeft = logDisp.scrollWidth;
-        };
-        okiniButton(baseC);
-        return baseC;
-    };// 画面作る関数終わり
+            logDisp.innerHTML += s
+            logDisp.scrollTop = logDisp.scrollHeight
+            logDisp.scrollLeft = logDisp.scrollWidth
+        }
+        okiniButton(baseC)
+        return baseC
+    }// 画面作る関数終わり
     /**おきにボタン */
     function okiniButton(elem) {
         //お気に入りのボタンつくっちゃうも
@@ -757,7 +757,7 @@ temp.srl = function() {
             //['',''],
         ]
         for (let key in okinis) if (okinis.hasOwnProperty(key)) {
-            let el = okinis[key];
+            let el = okinis[key]
             if (el[1] === undefined || el[1] === '') {
                 // let a = (new URL(location.href)).hostname.split('.')[0]
                 // a.hostname.split('.')[0]
@@ -770,12 +770,12 @@ temp.srl = function() {
 	 * ネームスペース単位じゃなくインストールスクリプトで分けられてるぽい
 	 */
     function gmValuesAll() {
-        let vals = [];
-        let ob = {};
+        let vals = []
+        let ob = {}
         for (let key of GM_listValues()) { //for of は実体を返す
             //log(key)
             vals.push(GM_getValue(key))
-            ob[key] = GM_getValue(key);
+            ob[key] = GM_getValue(key)
         }
         log(ob)
     }
@@ -784,69 +784,69 @@ temp.srl = function() {
 	 */
     function maiKuji(start) {
         let mai = '毎日くじ次へ'
-        log('maiKuji実行');
-        log(mai, GM_getValue(mai));
+        log('maiKuji実行')
+        log(mai, GM_getValue(mai))
         //gmValuesAll();
         if (start) {
-            log('変数セット', start);
-            GM_setValue(mai, start); //スタート書き換え
+            log('変数セット', start)
+            GM_setValue(mai, start) //スタート書き換え
             //log(mai, GM_getValue(mai));
         }
-        let ima = GM_getValue(mai);
+        let ima = GM_getValue(mai)
         if (!ima) {
-            log('枚にくじima無し、抜ける', ima);
-            return false;
+            log('枚にくじima無し、抜ける', ima)
+            return false
         }
         switch (ima) {
             case 1:
-                log('case', ima);
-                GM_setValue(mai, ima + 1);
-                location.href = 'http://www.rakuten.co.jp/';
-                break;
+                log('case', ima)
+                GM_setValue(mai, ima + 1)
+                location.href = 'http://www.rakuten.co.jp/'
+                break
             case 2:
-                log('case', ima);
+                log('case', ima)
                 if (location.href === 'http://www.rakuten.co.jp/') {
-                    GM_setValue(mai, ima + 1);
-                    list.楽天系の毎日くじ.rakuTop2kuji();
+                    GM_setValue(mai, ima + 1)
+                    list.楽天系の毎日くじ.rakuTop2kuji()
                 }
-                break;
+                break
             case 3:
-                log('case', ima);
+                log('case', ima)
                 if (location.href.match('https://kuji.rakuten.co.jp/.+/.+')) {
-                    GM_setValue(mai, ima + 1);
-                    location.href = 'https://www.infoseek.co.jp/Luckylot';
+                    GM_setValue(mai, ima + 1)
+                    location.href = 'https://www.infoseek.co.jp/Luckylot'
                 }
-                break;
-            default: break;
+                break
+            default: break
             //location.href = 'https://www.infoseek.co.jp/Luckylot';
             //http://www.rakuten.co.jp/?l2-id=shop_header_logo
         }
-        log('まいくじ終わり', mai, GM_getValue(mai));
+        log('まいくじ終わり', mai, GM_getValue(mai))
     }
 	/**毎日くじ作り直し 
 	 * @param 
 	*/
     function maiJump(flagEdit) {
-        const name = '毎日ジャンプ';
-        const debug = true;
-        debug && log(name + 'start');
+        const name = '毎日ジャンプ'
+        const debug = true
+        debug && log(name + 'start')
         //フラグを書き込む
         if (flagEdit === 1) {
-            debug && log(name + 'フラグを作る');
-            GM_setValue(name, 1);
+            debug && log(name + 'フラグを作る')
+            GM_setValue(name, 1)
         } else if (flagEdit === 0) {
-            debug && log(name + 'フラグを削除');
-            GM_deleteValue(name);
+            debug && log(name + 'フラグを削除')
+            GM_deleteValue(name)
         }
         //フラグが無ければ抜ける
         if (!GM_getValue(name)) {
-            return false;
+            return false
         }
         const arr = [
             'https://kuji.rakuten.co.jp/.+/.+',
             'https://www.infoseek.co.jp/Luckylot'
         ]
-        debug && log(name + 'end');
+        debug && log(name + 'end')
         //今いるURLから次にジャンプする、
         //ジャンプ実行フラグがついてなければ抜ける
     }
@@ -855,14 +855,14 @@ temp.srl = function() {
 	 */
     function button_tukuru(text, func) {
         const css_ClassName = 'button_tukuru'
-        const css_id = 'button_tukuru_css';
+        const css_id = 'button_tukuru_css'
 
         //css無ければ作る
-        let css_el = document.getElementById(css_id);
+        let css_el = document.getElementById(css_id)
         if (css_el === null) {
-            css_el = document.createElement('style');
-            css_el.id = css_id;
-            document.head.appendChild(css_el);
+            css_el = document.createElement('style')
+            css_el.id = css_id
+            document.head.appendChild(css_el)
             css_el.textContent = ([
                 `
 				.${css_ClassName}{
@@ -900,10 +900,10 @@ temp.srl = function() {
         return el_a
     }
     //main/////////////////////////////////////
-    const log = my_alert;
-    log(`\n${(new Date).toLocaleString()}`);
-    log(`${Date.now() - time}ms main ##########################`);
-    log('@version 2019.11.16.113733');
+    const log = my_alert
+    log(`\n${(new Date).toLocaleString()}`)
+    log(`${Date.now() - time}ms main ##########################`)
+    log('@version 2019.11.16.113733')
     ugoiteruka('.')
 
     const arr = []
@@ -916,7 +916,7 @@ temp.srl = function() {
     function x(name, url, func) {
         if (name === 0) {
             //log("除外きた")
-            return;
+            return
         }
         arr.push([name, url, func])
     }
@@ -927,26 +927,26 @@ temp.srl = function() {
             let [name, url, func] = val
 
             //urlは.エスケープしてワイルドカードが使えるように。そのかわりドットは使えない。
-            let url_join = url.join('|').replace(/\./g, '\\.'); //.は正規表現のためにエスケープ
-            url_join = url_join.replace(/\*/g, '.*?');//ワイルドカードを実装。
-            let re = new RegExp(url_join, 'i');
+            let url_join = url.join('|').replace(/\./g, '\\.') //.は正規表現のためにエスケープ
+            url_join = url_join.replace(/\*/g, '.*?')//ワイルドカードを実装。
+            let re = new RegExp(url_join, 'i')
             //log(name,url_join)
             //log(url_exp)
             if (re.test(location.href)) {
-                let obj = {name: name, f: func};
+                let obj = {name: name, f: func}
                 ugoiteruka('*')
 
                 //log(` ${name} $$$$$$$$$$$$$$$$$$$`);
-                log(`${name} $$$$$$$$$$$$$$$$$$$`);
-                obj.f();
+                log(`${name} $$$$$$$$$$$$$$$$$$$`)
+                obj.f()
             }
         }
     }
 
     function sleep(msec) {
-        return new Promise(r => setTimeout(r, msec)); // returnが無くてうまく動かなかった。
+        return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
     }
-    const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec));
+    const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
 
 
     x('全部b', ['^http'], function() {
@@ -959,7 +959,7 @@ temp.srl = function() {
             let btn2 = button_tukuru('view all', () => {
                 let str = ''
                 for (let [key, value] of Object.entries(localStorage)) {
-                    str += (`${key}: ${value}\n`);
+                    str += (`${key}: ${value}\n`)
                 }
                 log(str)
             })
@@ -973,7 +973,7 @@ temp.srl = function() {
             let btn2 = button_tukuru('view all', () => {
                 let str = ''
                 for (let [key, value] of Object.entries(sessionStorage)) {
-                    str += (`${key}: ${value}\n`);
+                    str += (`${key}: ${value}\n`)
                 }
                 log(str)
             })
@@ -988,18 +988,18 @@ temp.srl = function() {
     x('workflowy', ['^https://workflowy.com/'], function() {
         //const base = nsMiiya.gamen();// 画面作っちゃう
         let dataSounyuF = function(s = '') {
-            document.activeElement.textContent += mydate('yyyy/MM/dd') + ' ' + s;
+            document.activeElement.textContent += mydate('yyyy/MM/dd') + ' ' + s
             /* フォーカス位置調整 */
-            let el = document.activeElement;
-            let range = document.createRange();
-            range.setStart(el, 1); // オプション2はオブジェのオフセット、0で先頭、el.chilednodesで文字単位
+            let el = document.activeElement
+            let range = document.createRange()
+            range.setStart(el, 1) // オプション2はオブジェのオフセット、0で先頭、el.chilednodesで文字単位
             // range.selectNodeContents(el);
-            range.collapse(true);// 選択を解除、これはエンドしてしてないから、無くても動く
-            let sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            el.focus();
-        };
+            range.collapse(true)// 選択を解除、これはエンドしてしてないから、無くても動く
+            let sel = window.getSelection()
+            sel.removeAllRanges()
+            sel.addRange(range)
+            el.focus()
+        }
         // ショートカットキー追加
         document.addEventListener('keydown', (e) => {
             // nsMiiya.aloging(e.ctrlKey+" " ,0);
@@ -1014,21 +1014,21 @@ temp.srl = function() {
             if (e.altKey) { //変化キーおしてるか？
                 switch (String.fromCharCode(e.keyCode)) {
                     case 'A': //A
-                        e.preventDefault(); // 避ける初期動作を
-                        dataSounyuF();
-                        break;
+                        e.preventDefault() // 避ける初期動作を
+                        dataSounyuF()
+                        break
                     case 'T':
-                        e.preventDefault(); // 避ける初期
-                        dataSounyuF('#タスク ');
-                        break;
+                        e.preventDefault() // 避ける初期
+                        dataSounyuF('#タスク ')
+                        break
                     case '3':
-                        e.preventDefault(); // 避ける初期
-                        dataSounyuF('#');
-                        break;
+                        e.preventDefault() // 避ける初期
+                        dataSounyuF('#')
+                        break
                     // document.activeElement.textContent+=moment().format('yyyy/MM/dd')+" #タスク ";
                 }
             }
-        });
+        })
         // // ボタンを作る
         // mkEle(base, 'button', {
         //     textContent: 'タスク',
@@ -1048,34 +1048,34 @@ temp.srl = function() {
         // });
     })
     x('ルーターログイン', ['^https?://192.168.\\d+.\\d+'], function() {
-        const base = nsMiiya.gamen();// 画面作っちゃう
+        const base = nsMiiya.gamen()// 画面作っちゃう
         function fff(params) {
-            document.getElementById('userName').value = 'admin';
-            document.getElementById('pcPassword').value = 'ttoomm99';
-            document.getElementById('loginBtn').click();
+            document.getElementById('userName').value = 'admin'
+            document.getElementById('pcPassword').value = 'ttoomm99'
+            document.getElementById('loginBtn').click()
         }
-        fff();
+        fff()
         mkEle(base, 'button', {
             textContent: 'ルーター',
             onclick: fff,
-        });
+        })
     })
     //楽天系/////////////////////////
     x('楽天スーパーヒーロー', ['^https://campaign.rakuten.jp/heroes/'], function() {
-        const base = nsMiiya.gamen();// 画面作っちゃう	
+        const base = nsMiiya.gamen()// 画面作っちゃう	
         mkEle(base, 'button', {
             textContent: 'callbtn',
             onclick: (ev) => {
                 document.querySelector('.callbtn').click()
             }
-        });
+        })
         mkEle(base, 'button', {
             textContent: '受け取らず',
             onclick: (ev) => {
                 document.querySelector('img[alt="受け取らずに次へに進む"]').click()
             }
-        });
-        let flag = true;
+        })
+        let flag = true
         mkEle(base, 'button', {
             textContent: '受け取らず',
             onclick: (ev) => {
@@ -1088,7 +1088,7 @@ temp.srl = function() {
                 }
                 flag = !flag
             }
-        });
+        })
         //200円クーポンは3500円以上としょぼい
         //https://campaign.rakuten.jp/heroes/?heroes_call=coupon&scid=wi_ich_gmx_coupongetcoupon
         //限定クーポン↑でヒーローたくさん呼ぶ
@@ -1104,48 +1104,48 @@ temp.srl = function() {
 		 */
     })
     x('infoの報告', ['^https://pointmail.rakuten.co.jp/subcard/complete'], function() {
-        document.querySelector('#completionReportBtn').click();
+        document.querySelector('#completionReportBtn').click()
     })
     x('メールdeポイント', ['^https://member.pointmail.rakuten.co.jp/box/*'], function() {
-        const title = 'メールポイント';
-        const base = nsMiiya.gamen();// 画面作っちゃう
+        const title = 'メールポイント'
+        const base = nsMiiya.gamen()// 画面作っちゃう
         // document.querySelector('.point_url').click()
         let suteFunc = async function() {
-            arebaCli('.point_url>a'); //spanClickしても数字減ったけど記録されず
-            await sleep(1000);
-            arebaCli('li.next>a');
+            arebaCli('.point_url>a') //spanClickしても数字減ったけど記録されず
+            await sleep(1000)
+            arebaCli('li.next>a')
             // let el;
             // el = document.querySelector('.point_url');
             // if (el !== null) click();
             // document.querySelector('li.next>a').click()
-        };
+        }
         mkEle(base, 'button', {
             onclick: suteFunc,
             textContent: 'mail de p',
         })
-        new GM_registerMenuCommand(title + '2', suteFunc, 'C');
+        new GM_registerMenuCommand(title + '2', suteFunc, 'C')
         if (location.href.match('https://member.pointmail.rakuten.co.jp/box/ItemDetail/.+')) {
-            arebaCli('.point_url>a'); //spanClickしても数字減ったけど記録されず
+            arebaCli('.point_url>a') //spanClickしても数字減ったけど記録されず
         }
     })
     x('楽天enaviでクリックポイント', ['^https://www.rakuten-card.co.jp/*'], function() {
-        const base = nsMiiya.gamen();// 画面作っちゃう
+        const base = nsMiiya.gamen()// 画面作っちゃう
         async function enaviClick() {
-            let elemList = document.querySelectorAll('[id^="position"]');// cssセレクタでhasが使えないからloop検索
-            log('クリック箇所=' + elemList.length);
+            let elemList = document.querySelectorAll('[id^="position"]')// cssセレクタでhasが使えないからloop検索
+            log('クリック箇所=' + elemList.length)
             for (let i = 0; i < elemList.length; i++) {
                 if (i < 0) {
                     //前半スキップ
                     //continue;
                 }
                 if (elemList[i].querySelector('img[src$="check.gif"]')) {
-                    let s = elemList[i].querySelector('a[href^=\'javascript\']');// .textConten;
+                    let s = elemList[i].querySelector('a[href^=\'javascript\']')// .textConten;
                     // log(s.textContent);
-                    s.style = 'box-shadow: 0 0 0px 3px rgba(222, 111, 222, 0.90);';
-                    log('クリック');
-                    s.click(); // クリック
+                    s.style = 'box-shadow: 0 0 0px 3px rgba(222, 111, 222, 0.90);'
+                    log('クリック')
+                    s.click() // クリック
                     //早くしすぎると歯抜けになる
-                    await new Promise((r) => setTimeout(r, 891)); // sleep
+                    await new Promise((r) => setTimeout(r, 891)) // sleep
                 }
                 //
                 // log(eles[i].querySelectorAll(".clearfix .dateArrival>img").length);
@@ -1157,12 +1157,12 @@ temp.srl = function() {
         mkEle(base, 'button', {
             textContent: 'クリックde',
             onclick: enaviClick,
-        });
+        })
     })
     x('Infoseekのラッキーくじサッカー', ['^https://www.infoseek.co.jp/Luckylot*'], function() {
         if (location.href === 'https://www.infoseek.co.jp/Luckylot/result') {
-            log('サッカーくじ終わり');
-            location.href = 'https://www.infoseek.co.jp/';
+            log('サッカーくじ終わり')
+            location.href = 'https://www.infoseek.co.jp/'
         }
         //https://www.infoseek.co.jp/Luckylot/result
         // if (GM_getValue('毎日くじ次へ')) {
@@ -1172,28 +1172,28 @@ temp.srl = function() {
         // 	log('くじセット');
         // 	GM_setValue('毎日くじ次へ', 1);
         // }
-        const base = nsMiiya.gamen();// 画面作っちゃう
+        const base = nsMiiya.gamen()// 画面作っちゃう
         let fn = async function() {
-            await new Promise((r) => setTimeout(r, 500)); // sleep
-            document.querySelector('.isluckykuji_start').click();
-            await new Promise((r) => setTimeout(r, 500)); // sleep
-            document.querySelector('.isluckykuji_select:nth-of-type(1)').click();
-            log('ow');
-        };
+            await new Promise((r) => setTimeout(r, 500)) // sleep
+            document.querySelector('.isluckykuji_start').click()
+            await new Promise((r) => setTimeout(r, 500)) // sleep
+            document.querySelector('.isluckykuji_select:nth-of-type(1)').click()
+            log('ow')
+        }
         //new GM_registerMenuCommand(title, fn, 'C');
-        fn();
+        fn()
     })
     x('infoミニくじ', ['^https://www.infoseek.co.jp/(\\?.+)?$'], function() {
-        const el = document.querySelector('area.islot_lot');
-        if (el !== null) {el.click();}
+        const el = document.querySelector('area.islot_lot')
+        if (el !== null) {el.click()}
     })
     x('enavi自動ログイン', ['^https://www.rakuten-card.co.jp/e-navi/index.xhtml'], async function() {
-        await new Promise((r) => setTimeout(r, 1500)); // sleep
+        await new Promise((r) => setTimeout(r, 1500)) // sleep
         //chromeのオートコンプリートでパスワードはあるように見えるが空欄状態、画面Clickで値が入る
         if (document.querySelector('#u').value !== '' &&
             document.querySelector('#p').value !== ''
         ) {
-            log(1);
+            log(1)
             //document.querySelector('#loginButton').click();
         }
     })
@@ -1203,11 +1203,11 @@ temp.srl = function() {
         '^https://www.infoseek.co.jp/Luckylot*',
         '^https://isbingo.www.infoseek.co.jp/isbingo/getCard',
         '^https://pointmail.rakuten.co.jp/subcard/complete',], function() {
-            const base = nsMiiya.gamen();// 画面作っちゃう	
+            const base = nsMiiya.gamen()// 画面作っちゃう	
             mkEle(base, 'button', {
                 textContent: '楽天くじ',
                 onclick: this.rakuTop2kuji,
-            });
+            })
             // if (GM_getValue('raku')) {
             // 	GM_setValue('raku', 0);
             // 	rakutenTop2Kuji();
@@ -1225,12 +1225,12 @@ temp.srl = function() {
             // }
             //var this.host;
             for (let i = 0; i < this.host.length; i++) {
-                const s = this.host[i].replace(/[*?]/g, ''); // g繰り返し
+                const s = this.host[i].replace(/[*?]/g, '') // g繰り返し
                 mkEle(base, 'a', {
                     textContent: s,
                     href: s,
-                });
-                mkEle(base, 'br', {});
+                })
+                mkEle(base, 'br', {})
             }
             // rakuTop2kuji: function() {
             // 	arebaCli('a[href^="https://rd.rakuten.co.jp/s/?R2=https%3A%2F%2Fkuji.rakuten.co.jp"]');
@@ -1244,24 +1244,24 @@ temp.srl = function() {
         // 	log('くじセット');
         // 	GM_setValue('毎日くじ次へ', 1);
         // }
-        await new Promise((r) => setTimeout(r, 1000)); // sleep
-        arebaCli('#entry');
+        await new Promise((r) => setTimeout(r, 1000)) // sleep
+        arebaCli('#entry')
     })
 
     x('google', ['^https?://www.google.(?:com|co.jp)/'], function() {
-        let d = !!0;
-        d && log('google no redirect');
+        let d = !!0
+        d && log('google no redirect')
         //Array.prototypeは[]で置き換え可能
         Array.prototype.forEach.call(document.querySelectorAll('h3.r > a'), function(elem) {
-            d && log(elem.textContent);
-            elem.onmousedown = function() {};
-        });
+            d && log(elem.textContent)
+            elem.onmousedown = function() {}
+        })
     })
     //kk動画サイト///////////////////////////////
 
     x('kkonload', ['^https://openloadpro.com/'], function() {
-        let d = !true;
-        d && log('zippys');
+        let d = !true
+        d && log('zippys')
         //arebaCli('.openload-link > a:nth-child(1)');
         let url = document.querySelector('.openload-link > a').href
         location.href = url
@@ -1275,7 +1275,7 @@ temp.srl = function() {
 
         video_top_play()
         log(button_tukuru('video再生', video_top_play))//動かない？
-        log(button_tukuru('video再生arr',()=> video_top_play()))
+        log(button_tukuru('video再生arr', () => video_top_play()))
         log(button_tukuru('head saku', () => {
             document.head.remove() //狂って酷いことに
         }))
@@ -1287,10 +1287,10 @@ temp.srl = function() {
     })
     x('javmix大画面', ['^https://javmix.tv/video/*/'], function() {
         //let playerDiv = document.querySelector('#player-embed')
-        let elm = document.querySelector('#player-embed > iframe');
+        let elm = document.querySelector('#player-embed > iframe')
         //let videotag = elm.contentWindow.document.querySelector('video')
         //
-        elm.sandbox = 'allow-scripts allow-same-origin'; //iframe制限して許可条件、popup防げるけど、相手が書き換えることも可能
+        elm.sandbox = 'allow-scripts allow-same-origin' //iframe制限して許可条件、popup防げるけど、相手が書き換えることも可能
         video_top_play(elm)
         /**
          * urlでa elemを作る
@@ -1348,9 +1348,9 @@ temp.srl = function() {
         let obj = document.querySelector('#sample-video')
         //log(obj)
         document.onreadystatechange = function(event) {
-            log(this.readyState);
+            log(this.readyState)
         }
-        arebaCli('#detail-sample-movie div a', 0);
+        arebaCli('#detail-sample-movie div a', 0)
         //log(document.readyState)
         //document.addEventListener("DOMContentLoaded", hoge)
         //DOMContentLoaded = () => log("load1")
@@ -1364,9 +1364,9 @@ temp.srl = function() {
         //location.href = url
     })
     x(0, 'KK_dropbooks', ['^https://dropbooks.tv/', '^http://dlbooks.to/', '^http://xbooks.to/'], function() {
-        const d = !true;
+        const d = !true
         //css
-        const cssEl = returnMyCss();
+        const cssEl = returnMyCss()
         //cssEl.sheet.insertRuインサートしようとしたけどスペルわからんくて辞めた
         cssEl.insertAdjacentText('beforeEnd', '\
             a,a * { color: #77e !important;font-weight: bold; } \
@@ -1376,60 +1376,60 @@ temp.srl = function() {
         //検索結果はhttpからのフルアドレスだった。
         //cssセレクタではbaseURLはアリでも無しでもヒットする→嘘、ヒットしない
         //domで書き換えた後はヒットする、
-        let els = document.querySelectorAll('h3>a[href*="/detail/"]');
-        d && log('cssセレクタで', els.length);
+        let els = document.querySelectorAll('h3>a[href*="/detail/"]')
+        d && log('cssセレクタで', els.length)
         for (let i = 0; i < els.length; i++) {
             //const newel=document.createElement('a');
-            let el = els[i];
-            const cnode = el.cloneNode(true);
+            let el = els[i]
+            const cnode = el.cloneNode(true)
             //.appendChild(cnode);
             cnode.textContent = '■'
-            el.parentElement.insertBefore(cnode, el);
-            el.href = el.href.replace('/detail/', '/detail/download_zip/');
-            el.textContent = '◆' + el.textContent;
+            el.parentElement.insertBefore(cnode, el)
+            el.href = el.href.replace('/detail/', '/detail/download_zip/')
+            el.textContent = '◆' + el.textContent
             //d && log(el.href);
         }
         //プレビュー作っちゃう
         //作ろうと思ったけどサムネのURLがxhrしないとわかんないから保留
         //let globalInFn = (function() {return this})(); // ここじゃグローバル取れないぽ
 
-        els = document.querySelectorAll('a[onclick^="bookStand"]');
+        els = document.querySelectorAll('a[onclick^="bookStand"]')
         for (let i = 0; i < els.length; i++) {
-            let el = els[i];
+            let el = els[i]
             //el.onclick=()=>log(1111);//動作するがhtmlはそのまま,オートページャーで消える
-            el.setAttribute('onclick', 'aa()'); //書き換わる
+            el.setAttribute('onclick', 'aa()') //書き換わる
             //el.textContent = '◆ぷ' + el.textContent;
         }
         // タイトル分かり易く
-        let s;
+        let s
         do {
-            s = (location.href.match(/(?:word:)([^/]+)/) || [])[1];
+            s = (location.href.match(/(?:word:)([^/]+)/) || [])[1]
             if (s) {
                 document.title = decodeURIComponent(s)
-                    + ' _' + document.domain;
-                break;
+                    + ' _' + document.domain
+                break
             }
-            s = (location.href.match(/(?:sort:)(.+)/) || [])[1];
+            s = (location.href.match(/(?:sort:)(.+)/) || [])[1]
             if (s) {
                 document.title = s.replace(/\/.+:/, ':')
-                    + ' _' + document.domain;
-                break;
+                    + ' _' + document.domain
+                break
             }
-        } while (false);
+        } while (false)
     })
     x('KKsmvto', ['^http://smv.to/*'], function() {
         //Clickされたノードを判定する
         function hantei(ev) {
             //log(e);	
-            log(ev.target.tagName, ev.target.className);
+            log(ev.target.tagName, ev.target.className)
             //log(e.target);
             if (ev.target.tagName == 'IMG' && ev.target.className == 'thumb') {
-                ev.preventDefault();
-                ev.stopPropagation();
-                makeThumbScreen(ev);
+                ev.preventDefault()
+                ev.stopPropagation()
+                makeThumbScreen(ev)
             }
         }
-        document.body.addEventListener('click', hantei, true);
+        document.body.addEventListener('click', hantei, true)
 		/*判定せず、ターゲット全てにリスナーを登録するタイプ
 		var eles = document.querySelectorAll("a>.thumb");
 		var color = Math.random().toString(16).slice(2, 5);
@@ -1463,7 +1463,7 @@ temp.srl = function() {
 						z-index: 2147483646;
 					`,
                 onmousewheel: function(e) {
-                    e.stopPropagation();
+                    e.stopPropagation()
                     //e.preventDefault();
                     //log(e);
                     //return false;
@@ -1471,40 +1471,40 @@ temp.srl = function() {
                 onclick: function(e) {
                     // log(this);
                     // log(e.target);
-                    this.parentNode.removeChild(this);
+                    this.parentNode.removeChild(this)
                 },
-            }));
-            let num = parseInt(ev.target.getAttribute('count'));
-            log(num, ev.target.src);
-            let n;
+            }))
+            let num = parseInt(ev.target.getAttribute('count'))
+            log(num, ev.target.src)
+            let n
             for (let i = 1; i <= 35 && i <= num; i++) {
-                if (!ev.target.src) {break;}
-                n = parseInt(num / 35 * i) || 1;
-                if (n < i) n = i;
+                if (!ev.target.src) {break}
+                n = parseInt(num / 35 * i) || 1
+                if (n < i) n = i
                 base.appendChild(Object.assign(document.createElement('img'), {
                     src: ev.target.src.match('^.+/') + 'animation_' + ('0000' + n).slice(-5) + '.jpg',
                     style: '	vertical-align: bottom;',
                     //http://img1.smv.to/plpiAK5qSk/animation_00005.jpg',
-                }));
+                }))
             }
         }
     })
     //kkダウンロード系/////////////////////////////////
     x('zippyshare', ['^https://www*.zippyshare.com/v/'], function() {
-        let d = !true;
-        d && log('zippys');
-        arebaCli('#dlbutton', 3, true);
+        let d = !true
+        d && log('zippys')
+        arebaCli('#dlbutton', 3, true)
         // let url = document.querySelector('#dlbutton').href
         // location.href = url
     })
     x('mx-sh', ['^https://mx-sh.net/'], function() {
-        let d = !true;
-        d && log('zippys');
-        arebaCli('#Downloadfre');
+        let d = !true
+        d && log('zippys')
+        arebaCli('#Downloadfre')
     })
     x('wupfile', ['^https://wupfile.com/'], function() {
-        let d = !true;
-        d && log('zippys');
+        let d = !true
+        d && log('zippys')
         arebaCli('#method_free');
         //downloadbtn
         //document.querySelector("#downloadbtn").click()
@@ -1513,44 +1513,44 @@ temp.srl = function() {
         //2019/09/02 自動ダウンロードを簡易的に
         //setintarval→clearinでもできるけど、settimeoutのほうが見やすい？
         (function tryDownload() {
-            let time = new Date();
+            let time = new Date()
             let el = document.querySelector('#downloadbtn')
-            log(time);
-            log(el.disabled);
+            log(time)
+            log(el.disabled)
             if (!el.disabled) {
-                el.click();
-                return;
-            }
-            setTimeout(tryDownload, 5000);
-        }());
-    })
-    x('jolinfile', ['^https?://jolinfile.com'], function() {
-        let d = !true;
-        d && log('http://jolinfile.com');
-        arebaCli('[value="Free Download"]');
-        arebaCli('#dd_link');
-        (function tryDownload() {
-            let time = new Date();
-            let el = document.querySelector('#downloadbtn')
-            log(time);
-            log(el.disabled);
-            if (!el.disabled) {
-                el.click();
+                el.click()
                 return
             }
-            setTimeout(tryDownload, 5000);
-        }());
+            setTimeout(tryDownload, 5000)
+        }())
+    })
+    x('jolinfile', ['^https?://jolinfile.com'], function() {
+        let d = !true
+        d && log('http://jolinfile.com')
+        arebaCli('[value="Free Download"]')
+        arebaCli('#dd_link');
+        (function tryDownload() {
+            let time = new Date()
+            let el = document.querySelector('#downloadbtn')
+            log(time)
+            log(el.disabled)
+            if (!el.disabled) {
+                el.click()
+                return
+            }
+            setTimeout(tryDownload, 5000)
+        }())
     })
     x('rapidgator', ['^https://rapidgator.net/'], function() {
-        let d = !!true;
-        d && log('mexa');
-        arebaCli('.link.act-link.btn-free');
-        arebaCli('.btn-download');
+        let d = !!true
+        d && log('mexa')
+        arebaCli('.link.act-link.btn-free')
+        arebaCli('.btn-download')
     })
     x('mexa_sh', ['^https://mexa.sh/'], function() {
-        let d = !!true;
-        d && log('mexa');
-        arebaCli('#Downloadfre');
+        let d = !!true
+        d && log('mexa')
+        arebaCli('#Downloadfre')
         //downloadbtn
         //document.querySelector("#downloadbtn").click()
         //document.querySelector('#downloadbtn').removeAttribute('disabled')
@@ -1570,31 +1570,31 @@ temp.srl = function() {
         // }());
     })
     x('dousyoko', ['^https?://.+.dousyoko.net/'], function() {
-        let d = !!true;
+        let d = !!true
         const $ = (...s) => document.querySelectorAll(...s)
-        d && log($('#download_pass').value);
+        d && log($('#download_pass').value)
         $('#download_pass')[0].type = 'text'
         $('#download_pass')[0].value = 'dddd'
-        d && log('dddd');
-        arebaCli('.submit');
+        d && log('dddd')
+        arebaCli('.submit')
     })
     x('z2icom', ['^https://z2i.com/', '^https://im1.io/', '^https://shrinx.net'], async function() {
-        let d = !true;
+        let d = !true
         let current_url = window.location.href
         let api = current_url.split('?api=').slice(1).join('?api=').split('&url=')[0]
         let url = current_url.split('&url=').slice(1).join('&url=')
         //後ろのjoinは半分ダミー、Stringg欲しいから、コピペしたんだと思う、toStringが正しい。
-        d && alert(url);
+        d && alert(url)
         if (url) {
             window.location.href = url
         }
         //await sleep(1000)
-        await new Promise((r) => setTimeout(r, 4500)); // sleep
-        arebaCli('#invisibleCaptchaShortlink');
+        await new Promise((r) => setTimeout(r, 4500)) // sleep
+        arebaCli('#invisibleCaptchaShortlink')
         //await sleep(3000)
         //await new Promise((r) => setTimeout(r, 3500)); // sleep
         //<a href="https://www116.zippyshare.com/v/pu2Jljh0/file.html" class="btn btn-success btn-lg get-link">Get Link</a>
-        arebaCli('a[href*="zippyshare.com"]', null, true);
+        arebaCli('a[href*="zippyshare.com"]', null, true)
         //location.href = document.querySelector().href
     })
 
@@ -1611,7 +1611,7 @@ temp.srl = function() {
         // document.head.appendChild(meta)
     })
     x('localhostとfile:///', ['^https://www.ugtop.com/', 'news.google', 'localhost', 'file:///'], async function() {
-        'use strict';
+        'use strict'
         //log('document.cookie > '+document.cookie)
         //log()
 
@@ -1656,23 +1656,23 @@ temp.srl = function() {
     })
     //画像ダウンロード////////////////////
     x('dawnfun.com/', ['^https://r18.dawnfun.com/'], async function() {
-        let images = [];  // この配列にbase64のデータを入れる
+        let images = []  // この配列にbase64のデータを入れる
 
         function downloadImages(images) {
-            let zip = new JsZip();
+            let zip = new JsZip()
             for (let i = 0; i < this.images.length; i++) {
-                zip.file('img' + [i] + '.png', images[i].split(',')[1], {base64: true});
+                zip.file('img' + [i] + '.png', images[i].split(',')[1], {base64: true})
             }
             zip.generateAsync({type: 'blob'})
                 .then(function(content) {
-                    FileSaver.saveAs(content, 'images.zip');
-                });
+                    FileSaver.saveAs(content, 'images.zip')
+                })
         }
         //let JSZip = require('jszip');
 
-        let js_url = 'http://localhost:8888/lib/jszip.js';
+        let js_url = 'http://localhost:8888/lib/jszip.js'
         console.log(123)
-        await sleep(1000);
+        await sleep(1000)
         // import fm from 'http://localhost:8888/lib/FileSaver.js'
         // import zm from 'http://localhost:8888/lib/jszip.js'
         // const FS = await import('http://localhost:8888/lib/FileSaver.js')
@@ -1692,15 +1692,15 @@ temp.srl = function() {
         //         saveAs(content, 'example.zip');
         //     });
         function zipka(imgData) {
-            let zip = new JSZip();
+            let zip = new JSZip()
             console.log(zip)
-            zip.file('blob_t.jpg', imgData, {blob: true});
-            zip.file('blob_f.jpg', imgData, {blob: false});
+            zip.file('blob_t.jpg', imgData, {blob: true})
+            zip.file('blob_f.jpg', imgData, {blob: false})
             zip.generateAsync({type: 'blob', compression: 'STORE', })
                 .then(function(content) {
                     // see FileSaver.js
-                    saveAs(content, 'example.zip');
-                });
+                    saveAs(content, 'example.zip')
+                })
         }
         let url = 'https://r18.dawnfun.com/20191114doujin/Doujin-20191114113/000.jpg'
         GM_xmlhttpRequest({
@@ -1709,12 +1709,12 @@ temp.srl = function() {
             headers: {referer: url, origin: url},
             responseType: 'blob',
             onload: function(resp) {
-                let img = document.createElement('img');
-                img.src = window.URL.createObjectURL(resp.response);
-                document.body.appendChild(img);
+                let img = document.createElement('img')
+                img.src = window.URL.createObjectURL(resp.response)
+                document.body.appendChild(img)
                 // zipka(resp.response)
             }
-        });
+        })
     })
     x('manga314', ['^https://manga314.com/'], async function() {
         //クリアボタン欲しい
@@ -1740,12 +1740,12 @@ temp.srl = function() {
                 //log(e.buttons, e.button, e.target.tagName, e.target.rel)
                 //Aが大文字な謎
                 if (ev.target.tagName == 'A' && ev.target.rel == 'bookmark') {
-                    ev.preventDefault();
+                    ev.preventDefault()
                     log('これじゃ' + ev.target.innerHTML)
                     _GM_xhr(ev.target.href, ev.target.innerHTML)
                 }
             } while (false)
-        }, false);
+        }, false)
 
         // 右クリックも作ってみる
         document.addEventListener('contextmenu', function(ev) {
@@ -1753,7 +1753,7 @@ temp.srl = function() {
             if (ev.target.tagName == 'A' &&
                 ev.target.rel == 'bookmark' &&
                 ev.ctrlKey === false) {
-                ev.preventDefault();
+                ev.preventDefault()
                 log('◆これ◆' + ev.target.innerHTML)
                 if (ev.shiftKey) {
                     _js_xhr(ev.target.href, ev.target.textContent)
@@ -1764,7 +1764,7 @@ temp.srl = function() {
                     ? _GM_xhr(ev.target.href, ev.target.textContent)
                     : _dawnfun_only(ev.target.href, ev.target.textContent)
             }
-        }, false);
+        }, false)
 
         const _GM_xhr = function(url, title) {
             log('_GM_xhr')
@@ -1772,7 +1772,7 @@ temp.srl = function() {
                 method: 'GET',
                 url: url,//'http://localhost:8888',
                 onload: function(resp) {
-                    console.log(resp);
+                    console.log(resp)
 
                     let text = resp.responseText
                     // zipにレスポンスデータを追加
@@ -1780,16 +1780,16 @@ temp.srl = function() {
                     _kai_n_view(text, title)
                 },
                 onerror: function(response) {
-                    console.log(response.responseText);
+                    console.log(response.responseText)
                 },
-            });
+            })
         }
         //素のxhrも書いてみてる、途中
         const _js_xhr = function(url, title, zip = false) {
             log('js_xhr')
             // オリジナル画像を読み込む
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
+            let xhr = new XMLHttpRequest()
+            xhr.open('GET', url, true)
             //xhr.responseType = 'text';
             console.log(555)
             // xhr.addEventListener('load', function() {});
@@ -1798,7 +1798,7 @@ temp.srl = function() {
                 // zipにレスポンスデータを追加
                 //console.log(xhr.response);
                 _kai_n_view(text, title, zip)
-            };
+            }
             xhr.send()
             console.log(1212)
         }
@@ -1806,15 +1806,15 @@ temp.srl = function() {
         const _xhr_promise = function(url) {
             const p = new Promise((resolve, reject) => {
                 //log('js_xhr')
-                let xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
+                let xhr = new XMLHttpRequest()
+                xhr.open('GET', url, true)
                 //xhr.responseType = 'text';
                 xhr.onload = function() {
                     resolve(xhr.response)
-                };
+                }
                 xhr.send()
-            });
-            return p;
+            })
+            return p
         }
         const make_links = function(arr, title) {
             //let els = arr
@@ -1822,12 +1822,12 @@ temp.srl = function() {
                 .replace(/\//g, '@スラ')
                 .replace(/~/g, '〜')
                 .replace(/.zip|.rar|\//, '')
-                ;
+                
             title = mydate('@yyyyMMddhhmmss-') + title
             let rel = 'rel="noreferrer" '
-            let hrefs = '';
+            let hrefs = ''
             for (let val of arr) {
-                hrefs += `<a href="${val}" ${rel}title="${title}">a</a> `;
+                hrefs += `<a href="${val}" ${rel}title="${title}">a</a> `
             }
             return hrefs
         }
@@ -1889,21 +1889,21 @@ temp.srl = function() {
                         resolve(resp.response)
                     },
                     onerror: function(response) {
-                        console.log(response.responseText);
+                        console.log(response.responseText)
                     },
-                });
-            });
-            return p;
+                })
+            })
+            return p
         }
 
         const _url_arr_down = async function(url_arr, title) {
-            let zip = new JSZip();
+            let zip = new JSZip()
             for (let val of url_arr) {
                 log(val)
                 let blobimg = await _GM_xhr_promise(val)
-                console.log(blobimg);
-                let filename = new URL(val).pathname.split('/').pop();
-                zip.file(filename, blobimg, {blob: true});
+                console.log(blobimg)
+                let filename = new URL(val).pathname.split('/').pop()
+                zip.file(filename, blobimg, {blob: true})
                 // let img = document.createElement('img');
                 // img.src = window.URL.createObjectURL(blobimg);
                 // document.body.appendChild(img);
@@ -1911,13 +1911,13 @@ temp.srl = function() {
             zip.generateAsync({type: 'blob', compression: 'STORE', })
                 .then(function(content) {
                     // see FileSaver.js
-                    saveAs(content, title + '.zip');
-                });
+                    saveAs(content, title + '.zip')
+                })
         }
         function zipka(imgData) {
             console.log(zip)
 
-            zip.file('blob_f.jpg', imgData, {blob: false});
+            zip.file('blob_f.jpg', imgData, {blob: false})
 
         }
         //test用
@@ -1925,15 +1925,15 @@ temp.srl = function() {
 
         function atode_sakujo() {//画像のリンクを作る
             //document.querySelectorAll('img[original*="r18.dawnfun.com"]')
-            let els = document.querySelectorAll('img[original*="r18.dawnfun.com"]');
-            document.title = document.title.replace(' | manga314.com', '').replace(/.zip|.rar|\//, '');
-            let urls = '', hrefs = '';
+            let els = document.querySelectorAll('img[original*="r18.dawnfun.com"]')
+            document.title = document.title.replace(' | manga314.com', '').replace(/.zip|.rar|\//, '')
+            let urls = '', hrefs = ''
             for (let i = 0, l = els.length; i < l; i++) {
                 //const newel=document.createElement('a');
-                let val = els[i];
+                let val = els[i]
                 let url = val.getAttribute('original')
-                urls += url + '\n';
-                hrefs += `<a href="${url}" title="${document.title}">link</a> `;
+                urls += url + '\n'
+                hrefs += `<a href="${url}" title="${document.title}">link</a> `
             }
             log(hrefs)
 
@@ -1959,7 +1959,7 @@ temp.srl = function() {
 				opacity: 1;
 				border: 2px solid gray;
 			`,
-                }));
+                }))
                 let zipname = waku.appendChild(Object.assign(document.createElement('input'), {
                     type: 'text',
                     value: document.title,
@@ -1968,20 +1968,20 @@ temp.srl = function() {
                         //log(this, e)
                         e.target.select()
                         document.execCommand('cut')
-                        let selection = getSelection();
-                        let element = document.getElementById('hoge23');
-                        selection.selectAllChildren(element);
+                        let selection = getSelection()
+                        let element = document.getElementById('hoge23')
+                        selection.selectAllChildren(element)
                     },
-                }));
+                }))
                 let button1 = waku.appendChild(Object.assign(document.createElement('input'), {
                     type: 'button',
                     value: 'slect urls',
                     onclick: function(e) {
-                        let selection = getSelection();
-                        let element = document.getElementById('hoge23');
-                        selection.selectAllChildren(element);
+                        let selection = getSelection()
+                        let element = document.getElementById('hoge23')
+                        selection.selectAllChildren(element)
                     },
-                }));
+                }))
                 let button2 = waku.appendChild(Object.assign(document.createElement('input'), {
                     type: 'button',
                     value: 'view mode',
@@ -1990,7 +1990,7 @@ temp.srl = function() {
                         e.target.select()
                         document.execCommand('copy')
                     },
-                }));
+                }))
                 let base = waku.appendChild(Object.assign(document.createElement('div'), {
                     id: 'hoge23',
                     title: 'tttttt',
@@ -2001,86 +2001,86 @@ temp.srl = function() {
                     style: `
 				border: 2px solid gray;						
 			`,
-                }));
+                }))
                 //base.textContent = urls
-                base.innerHTML = hrefs;
+                base.innerHTML = hrefs
             }
         }
 
     })
     //過去の残骸////////////////////////
     x(0, 'サークルKクーポン', ['^https://www.circleksunkus.jp/mypage/coupon/index.html'], async function() {
-        const d = !false;
+        const d = !false
         if (document.title.match('クーポン')) {
-            d && alert(document.title);
+            d && alert(document.title)
         } else {
-            await new Promise((r) => setTimeout(r, 1000)); // sleep
-            location.reload();
+            await new Promise((r) => setTimeout(r, 1000)) // sleep
+            location.reload()
         }
         function kuponKaiseki() {
-            let o = {};
-            let cCode, cjc;
+            let o = {}
+            let cCode, cjc
             let el = document.querySelectorAll('.modal-open')
-            let i = 1;
+            let i = 1
             for (let key of el) {
-                cCode = key.getAttribute('data-scs') + '';
-                cjc = key.getAttribute('data-cjc') + '';
+                cCode = key.getAttribute('data-scs') + ''
+                cjc = key.getAttribute('data-cjc') + ''
                 o[i] = {'cCode': cCode, 'cjc': cjc}
-                i++;
+                i++
             }
-            return JSON.stringify(o);
+            return JSON.stringify(o)
         }
-        const base = nsMiiya.gamen();// 画面作っちゃう	
+        const base = nsMiiya.gamen()// 画面作っちゃう	
         const tA = mkEle(base, 'textarea', {
             textContent: '{"1":{"cCode":"01098","cjc":"9830869000009"},"2":{"cCode":"01093","cjc":"9830867000001"}}',
             style: 'height: 7em;',
-        });
-        mkEle(base, 'br', {});
+        })
+        mkEle(base, 'br', {})
         //log('t1', this);
         mkEle(base, 'button', {
             textContent: 'josn書き出し',
             onclick: () => { //アロー関数定義でthis固定
-                log(this, this.tA);
+                log(this, this.tA)
                 tA.textContent = kuponKaiseki()
             },
-        });
+        })
         mkEle(base, 'button', {
             textContent: 'josn読み込み',
             onclick: (event) => {
-                const obj = JSON.parse(tA.textContent);
-                log(obj);
+                const obj = JSON.parse(tA.textContent)
+                log(obj)
                 for (let key in obj) if (obj.hasOwnProperty(key)) {
-                    log(key + ':' + obj[key]);
+                    log(key + ':' + obj[key])
                     mkEle(base, 'button', {
                         textContent: key,
                         onclick: () => {
-                            log(obj[key]);
+                            log(obj[key])
                         }
-                    });
+                    })
                 }
             }
             ,
-        });
+        })
         mkEle(base, 'button', {
             textContent: 'Kクーポン',
             onclick: function(event) {
                 mkEle(document.body, 'div', {
                     id: 'loadtest',
                     style: 'height:44px;background:#EEE',
-                }, 'afterbegin');
+                }, 'afterbegin')
 				/*	nsMiiya.aloging('くじ' + event);
 					let xx = document.querySelectorAll('a[href^="https://rd.rakuten.co.jp/s/?R2=https%3A%2F%2Fkuji.rakuten.co.jp"]');
 					nsMiiya.aloging(xx.length);
 					xx[0].click();*/
             },
-        });
+        })
     })
-    x(0, 'サークルKスロット', ['^https?://app.circleksunkus.jp/slot_top.php'], () => {document.querySelector('a[href*="slot"').click();},
+    x(0, 'サークルKスロット', ['^https?://app.circleksunkus.jp/slot_top.php'], () => {document.querySelector('a[href*="slot"').click()},
     )
     xdo() //メイン
     ugoiteruka('#', 'sakujo')
-    log(`${Date.now() - time}ms エラー無し##########################`);
-})();
+    log(`${Date.now() - time}ms エラー無し##########################`)
+})()
 
 /*
 2019/11/12 function をconst リテラルで書くと、変なとこから呼び出されて未定義エラー
