@@ -22,7 +22,7 @@ const map = {
             ])],
         ]),
     ],
-};
+}
 console.log(map)
 //console.log(ksdflksdf([...map]))
 //console.log(JSON.stringify([...map]))
@@ -32,21 +32,21 @@ const jsonStr = JSON.stringify(map, function(key, val) {
         return {
             __type__: 'Map',
             __value__: [...val]
-        };
+        }
     }
-    return val;
-});
+    return val
+})
 
 const newObj = JSON.parse(jsonStr, function(key, val) {
     if (val != null && val.__type__ === 'Map') {
-        return new Map(val.__value__);
+        return new Map(val.__value__)
     }
-    return val;
-});
+    return val
+})
 
-console.log(jsonStr);
+console.log(jsonStr)
 // console.log(obj);
-console.log(newObj);
+console.log(newObj)
 
 const arr = [
     ['a', 100],
@@ -61,7 +61,7 @@ console.log(JSON.stringify(arr, null, 4))
 
 const dfggd = {
     a: 100, b: function() {
-        let v = 1;
+        let v = 1
         let a = 100
     }, c: {a: 100, b: 200, c: 333}
 }

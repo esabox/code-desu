@@ -697,7 +697,7 @@ const arr = [
         func: function() {
             'use strict';
             log(`//複数OR条件のifをArray.prototype.includesで、
-//関数定義の時に引数は変数でないといけない、デフォルトで数値入力ぽいことはできる`);
+            //関数定義の時に引数は変数でないといけない、デフォルトで数値入力ぽいことはできる`);
             let a;
             //if(b===2 || b===3 || b===5)を
             //Array.includes 一番見やすい

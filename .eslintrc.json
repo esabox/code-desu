@@ -1,0 +1,37 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "parser": "babel-eslint",
+    //"extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2017,
+        "allowImportExportEverywhere": true
+    },
+    "rules": {
+        "indent": [
+            0,
+            "tab"
+        ],
+        "no-unused-vars": 0, //使わない変数
+        "no-undef": 0, //未定義
+        "no-func-assign": 0, //使わない関数
+        "no-fallthrough": 0, //case文でbreak
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ]
+    }
+}

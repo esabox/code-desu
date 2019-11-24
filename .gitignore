@@ -1,3 +1,4 @@
 
 .DS_Store
 user-js/
+/node_modules/
