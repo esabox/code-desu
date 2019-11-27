@@ -63,8 +63,8 @@ let time = Date.now() //時間測定
 
 
 let nsMiiya = {gamen() {} } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
-// ネームスペース
-// window.nsMiiya = {};
+
+
 /** ボタンを作る*/
 function mkEle(pElem, tag, obj, loca = 'beforeend') {
     let elem = document.createElement(tag)
@@ -2259,50 +2259,62 @@ const arr = [
         func: () => {
             //console.log(11)
             const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
-
+            let i=0
             !(function loop() {
                 //プロパティ使う方法以外は、無名関数tryも使ってみたけど無理だった。
                 //スコープ外にletが1番綺麗に書けるかな。
-                if (!loop.i) loop.i = 0
                 let elem = document.querySelector('.com-tv-CommentButton button')
-                log(loop.i, elem)
-                loop.i++
+                log(i, typeof elem)
+                i++
 
-                let timeoutID = window.setTimeout(loop, 1000)
-                if (20 < loop.i || !elem.disabled) {
-                    log(loop.i)
-                    window.clearTimeout(timeoutID)//return;ジャムり
+                if (elem && !elem.disabled) {
+                    log(elem.disabled)
                     elem.click()
+                } else {
+                    setTimeout(loop, 1000)
                 }
-
             })()
         },
     },//abemaのコメ欄を自動で開く,
     {
         name: '当日の毛や木ヒルズを自動で開く、0時すぎると無理',
-        url: ['abema.tv/timetable#keyaki',],
+        url: ['^https://abema.tv/timetable#keyaki',],
         end: 0,
         date: '2019/10/10',
         func: async () => {
-            log('タイムテーブルから')
+            log('タイムテーブルから3')
             //alert("stop")
             //document.title="■"
+            //body.onloadは使えない、その後に番組欄は作られる。
             let t = document.title
-            document.title = '①' + t
+            document.body.onload = function() {
+                document.title = 'load:' + document.title 
+                log('load')
+            }
 
-            await new Promise(r => setTimeout(r, 4000))
-            document.title = '②' + t
+            document.title = '①' + document.title
 
-            let els = document.querySelectorAll('article span[class$="_a"]')
-            for (let val of els) {
+            let elem
+            do {
+                elem = document.querySelectorAll('article span')
+                await new Promise(r => setTimeout(r, 1000))
+                // document.title = '_' + document.title
+                log('mati')
+            } while (!elem.length || await sleep(1000)) 
+            
+            log('DOM作成済み')
+
+            for (let val of elem) {
                 if (val.textContent.match(/^けやきヒルズ/)) {
                     document.title = '③' + t
 
-                    console.log(val)
+                    log('クリック')
                     val.click()
-                    document
+                    let url=document
                         .querySelectorAll('.com-m-SlotCard__container--with-hover>a')[0]
-                        .click()
+                            .href
+                    log(url)
+                    location.href=url
                 }
             }
         },
