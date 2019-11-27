@@ -1,6 +1,6 @@
 /* eslint-enable no-unused-vars */
 
-import * as lib from './mod.js'
+// import * as lib from './mod.js'
 
 const log = console['log'] //log短縮、改変だがソースが見やすくなるメリット。
 log(`\n\n\n${new Date().toLocaleString()}`)
@@ -8,7 +8,7 @@ let time = Date.now() //時間測定
 
 const arr = [
 	{
-		name: 'テンプレート原本',
+		name: 'テンプレート\\原本',
 		date: '',
 		play: 0,
 		uniq: 1,
@@ -1556,7 +1556,7 @@ const arr = [
 	},//複数url対応の関数郡、旧mypo,
 	{
 		name: '新毎ポ関数2019-10-17',
-		date: '',
+		date: '2019-10-17',
 		play: 0,
 		uniq: 59,
 		func: function() {
@@ -1670,12 +1670,12 @@ const arr = [
 	},//ベンチマーク,
 	{
 		name: 'ベンチ2、設定を内包',
-		date: '',
+		date: '2019/10/18',
 		play: 0,
 		uniq: 63,
 		func: function() {
 			'use strict'
-			//2019/10/18
+			//
 			//初期化が多いとややこしいから、くくってみたが、読みにくい。
 			//ベンチが複数同時進行しないから、インスタンス化は必要ない。
 			//なんで、シンプルにObject一個で作れるが、ben.loop(func)みたいになっちゃう。
@@ -1869,7 +1869,7 @@ const arr = [
 	},//基礎class構文,
 	{
 		name: 'ベンチ3、クロージャ断念',
-		date: '',
+		date: '2019/10/18',
 		play: 0,
 		uniq: 70,
 		func: function() {
@@ -2457,10 +2457,10 @@ const arr = [
 		},
 	},//2017年？ぐらいに車輪した日付関数,
 	{
-		name: 'localhostをimportテスト',
+		name: 'localhostをimportテスト\\',
 		date: '',
 		play: 0,
-		uniq: 86,
+		uniq: [86, 12],
 		func: async function() {
 			'use strict'
 			log(12e4)
@@ -2532,6 +2532,7 @@ function arr_seibi() {
 
 //log(arr)
 //log(objt)
+import * as lib from './mod.js'
 
 let str = lib.obj_to_txt(arr)
 lib.dom_copy('const arr=' + str)
