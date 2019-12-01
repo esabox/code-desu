@@ -53,9 +53,15 @@
             //"preLaunchTask": "load_js.htmlでjs"
         },
         {
+            "type": "node",
+            "request": "launch",
+            "name": "node.js debug",
+            "program": "${workspaceFolder}/${relativeFile}"
+        },
+        {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome",
+            "name": "Launch Chrome2",
             "url": "http://localhost:8888/js/load_js.html?js=${relativeFile}", //${relativeFile}
             "webRoot": "${workspaceFolder}"
         }

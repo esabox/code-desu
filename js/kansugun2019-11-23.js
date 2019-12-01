@@ -2472,6 +2472,183 @@ const arr = [
 			//module2.bar();
 		},
 	},//localhostをimportテスト,
+	{
+		name: '関数群、関数を複数にしてみる',
+		date: '',
+		play: 0,
+		uniq: 82,
+		func: function() {
+			'use strict'
+			const obj = {
+				abc数値にカンマ: {
+					n: 'abc数値にカンマ',
+					f: () => Number(1000000).toLocaleString(),
+					r: '1,000,000',
+					d: '2019/10/27 13:05:58'
+				},
+				'es6 分割代入': {
+					n: 'es6 分割代入',
+					f1_: () => {
+						let [a, b] = [10, 11]
+						return [b, a].join(',')
+					},
+					r: '11,10',
+					d: '2019/10/27 13:05:58'
+				},
+				date: {
+					n: 'dateオブジェ',
+					f1_: () => Date(),
+					f2_: () => Date.now(),
+					f3_: () => (new Date).toLocaleString(),
+
+					d: '2019/10/27 13:05:58'
+				},
+				配列なのにtypeofでobject: {
+					n: '配列なのにtypeofでobject',
+					d: '2019/10/27 13:05:58',
+					f1_: () => typeof [],
+					f2_: () => Array.isArray([]),
+				},
+				'文字列の連続、es6': {
+					n: '文字列の連続、es6',
+					d: '2019/10/27 13:05:58',
+					f1_: () => '_##'.repeat(4),
+					f1__r: '_##_##_##_##',
+					f2_: () => 'a'.repeat(3),
+					f2__r: 'aaa',
+					f3_: () => 'a'.repeat(0),
+					f3__r: '',
+					hoge: [() => 'a'.repeat(3), 'a',],
+					fns: [
+						[() => '12345'.slice(2),'345',],
+						[() => '12345'.slice(-2),'45',],
+						[() => '12345'.slice(1, -2),'23',],
+						[() => '12345'.slice(-3, -1),'34',],
+						[() => '12345'.slice(-4, 3),'23',],
+					],
+				},
+			}
+
+			let obj2 = {}
+			//log(arr)
+			kansuGunObj1(obj)
+			//log(obj2)
+			import('http://localhost:8888/js/mod.js')
+				.then((mod) => {
+					console.log(mod)
+					// インポートしたモジュールが、module にセットされています
+
+					let str = mod.obj_to_txt(obj2)
+					mod.dom_copy('const arr=' + str)
+					// module を使った処理を記述します
+					str = `${str};`
+					log(str)
+				})
+
+
+			//関数群obj1型用の関数
+			function kansuGunObj1(obj) {
+				for (let [key, val] of Object.entries(obj)) {
+					//log(key,val)
+					//log(key, typeof val)
+					//rがなければ、関数を実行し、作る
+					//if (!val.r) val.r = val.f()
+					//日付がなければ日付
+					if (!val.d) val.d = new Date().toLocaleString()
+					//obj2に代入する。
+					let p_val = val
+					let newobj = {}
+					for (let [key, val] of Object.entries(p_val)) {
+						if (newobj[key] === undefined)
+							newobj[key] = val
+						//p_val[key] = val
+						if (typeof val === 'function') {
+							//log(key, typeof val, val2.n)
+							//log(val2)
+							//log(val.call(val2))
+							//log(val2[key]())
+							//アロー関数で作ったので、メソッド関係なくthis固定
+							//p_val[key.slice(0, -1) + 'R'] = val()// val.call(val2)  // val2[key]()
+							newobj[key + '_r'] = val()// val.call(val2)  // val2[key]()
+						}
+						if (Array.isArray(val)) {
+							let arr = val
+							//arr_fn0_res1(arr)
+							if (typeof val[0] === 'function')
+								val[1] = val[0]()
+							if (Array.isArray(val[0])) {
+								let p_val = val//[0]
+								for (let i = 0; i < p_val.length; i++) {
+									let vvv = p_val[i]
+									//p_val[i] = [vvv[0], vvv[0]()]
+									vvv[1] = vvv[0]()
+								}
+							}
+							function arr_fn0_res1(arr) {
+								let newarray = []
+								for (let [key, val] of Object.entries(arr)) {
+									log(key, val)
+									if (typeof val === 'function') {
+										//arr[key + 1] = arr[key]()
+										arr = 0//[val, 1, val()]
+									}
+									if (Array.isArray(val)) {
+										arr_fn0_res1(val)
+									}
+								}
+							}
+
+						}
+					}
+					// val2=newobj
+					// obj2[val.n] = val
+					obj2[val.n] = newobj
+				}
+			}
+
+			//htmlに表示させてclickコピー
+			function dom_copy(str) {
+				let d = document.body
+				d.style.backgroundColor = '#222'
+				d.style.color = '#fff'
+				d.style.whiteSpace = 'pre'
+				d.style.tabSize = 2
+				d.style.MozTabSize = 2 //firefox用
+				d.style.fontFamily = 'monospace'
+				//d.style.fontSize = "70px";
+				d.innerHTML = str
+				d.onclick = function(e) {
+					let selection = getSelection()
+					selection.selectAllChildren(this)
+					document.execCommand('copy')
+					//selection.removeAllRanges()
+					this.onclick = null
+				}
+			}
+
+			//obj+arrを展開してテキストで返す。
+			function obj_to_txt(obj, indent = 0) {
+				let str = ''
+				let ind = '\t'.repeat(indent)
+				let is_arr = Array.isArray(obj)
+
+				for (let [key, value] of Object.entries(obj)) {
+					if (typeof value === 'string') {
+						value = `'${value}'`
+					}
+					if (typeof value === 'object') value = obj_to_txt(value, indent + 1)
+					if (!is_arr) value = `'${key}': ${value}`
+
+					str += `${ind}\t${value},\n`
+
+					//console.log();
+				}
+				if (is_arr) str = `[\n${str}${ind}]`
+				else str = `{\n${str}${ind}}`
+				return str
+			}
+		},
+	},//obj+arrの複合を展開書き出す車輪開発,
 ]
 
 function kkk(play, name, func) {
@@ -2515,7 +2692,7 @@ function arrPlay() { //関数の実行、Tが無ければ、最後の関数を�
 /**
  * 関数群の整備用関数
  */
-function arr_seibi() {
++(function arr_seibi(arr) {
 	for (let i = 0, l = arr.length; i < l; i++) {
 		let v = arr[i]
 		//objの並び替えと初期値
@@ -2527,7 +2704,7 @@ function arr_seibi() {
 			func: v.func
 		}
 	}
-}
+})//(arr)
 //arr_seibi()
 
 //log(arr)
