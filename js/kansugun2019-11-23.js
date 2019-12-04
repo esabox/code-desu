@@ -2520,11 +2520,11 @@ const arr = [
 					f3__r: '',
 					hoge: [() => 'a'.repeat(3), 'a',],
 					fns: [
-						[() => '12345'.slice(2),'345',],
-						[() => '12345'.slice(-2),'45',],
-						[() => '12345'.slice(1, -2),'23',],
-						[() => '12345'.slice(-3, -1),'34',],
-						[() => '12345'.slice(-4, 3),'23',],
+						[() => '12345'.slice(2), '345',],
+						[() => '12345'.slice(-2), '45',],
+						[() => '12345'.slice(1, -2), '23',],
+						[() => '12345'.slice(-3, -1), '34',],
+						[() => '12345'.slice(-4, 3), '23',],
 					],
 				},
 			}
@@ -2649,7 +2649,40 @@ const arr = [
 			}
 		},
 	},//obj+arrの複合を展開書き出す車輪開発,
+	{
+		name: 'arr_objの多次元配列でarray.map',
+		date: '2019/12/03',
+		play: 0,
+		uniq: 82,
+		func: function() {
+			'usestrict'
+			let arr_obj = [
+				{a: 1, b: 2, },
+				{a: 3, b: 4, },
+				{a: 5, b: 3, },
+			]
+			let bMax
+			bMax = Math.max(...arr_obj.map(val => val.b))
+			log('max=' + bMax)
+			bMax = arr_obj.reduce((max, val) => max > val.b ? max : val.b)
+			log('max=' + bMax)
+
+			arr_obj.map(val => val.a = val.a + 'z')
+			arr_obj.map((val, i, arr) => arr[i].a = val.a + 'z') //上と同じ、
+			//一次元arrだとvalがobjにならないから、第三でarrが必要になる。
+
+			log(JSON.stringify(arr_obj, null, '  '))
+		},
+	},//
 ]
+// {
+// 	name: 'temp',
+// 	date: '',
+// 	play: 0,
+// 	uniq: 82,
+// 	func: function() {
+// 	},
+// },//temp
 
 function kkk(play, name, func) {
 	arr.push({play: play, name: name, func: func, uniq: num++})
