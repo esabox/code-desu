@@ -8,6 +8,7 @@
 // @description  3aa山彦が鯉をやる気にさせなかったり夢の地下室の本当の予想。
 // @author       山田一意太郎左衛門
 // @include *
+// @exclude     https://docs.google.com/*
 // @grant	GM_registerMenuCommand
 // @grant 	GM_getValue
 // @grant 	GM_setValue
@@ -1881,12 +1882,13 @@ const arr = [
 
             // 右クリックも作ってみる
             document.addEventListener('contextmenu', function(ev) {
-                log(ev.shiftKey)
+                //log(ev.shiftKey)
                 if (ev.target.tagName == 'A' &&
                     ev.target.rel == 'bookmark' &&
                     ev.ctrlKey === false) {
                     ev.preventDefault()
-                    log('◆これ◆' + ev.target.innerHTML)
+                    ev.stopPropagation()
+                    log('◆' + ev.target.innerHTML)
                     if (ev.shiftKey) {
                         _js_xhr(ev.target.href, ev.target.textContent)
                         //_js_xhr(ev.target.href, ev.target.textContent, 'zip')
@@ -2259,7 +2261,7 @@ const arr = [
         func: () => {
             //console.log(11)
             const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
-            let i=0
+            let i = 0
             !(function loop() {
                 //プロパティ使う方法以外は、無名関数tryも使ってみたけど無理だった。
                 //スコープ外にletが1番綺麗に書けるかな。
@@ -2288,7 +2290,7 @@ const arr = [
             //body.onloadは使えない、その後に番組欄は作られる。
             let t = document.title
             document.body.onload = function() {
-                document.title = 'load:' + document.title 
+                document.title = 'load:' + document.title
                 log('load')
             }
 
@@ -2300,8 +2302,8 @@ const arr = [
                 await new Promise(r => setTimeout(r, 1000))
                 // document.title = '_' + document.title
                 log('mati')
-            } while (!elem.length || await sleep(1000)) 
-            
+            } while (!elem.length || await sleep(1000))
+
             log('DOM作成済み')
 
             for (let val of elem) {
@@ -2310,11 +2312,11 @@ const arr = [
 
                     log('クリック')
                     val.click()
-                    let url=document
+                    let url = document
                         .querySelectorAll('.com-m-SlotCard__container--with-hover>a')[0]
-                            .href
+                        .href
                     log(url)
-                    location.href=url
+                    location.href = url
                 }
             }
         },
@@ -2372,7 +2374,7 @@ if (location.href.match('http://localhost:8888/favicon.ico')) {
                 // func: v.func
                 name: v.name,
                 url: v.url,
-                end: v.end||0,
+                end: v.end || 0,
                 date: v.date || '',
                 func: v.func,
             }
