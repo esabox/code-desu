@@ -17,17 +17,13 @@ class Bench {
 		this.performance = (typeof exports === 'object')
 			? require('perf_hooks').performance
 			: window.performance
-
 	}
 
 	do_func_loop_and_returnTime(func, loop) {
 		let time = performance.now() //時間測定this.this.
 		for (let i = 0; i < loop; i++) func()
 		time = performance.now() - time
-
-		//this.logs.push(func)
 		return time
-		//this.times.push(time)
 	}
 	add(func) {
 		this.obj_arr.push({func: func, time: 0, result: ''})
@@ -44,12 +40,10 @@ class Bench {
 		for (let j = 0; j < this.loop1; j++) {
 			for (let [key, val] of Object.entries(this.obj_arr)) {
 				val.time += this.do_func_loop_and_returnTime(val.func, this.loop2)
-				// this.times[key] = val.time
 			}
-			//this.prt()
 		}
 
-		return this.obj_arr.shift() && this.obj_arr //.unshift(1)
+		return this.obj_arr.shift() && this.obj_arr 
 	}
 
 	_maxleng(arr) {
@@ -66,26 +60,20 @@ class Bench {
 			return this.replace(/[^\x01-\x7E]/g, '**').length
 		}
 		const maxlen = (() => {
-			//const dec=arr.map(val)
-			const dec = arr.map(val => ('' + val).replace(/[^\x01-\x7E]/g, '**'))
-			log(dec)
 			const len_arr = arr.map(val => ('' + val).zen2_lenght())
-			// const len_arr = dec.map(val => ('' + val).length)
-			// const len_arr = arr.map(val => ('' + val).length)
-			log(len_arr)
 			return Math.max(...len_arr)
 		})()
 		//パディングで空白足して切り取ってたが、必要な空白を足したほうが良さそう。
 		function sliceZenkaku(str, arg) {
 			const zenkakuCount = (str.match(/[^\x01-\x7E]/g) || []).length
 			const len = str.length
-			log(str, zenkakuCount)
+			// log(str, zenkakuCount)
 			arg.length === 1
 				? arg[0] += zenkakuCount
 				: arg[1] -= zenkakuCount
 			return str.slice(...arg)
 		}
-		//空白を足すタイプに書き換え
+		//空白を足すタイプに書き換え、全角2文字扱いならsliceは複雑になる。
 		function padd(val, maxlen, opt = {align: 'left'}) {
 			let str=''+val
 			const len = str.zen2_lenght()
@@ -95,14 +83,6 @@ class Bench {
 			return str
 		}
 		arr = arr.map(val => padd(val, maxlen, {align: align}))
-			// (align === 'right')
-			// ? arr.map(val => padd('' + val, maxlen, {align: align}))
-			// : arr.map(val => padd('' + val, maxlen, {align: 'left'}))
-			// ? arr.map(val => sliceZenkaku(' '.repeat(maxlen) + val, [-maxlen]))
-			// : arr.map(val => sliceZenkaku(val + ' '.repeat(maxlen), [0, maxlen]))
-		// ? arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
-		// : arr.map(val => (val + ' '.repeat(maxlen)).slice(0, maxlen))
-
 		//戻す
 		arrObj.map((o, i) => o[newKey] = arr[i])
 	}
@@ -112,19 +92,27 @@ class Bench {
 
 		//ヘッダー
 		let str = '\n'
-		let [l1, l2] = [this.loop1, this.loop2] //分割代入で見やすく。
+		const [l1, l2] = [this.loop1, this.loop2] //分割代入で見やすく。
 		str += `//${l1.toLocaleString()}*(${l2}*fn)`
 		str += `= ${(l1 * l2).toLocaleString()}*fn \n`
 
 		//一回配列にコピー
-		let time_arr = objArr.map(o => o.time)
+		const time_arr = objArr.map(o => o.time)
 		//最大値
 		const max = Math.max(...time_arr)//objArr.map(o => o.time)) 
+		//グラフを作る
+		// for (let [key, val] of objArr.entries()) {
+		// 	val.graf = this.create_graf(val.time, max)
+		// }
+		objArr.forEach(obj =>
+			obj.graf = this.create_graf(obj.time, max)
+		)
 
 		// objArr = objArr.map(o => o.time.toFixed(1))
 		// time_arr = objArr.map(o => o.time.toFixed(1))
 		//time_arr = time_arr.map(t => t.toFixed(1))
 
+		//時間を小数点揃えて文字列化
 		objArr.map(o => o.time_str = o.time.toFixed(1))
 		// let maxlen = max.toFixed(1).length
 		// let time_strArray = objArr.map(o => o.time_str)
@@ -143,17 +131,11 @@ class Bench {
 		this._padding2(objArr, 'type')
 		this._padding2(objArr, 'func', undefined, 'left')
 
-		//mapでiで戻す。
 
-		for (let [key, val] of objArr.entries()) {
-			//配列をobjに追加。
-			//val.timeStr = time_arr[key]
-			val.graf = this.create_graf(val.time, max)
-		}
+		
 		// log(1, JSON.stringify(objArr.entries(), null, '  '))
 		// log(JSON.stringify(objArr, null, '  '))
 
-		log(max)
 
 		// for (let i = 0, l = this.funcs.length; i < l; i++) {
 		// 	let timeStr = time_arr[i]
@@ -163,7 +145,7 @@ class Bench {
 		// for (let [key, val] of Object.entries(objArr)) {
 		// 	str += `/*${val.graf} ${val.timeStr}ms */ ${this.head}${val.func})\n`
 		// }
-		objArr.map(o =>
+		objArr.forEach(o =>
 			str += `${o.func} // ${o.graf} ${o.time_str}ms ${o.result_pad} ${o.type} |\n`
 			// str += `/* ${o.graf} ${o.timeStr}ms ${o.result_pad} ${o.type} */ ${this.head}${o.func})  \n`
 		)
