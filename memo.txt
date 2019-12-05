@@ -42,3 +42,24 @@ hoge(undefined,10)
 関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
 str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
 str.length // => 17
+
+2019/12/05
+elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
+なので、cssセレクタでcss設定されたものは探せない。
+
+array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
+
+settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
+// setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
+// setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
+// setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
+// setTimeout(this.hoge.bind(this),100) //OK 行の時点で、固定した関数を返す
+Timeout.fn()的な実行される。this.hoge が呼べるのは、これが関数のアドレスだからだと予想。
+fn=0x2342 的な。
+こう見ると、アロー関数が特異なのが分かる、無名関数渡してるだけなのに。無名関数のthisを固定決定してる。
+アロー関数がthisを持ってないとネットに書いてあったが。
+hoge.bbb=100
+hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
+
+
+fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
