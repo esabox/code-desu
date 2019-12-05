@@ -7,18 +7,36 @@ const performance = (typeof exports === 'object')
 const log = console['log']
 //一重ループで作ったが、最初だけとてつもなく遅くなる。
 //二重ループにして平均取る、二重目が100未満だと誤差が激しすぎる。
+/**
+ * consoleでbenchmarkしちゃうもな
+ */
 class Bench {
 
-	constructor(loop1 = 10, loop2 = 1000) {
-		this.loop2 = loop2
-		this.loop1 = loop1
+	/**
+	 * 
+	 */
+	constructor(loop1 = 10, loop2 = 1000, opt = {}) {
+		this.sssort = opt.sort||false
+		this.column = opt.column || [
+			'func_L',
+			'//',
+			'result_R',
+			'type_R',
+		]
+		this.loop1 = loop1||10
+		this.loop2 = loop2||1000
 		this.head = 'b.add('
-		this.obj_arr = [{func: () => new Object(), time: 0, }]
-		this.performance = (typeof exports === 'object')
-			? require('perf_hooks').performance
-			: window.performance
+		this.obj_arr = [{func: () => undefined, time: 0, }]
+		// this.performance = (typeof exports === 'object')
+		// 	? require('perf_hooks').performance
+		// 	: window.performance
 	}
 
+	/**
+	 * 
+	 * @param {*} func 
+	 * @param {*} loop 
+	 */
 	do_func_loop_and_returnTime(func, loop) {
 		let time = performance.now() //時間測定this.this.
 		for (let i = 0; i < loop; i++) func()
@@ -26,7 +44,8 @@ class Bench {
 		return time
 	}
 	add(func) {
-		this.obj_arr.push({func: func, time: 0, result: ''})
+		const len=this.obj_arr.length
+		this.obj_arr.push({func: func, time: 0,id:len})
 	}
 	play() {
 
@@ -42,13 +61,8 @@ class Bench {
 				val.time += this.do_func_loop_and_returnTime(val.func, this.loop2)
 			}
 		}
-
-		return this.obj_arr.shift() && this.obj_arr 
-	}
-
-	_maxleng(arr) {
-		const len_arr = arr.map(val => ('' + val).length)
-		return Math.max(...len_arr)
+		// this.obj_arr =this.obj_arr.shift() 
+		return  this.obj_arr
 	}
 
 	_padding2(arrObj, key, newKey = key, align = 'right') {
@@ -75,7 +89,7 @@ class Bench {
 		}
 		//空白を足すタイプに書き換え、全角2文字扱いならsliceは複雑になる。
 		function padd(val, maxlen, opt = {align: 'left'}) {
-			let str=''+val
+			let str = '' + val
 			const len = str.zen2_lenght()
 			const space = ' '.repeat(maxlen - len)
 			if (opt.align === 'left') str = str + space
@@ -88,25 +102,33 @@ class Bench {
 	}
 
 	print_result() {
+		// setTimeout(function() {this.print_result2()}, 100) //this==Timeout{}で関数が見つからない
+		// setTimeout(() => this.print_result2(), 100) //OK
+		// setTimeout(this.print_result2,100) //呼び出せるが、先でthisがTimeout{}
+		// setTimeout(this.print_result2.bind(this), 100) //OK
+		this.print_result2()
+	}
+	print_result2() {
+		log(this)
 		let objArr = this.play()
 
 		//ヘッダー
 		let str = '\n'
 		const [l1, l2] = [this.loop1, this.loop2] //分割代入で見やすく。
-		str += `//${l1.toLocaleString()}*(${l2}*fn)`
+		str += `// ${l1.toLocaleString()}*(${l2}*fn)`
 		str += `= ${(l1 * l2).toLocaleString()}*fn \n`
 
 		//一回配列にコピー
-		const time_arr = objArr.map(o => o.time)
+		// const time_arr = objArr.map(o => o.time)
 		//最大値
-		const max = Math.max(...time_arr)//objArr.map(o => o.time)) 
+		const max = Math.max(...objArr.map(o => o.time))//time_arr)// 
 		//グラフを作る
-		// for (let [key, val] of objArr.entries()) {
-		// 	val.graf = this.create_graf(val.time, max)
-		// }
 		objArr.forEach(obj =>
 			obj.graf = this.create_graf(obj.time, max)
 		)
+		// for (let [key, val] of objArr.entries()) {
+		// 	val.graf = this.create_graf(val.time, max)
+		// }
 
 		// objArr = objArr.map(o => o.time.toFixed(1))
 		// time_arr = objArr.map(o => o.time.toFixed(1))
@@ -132,7 +154,7 @@ class Bench {
 		this._padding2(objArr, 'func', undefined, 'left')
 
 
-		
+
 		// log(1, JSON.stringify(objArr.entries(), null, '  '))
 		// log(JSON.stringify(objArr, null, '  '))
 
@@ -145,8 +167,14 @@ class Bench {
 		// for (let [key, val] of Object.entries(objArr)) {
 		// 	str += `/*${val.graf} ${val.timeStr}ms */ ${this.head}${val.func})\n`
 		// }
+
+		//並び替え
+		if (this.sssort)
+			objArr.sort((a, b) => a.time - b.time)
+
+		//表を作る
 		objArr.forEach(o =>
-			str += `${o.func} // ${o.graf} ${o.time_str}ms ${o.result_pad} ${o.type} |\n`
+			str += `${o.func} // ${o.result_pad} ${o.type} ${o.graf} ${o.time_str}ms |\n`
 			// str += `/* ${o.graf} ${o.timeStr}ms ${o.result_pad} ${o.type} */ ${this.head}${o.func})  \n`
 		)
 		log(str)
@@ -174,8 +202,8 @@ b.add(() => str.replace('.', '-'))
 
 // b.print_result()
 
-b = new Bench(10, 100000)
-b.add(() => !1)
+b = new Bench(10, 100000,{sort:false})
+b.add(() => 1)
 b.add(() => !1)
 b.add(() => false)
 b.add(() => Boolean(0))
@@ -183,14 +211,14 @@ b.add(() => {a: 100})
 b.add(() => [11, 22])
 b.add(() => 100)
 b.add(() => '日本語')
-b.add(() => '123')
-b.add(() => undefined)
-b.add(() => `${undefined}`)
-b.add(() => String(undefined))
-b.add(() => new String(111))
-b.add(() => String(111))
-b.add(() => ('' + undefined))
-b.add(() => (undefined + ''))
+// b.add(() => '123')
+// b.add(() => undefined)
+// b.add(() => `${undefined}`)
+// b.add(() => String(undefined))
+// b.add(() => new String(111))
+// b.add(() => String(111))
+// b.add(() => ('' + undefined))
+// b.add(() => (undefined + ''))
 // b.play()
 b.print_result()
 //log(str.replace(RegExp("\\.", "g"), "-"));
