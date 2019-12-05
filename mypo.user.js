@@ -1309,6 +1309,33 @@ const arr = [
         },
     },//kkビデオタグあったら全画面にして上に,
     {
+        name: 'kk video tokyomotion',
+        url: [
+            '^https://www.tokyomotion.net/video/',
+        ],
+        end: 0,
+        date: '2019/12/05',
+        func: function() {
+
+
+            video_top_play()
+            log(button_tukuru('video再生', video_top_play))//動かない？
+            log(button_tukuru('video再生arr', () => video_top_play()))
+            document.body.style.padding = 0
+
+            document.querySelectorAll('.top-nav,.navbar')
+                .forEach((el) => el.style.position = 'initial')
+
+            // css_instant('pos1223', '*{position: initial !important;}') 
+            //videoとかconsoleとか全部だめになる、インポ無いと優先順位低すぎて無視されるし。
+
+            // elems = document.querySelectorAll('[position=fixed]')
+            // elems.forEach((el) =>
+            //     el.style.position = null
+            // )
+        },
+    },//,
+    {
         name: 'javmix大画面',
         url: ['^https://javmix.tv/video/*/',],
         end: 0,
