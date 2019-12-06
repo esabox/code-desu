@@ -2674,6 +2674,16 @@ const arr = [
 			log(JSON.stringify(arr_obj, null, '  '))
 		},
 	},//
+	{
+		name: 'テンプレートリテラルを自分でParse',
+		date: '2019/12/05',
+		play: 0,
+		uniq: 0,
+		func: function() {
+			const res = 'ss${func} // ${result_R}\\$a  a{} ${type_R}aa'.match(/\$\{.+?\}|[^$]+|\$/g)
+			console.log(res)
+		},
+	},//
 ]
 // {
 // 	name: 'temp',
