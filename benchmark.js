@@ -5,20 +5,28 @@ const performance = (typeof exports === 'object')
 	? require('perf_hooks').performance
 	: window.performance
 const log = console['log']
-//一重ループで作ったが、最初だけとてつもなく遅くなる。
-//二重ループにして平均取る、二重目が100未満だと誤差が激しすぎる。
-/**
- * consoleでbenchmarkしちゃうもな
- */
-class Bench {
+// let kasu = new Bench()
 
+class Bench {
+	//一重ループで作ったが、最初だけとてつもなく遅くなる。
+	//二重ループにして平均取る、二重目が100未満だと誤差が激しすぎる。
 	/**
-	 * 
+	 * ほげ
+	 * @param {*} loop1 平均
+	 */
+	
+	/**
+	 * consoleでbenchmarkしちゃうもな
+	 * @param {Object} opt オプション
+	 * @param {Object} opt.sort オプション
+	 * @param {Number} loop1 平均用ループ
+	 * @param {Number} loop2 メインループ
+	 * @return {Object} ベンチーマークインスタンス
 	 */
 	constructor(loop1 = 10, loop2 = 1000, opt = {}) {
 		this.sssort = opt.sort || false
 		this.format = opt.format ||
-			'ああ${func} // ${result_R} ${type_R}aa'
+			'[*idR*] *funcL* // *resultR* *typeL* *graf* *timeStrR*ms'
 		this.loop1 = loop1 || 10
 		this.loop2 = loop2 || 1000
 		this.head = 'b.add('
@@ -149,32 +157,39 @@ class Bench {
 		if (this.sssort === 'descend')
 			objArr.sort((b, a) => a.time - b.time)
 
-		log(JSON.stringify(objArr, undefined, '  '))
-
-		//表を作る
-		objArr.forEach(o =>
-			str += `${o.func} // ${o.result_pad} ${o.type} ${o.graf} ${o.time_str}ms |\n`
-			// str += `/* ${o.graf} ${o.timeStr}ms ${o.result_pad} ${o.type} */ ${this.head}${o.func})  \n`
-		)
-
-		// this.fmtArray = this.format.match(/\$\{.+?\}|[^$]+|\$/g)
+		//log(JSON.stringify(objArr, undefined, '  '))
 
 		//気づいた、パティングを作るのは左右同時なら同じ1コストで作れる。
 		//objをフォーマットで文字列化、replaceで。
 		//予めフォーマットを配列化しておいて、それに変数投げ入れる方式もある。
+
 		function fmt_obj_conv(obj, fmt) {
-			return fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)
-			function aaa(str) {
-				const res = str.match(/^\$\{(.+)\}/)
-				if (res) {
+			return fmt.replace(/\*.*?\*|[^*]+/g, aaa) + '\n'
+			// return fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n' //最初はテンプレートリテラル
+			function aaa0(str) {
+				do {
+					if (str = '**') {
+						str = '*'; break
+					}
+					const res = str.match(/^\*(.*)\*/)
+					// const res = str.match(/^\$\{(.+)\}/)
+					if (!res) break
 					const key = res[1]
 					str = obj[key]
-					//log(res[1])
-				}
+				} while (false)
 				return str
+			}
+			function aaa(str) {
+				const res = str.match(/^\*(.*)\*/)
+				if (!res) return str
+				if (str === '**') return '*'
+
+				const key = res[1]
+				return obj[key]
 			}
 		}
 		str += '\n'
+		//表を作る
 		objArr.forEach(obj =>
 			str += fmt_obj_conv(obj, this.format)
 		)
@@ -207,6 +222,8 @@ b.add(() => str.replace('.', '-'))
 b = new Bench(10, 100000, {
 	// sort: 'descend',
 	// format: '[${idR}] ${funcL} ${graf}\n'
+	// format: '[${idR}] ${funcL} ${graf}\n'
+	// format: '[*idR*] *funcL* //n**a *graf*'
 })
 b.add(() => !!1)
 b.add(() => !1)
@@ -225,9 +242,15 @@ b.add(() => String(111))
 b.add(() => ('' + undefined))
 b.add(() => (undefined + ''))
 b.add(piyo)
-let fuga=()=>10/9
+let fuga = () => [1, 2, 3]
 b.add(fuga)
+let tako = function() {
+	return [1, 2, 3]
+}
+b.add(tako)
 // b.play()
-function piyo() {return 5 / 3}
+function piyo() {return 1, 2}
+
 b.print_result()
-//log(str.replace(RegExp("\\.", "g"), "-"));
+
+new Bench()
