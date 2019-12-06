@@ -5,23 +5,20 @@ const performance = (typeof exports === 'object')
 	? require('perf_hooks').performance
 	: window.performance
 const log = console['log']
-// let kasu = new Bench()
+//一重ループで作ったが、最初だけとてつもなく遅くなる。
+//二重ループにして平均取る、二重目が100未満だと誤差が激しすぎる。
 
 class Bench {
-	//一重ループで作ったが、最初だけとてつもなく遅くなる。
-	//二重ループにして平均取る、二重目が100未満だと誤差が激しすぎる。
-	/**
-	 * ほげ
-	 * @param {*} loop1 平均
-	 */
-	
+	// @param {{sort: string, format: string} } opt オブジェクト(プロパティ mem1・プロパティ mem2)
+
 	/**
 	 * consoleでbenchmarkしちゃうもな
-	 * @param {Object} opt オプション
-	 * @param {Object} opt.sort オプション
 	 * @param {Number} loop1 平均用ループ
-	 * @param {Number} loop2 メインループ
-	 * @return {Object} ベンチーマークインスタンス
+	 * @param {Number} [loop2=10000] メインループ
+	 * @param {Object} opt オプション
+	 * @param {?String} opt.sort 並び替え
+	 * @param {?String} opt.format 出力ようのフォーマット
+	 * @return {Bench} ベンチーマークインスタンス
 	 */
 	constructor(loop1 = 10, loop2 = 1000, opt = {}) {
 		this.sssort = opt.sort || false
@@ -39,8 +36,8 @@ class Bench {
 
 	/**
 	 * 
-	 * @param {*} func 
-	 * @param {*} loop 
+	 * @param {Function} func 
+	 * @param {Number} loop 
 	 */
 	do_func_loop_and_returnTime(func, loop) {
 		let time = performance.now() //時間測定this.this.
@@ -204,6 +201,7 @@ class Bench {
 		return str
 	}
 }
+let kasu = new Bench(1,100)
 
 let b
 b = new Bench(1000, 100)
@@ -241,15 +239,6 @@ b.add(() => new String(111))
 b.add(() => String(111))
 b.add(() => ('' + undefined))
 b.add(() => (undefined + ''))
-b.add(piyo)
-let fuga = () => [1, 2, 3]
-b.add(fuga)
-let tako = function() {
-	return [1, 2, 3]
-}
-b.add(tako)
-// b.play()
-function piyo() {return 1, 2}
 
 b.print_result()
 
