@@ -63,3 +63,17 @@ hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
 
 
 fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
+
+2019/12/06
+クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
+イメージ的にはスコープ繋がったけど、違った。
+let hoge=()=>{console.log(this.xxx)}で見れた。
+アロー関数はthisを束縛するってやつ。
+!(function() {log(typeof this)})() //undefined
+!(() =>      {log(typeof this)})() //object
+--分かりやすく
+this.a = 11
+let obj = {a: 22}
+obj.f = () =>      {log(this.a)}; obj.f() //11
+obj.f = function() {log(this.a)}; obj.f() //22
+thisは毎回混乱する、設計が悪いんや！
