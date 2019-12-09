@@ -2680,8 +2680,79 @@ const arr = [
 		play: 0,
 		uniq: 0,
 		func: function() {
+			'use strict'
 			const res = 'ss${func} // ${result_R}\\$a  a{} ${type_R}aa'.match(/\$\{.+?\}|[^$]+|\$/g)
 			console.log(res)
+		},
+	},//
+	{
+		name: 'funcにmethod作ってlet変数にアクセスできた？',
+		date: '2019/12/07',
+		play: 0,
+		uniq: 0,
+		des: 'クロージャみたいに、一部が生きてる感じ',
+		func: function() {
+			'use strict'
+			function hoge() {
+				try {log(a)}
+				catch (e) {log(e)}
+				hoge.me = function() {log(a++)}
+				let a = 1
+			}
+			log(typeof hoge.me) //undef
+			hoge() //cannot a
+			log(typeof hoge.me) //func
+			hoge.me() //1
+			hoge.me() //2
+			hoge() //cannot a
+			hoge.me() //2
+		},
+	},//
+	{
+		name: 'ループ関数にデフォ値',
+		date: '2019/12/07',
+		play: 0,
+		uniq: 0,
+		func: function() {
+			'use strict'
+			!(function hoge(i = 0) {
+				log(i)
+				if (5 < i) return
+				setTimeout(() => hoge(i + 1), 1000)
+			})()
+
+		},
+	},//
+	{
+		name: 'スプレッド構文、レストはややこしい',
+		date: '2019/12/07',
+		play: 0,
+		uniq: 0,
+		func: function() {
+			'use strict'
+			hoge(1, 2, 3)
+			function hoge(...arg) {
+				log(arg) //array(3)
+				log(...arg) //1 2 3
+				log([...arg]) //array(3)
+			}
+		},
+	},//
+	{
+		name: '関数内での初期化',
+		date: '2019/12/08',
+		play: 0,
+		uniq: 0,
+		func: function() {
+			'use strict'
+			hoge()
+			function hoge() {
+				let v
+				function f() {log('f', v); v = 10}
+				if (!v) f()
+				f()
+				log(v)
+			}
 		},
 	},//
 ]
@@ -2694,35 +2765,8 @@ const arr = [
 // 	},
 // },//temp
 
-function kkk(play, name, func) {
-	arr.push({play: play, name: name, func: func, uniq: num++})
-	//ダブったときの連番ループ
-	// for(let i=0;i<100;i++){
-	// 	let it=i===0?"":i
-	// 	if(!objt[name+it]){
-	// 		//log(i,it)
-	// 		objt[name+it]={play:play,name:name,func:func,uniq:num++};
-	// 		break;
-	// 	}
-	// }
-
-	return
-	//プロパティの初期値、falseだとv=v||1←とか使えない。三項演算子なら出来る
-	// if (kkk.flag == undefined) kkk.flag = false
-	// //三項演算子の初期値
-	// // kkk.flag = kkk.flag !== undefined ? kkk.flag : false;
-
-	// //log("aflag", kkk.flag);
-	// //kkk.flag=kkk.flag
-
-	// if (play || kkk.flag) {
-	//	 let obj = {name: name, f: func}
-	//	 log(` ${name} $$$$$$$$$$$$$$$$$$$`)
-	//	 obj.f()
-	//	 kkk.flag = false
-	// }
-}
-function arrPlay() { //関数の実行、Tが無ければ、最後の関数を実行
+/**関数群を実行 */
+function arrPlay(arr) { //関数の実行、Tが無ければ、最後の関数を実行
 	for (let i = 0, l = arr.length; i < l; i++) {
 		let val = arr[i]
 		if (val.play || i == l - 1) {
@@ -2732,10 +2776,8 @@ function arrPlay() { //関数の実行、Tが無ければ、最後の関数を�
 		}
 	}
 }
-/**
- * 関数群の整備用関数
- */
-+(function arr_seibi(arr) {
+/** 関数群の整備用関数 */
+!(function arr_seibi(arr) {
 	for (let i = 0, l = arr.length; i < l; i++) {
 		let v = arr[i]
 		//objの並び替えと初期値
@@ -2748,16 +2790,15 @@ function arrPlay() { //関数の実行、Tが無ければ、最後の関数を�
 		}
 	}
 })//(arr)
-//arr_seibi()
 
-//log(arr)
-//log(objt)
-import * as lib from './mod.js'
+//Object書き出し
+// import * as lib from './mod.js'
+// let str = lib.obj_to_txt(arr)
+// lib.dom_copy('const arr=' + str)
 
-let str = lib.obj_to_txt(arr)
-lib.dom_copy('const arr=' + str)
 
-arrPlay()
+
+arrPlay(arr)
 log(` ${Date.now() - time}ms エラー無し##########################`)
 
 /*
