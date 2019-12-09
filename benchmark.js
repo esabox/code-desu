@@ -13,8 +13,8 @@ class Bench {
 
 	/**
 	 * consoleでbenchmarkしちゃうもな
-	 * @param {Number} loop1 平均用ループ
-	 * @param {Number} [loop2=10000] メインループ
+	 * @param {Number=10} loop1 平均用ループ
+	 * @param {Number} loop2 メインループ
 	 * @param {Object} opt オプション
 	 * @param {?String} opt.sort 並び替え
 	 * @param {?String} opt.format 出力ようのフォーマット
@@ -163,19 +163,6 @@ class Bench {
 		function fmt_obj_conv(obj, fmt) {
 			return fmt.replace(/\*.*?\*|[^*]+/g, aaa) + '\n'
 			// return fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n' //最初はテンプレートリテラル
-			function aaa0(str) {
-				do {
-					if (str = '**') {
-						str = '*'; break
-					}
-					const res = str.match(/^\*(.*)\*/)
-					// const res = str.match(/^\$\{(.+)\}/)
-					if (!res) break
-					const key = res[1]
-					str = obj[key]
-				} while (false)
-				return str
-			}
 			function aaa(str) {
 				const res = str.match(/^\*(.*)\*/)
 				if (!res) return str
@@ -201,7 +188,7 @@ class Bench {
 		return str
 	}
 }
-let kasu = new Bench(1,100)
+let kasu = new Bench(1, 100)
 
 let b
 b = new Bench(1000, 100)
@@ -219,27 +206,31 @@ b.add(() => str.replace('.', '-'))
 
 b = new Bench(10, 100000, {
 	// sort: 'descend',
-	// format: '[${idR}] ${funcL} ${graf}\n'
-	// format: '[${idR}] ${funcL} ${graf}\n'
-	// format: '[*idR*] *funcL* //n**a *graf*'
+	format: '// *timeStrL*ms *graf* *resultR* \n*funcL*\n'
 })
-b.add(() => !!1)
-b.add(() => !1)
-b.add(() => false)
-b.add(() => Boolean(0))
-b.add(() => {a: 100})
-b.add(() => [11, 22])
-b.add(() => 100)
-b.add(() => '日本語')
-b.add(() => '123')
-b.add(() => undefined)
-b.add(() => `${undefined}`)
-b.add(() => String(undefined))
-b.add(() => new String(111))
-b.add(() => String(111))
-b.add(() => ('' + undefined))
+// b.add(() => !!1)
+// b.add(() => !1)
+// b.add(() => false)
+// b.add(() => Boolean(0))
+// b.add(() => {a: 100})
+// b.add(() => [11, 22])
+// b.add(() => 100)
+// b.add(() => '日本語')
+// b.add(() => '123')
+// b.add(() => undefined)
+// b.add(() => `${undefined}`)
+// b.add(() => String(undefined))
+// b.add(() => new String(111))
+// b.add(() => String(111))
+// b.add(() => ('' + undefined))
+// b.add(() => (undefined + ''))
 b.add(() => (undefined + ''))
+b.add(() => [1, '', , 4].map(v => v + 1))
+b.add(() => [1, '', , 4].forEach(v => v + 1))
+b.add(() => Array(1, 2).map((v) => 1))
+b.add(() => {Array(100).fill(1).map(v => v * 2)})
+b.add(() => {Array(100).fill(1).forEach(v => v * 2)})
+b.add(() => {for (let i = 0, arr = Array(100).fill(1); i < arr.length; i++) {arr[i] * 2} })
+b.add(() => {for (let i = 0, arr = Array(100).fill(1), l = arr.length; i < l; i++) {arr[i] * 2} })
 
 b.print_result()
-
-new Bench()
