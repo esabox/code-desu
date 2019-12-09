@@ -80,16 +80,37 @@ Node.prototype.proMk2 = function(tag, obj) {
     elem = Object.assign(elem, obj)
     return elem
 }
-//Utilityクラスを作ってみる？
+/** リンクhtmlElementを返す */
 const create_href = function(url, text = false) {
     let a_elem = document.createElement('a')
     a_elem.href = url
     a_elem.textContent = text || url
     return a_elem
 }
-/**あればClick
- * @param selector{string}
- */
+/** タッチパネルを作る */
+function 入力パネル(url, text = false) {
+    let div = document.createElement('div')
+    div.style.fontSize = '3em'
+    div.style.fontFamily = 'monospace'
+
+    for (let i = 0; i < 10; i++) {
+
+        const elem = document.createElement('a')
+        elem.textContent = i
+        elem.href = i //これがあるとリンク下線つく
+        elem.onclick = function(ev) {
+            ev.stopPropagation()
+            ev.preventDefault()
+            conDoW.add(this.textContent)
+            const elem = document.activeElement
+            elem.value += this.textContent
+        }
+        elem.onmousedown = ev => ev.preventDefault() //focus移動しないように
+        div.appendChild(elem)
+    }
+    return div
+}
+/** あればClick @param selector cssセレクタ */
 function arebaCli(selector, anzen_sec = 3, is_href = false) {
     const el = document.querySelector(selector)
 
@@ -175,12 +196,18 @@ const video_top_play = function(video_elem = null, query = 'video') {
     if (elem) {
         //
         //log(1)
-
+        log(button_tukuru('回展', () => {
+            //log(elem)
+            elem.style.WebkitTransform = 'rotate(90deg)'
+            elem.style.width = '100vh'
+            elem.style.height = '100vw'
+        }
+        ))
         document.body.insertAdjacentElement('afterbegin', elem)
         if (elem) {
             elem.style = `
 						width: 100vw; 
-						height: 100vh;
+						height: calc(100vh);
 						background-color: black;
 						/* overflow-x: hidden; */
 						/*bodyにwideやmagineあったりすると余白出来る対策*/
@@ -188,6 +215,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 						transform: translateX(-50%);
                         left: 50%;
                         overflow: hidden;
+                        /* -webkit-transform: rotate(90deg); */
 						`
         }
         //自動再生
@@ -221,7 +249,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 }
 const cookie_view_del = function() {
     const cookie_view = () => {
-        const logo = '&#x1f36a;' //"🍪"
+        const logo = '🍪' //"🍪"
         log(logo + document.cookie.replace(/; /g, '\n' + logo))
     }
     const count = function() {
@@ -274,30 +302,38 @@ function emoji_rand() {
     return String.fromCodePoint(emojiCode)
 }
 
-//メッセージを表示するやつ、アラートの代わり
-const my_alert = function(...msg) {
-    //無理やりプロパティでメソッド作った
-    my_alert.log_clear = function() {
+/** Console display on website ウェブ上にConsole.logする */
+const conDoW = function(...msg) {
+    /** 追加用 */
+    conDoW.add = function(...arr) {
+        // console.log(arr)
+        write(...arr)
+    }
+    /** ログクリア、無理くりプロパティで作った */
+    conDoW.log_clear = function() {
         console.log(wakuElm, this)
-        wakuElm.remove() //textContent = ''
+        //
+        wakuElm.remove() //conDoW.shadow も削除する必要あり
+        delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
+        //wakuElm.textContent = '' //shwdow挟んでると消えない
         // let button = button_tukuru('ログクリア', function(e) {
         //     this.log_clear()
         // })
         //log(button)
     }
-    //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
 
+    //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
     //これをcos log に置き換えるから、中でlogすると無限ループ、それ回避用
-    const log = window['console'].log//省略不可、置換しないよう変則
+    const log = window['console'].log //省略不可、置換しないよう変則
     //log(...msg)
 
+    //GMあれば、設定を読み取る
     if (window.GM) {
-        //設定を読み取る
         let flag_name = 'my_alert_f'
         let my_alert_f = GM_getValue(flag_name, false)
         //メニュー登録、一度だけ、そのためにプロパティ利用
-        if (typeof my_alert.reg === 'undefined') {
-            my_alert.reg = 1
+        if (typeof conDoW.reg === 'undefined') {
+            conDoW.reg = 1
             GM_registerMenuCommand('my_alert_f=' + my_alert_f, function() {
                 //alert('Put script\'s main function here');
                 GM_setValue(flag_name, !my_alert_f)
@@ -311,20 +347,162 @@ const my_alert = function(...msg) {
     }
 
 
-    let css_id = 'my_alert_css'
-    let css_el = document.getElementById(css_id)
-    if (css_el === null) {
-        css_el = document.createElement('style')
+
+
+
+    let shokika = 0
+    if (shokika) {
+
+    }
+
+
+    //車道DOM
+    if (!conDoW.elem) conDoW.elem = _init()
+    function _init() {
+        const div1_id = 'div1desu'
+        // const div1_id = div1_id
+        const div1 = document.createElement('div')
+        div1.id = div1_id
+        document.body.appendChild(div1)
+
+        const shadowroot = div1.attachShadow({mode: 'open'})
+
+        const waku_id = 'waku'
+        let wakuElm = document.createElement('div')
+        //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
+        wakuElm = Object.assign(wakuElm, {
+            id: waku_id,
+            onclick: function(e) {
+                this.parentNode.removeChild(this)
+            },
+            onmouseenter: function(e) {
+                wakuElm.style.opacity = 1
+            },
+            onmouseleave: function() {
+                wakuElm.style.opacity = 0
+            },
+        })
+        wakuElm = shadowroot.appendChild(wakuElm)
+
+        //css
+        let css_id = 'my_alert_css'
+        let css_el = document.createElement('style')
         css_el.id = css_id
-        document.head.appendChild(css_el)
+        shadowroot.appendChild(css_el)
         css_el.insertAdjacentText('beforeend', ([`
 			.hoge{
 				background-color: rgba(255, 255, 255, 1);
 				color:black;
 				border: 1px solid silver;
 				padding: 1px;
+            }
+            /* #waku,#waku>*{all:initial} */
+			#${waku_id}{
+				background-color: ivory;
+				color:black;
+				transition: all 300ms ease 0s;
+				border: 2px solid silver;
+				padding: 5px;
+				position: fixed;
+				right: 0px;
+				//top: 0px;
+				bottom: 0px;
+				z-index: 2147483646;
+				font-size:12px;
+				overflow-x:auto;
+				width:300px;
+				max-height:90%;				
+				word-break: break-all;/* 文字に関係なくきっちり折り返す */
+				overflow-wrap: break-word;
+				white-space: pre-wrap;/* 開業・空白そのまま、しかし折り返す */
+
 			}
-			#waku{
+			#wakuxxxx {
+				-moz-animation: cssAnimation 0s ease-in 5s forwards;
+				/* Firefox */
+				-webkit-animation: cssAnimation 0s ease-in 5s forwards;
+				/* Safari and Chrome */
+				-o-animation: cssAnimation 0s ease-in 5s forwards;
+				/* Opera */
+				animation: cssAnimation 0s ease-in 5s forwards;
+				-webkit-animation-fill-mode: forwards;
+				animation-fill-mode: forwards;
+			}
+			@keyframes cssAnimation {
+				to {
+					width:0;
+					height:0;
+					overflow:hidden;
+				}
+			}
+			@-webkit-keyframes cssAnimation {
+				to {
+					width:0;
+					height:0;
+					visibility:hidden;
+				}
+			}`
+        ])[0])
+
+
+        return el
+    }
+    const div1_id = 'div1desu'
+    const div1 = document.getElementById(div1_id) ||
+        (() => {
+            const el = document.createElement('div')
+            el.id = div1_id
+            document.body.appendChild(el)
+            return el
+        })()
+    const shadowroot = div1.shadowRoot || div1.attachShadow({mode: 'open'})
+
+    const waku_id = 'waku'
+    let wakuElm = shadowroot.getElementById(waku_id)
+    //枠がなけりゃ作る
+    if (wakuElm === null) {
+        wakuElm = document.createElement('div')
+        //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
+        wakuElm = Object.assign(wakuElm, {
+            id: waku_id,
+            onclick: function(e) {
+                this.parentNode.removeChild(this)
+            },
+            onmouseenter: function(e) {
+                wakuElm.style.opacity = 1
+            },
+            onmouseleave: function() {
+                wakuElm.style.opacity = 0
+            },
+        })
+        wakuElm = shadowroot.appendChild(wakuElm)
+
+        // wakuElm = wakuElm.attachShadow({mode: 'open'})
+        // var p = document.createElement('p')
+        // p.textContent = 'これはShadowRootの中身です。'
+        // wakuElm.appendChild(p)
+
+        // document.body.appendChild(wakuElm)
+
+
+    }
+
+    //css
+    let css_id = 'my_alert_css'
+    let css_el = shadowroot.getElementById(css_id)
+    if (css_el === null) {
+        css_el = document.createElement('style')
+        css_el.id = css_id
+        shadowroot.appendChild(css_el)
+        css_el.insertAdjacentText('beforeend', ([`
+			.hoge{
+				background-color: rgba(255, 255, 255, 1);
+				color:black;
+				border: 1px solid silver;
+				padding: 1px;
+            }
+            /* #waku,#waku>*{all:initial} */
+			#${waku_id}{
 				background-color: ivory;
 				color:black;
 				transition: all 300ms ease 0s;
@@ -372,68 +550,69 @@ const my_alert = function(...msg) {
         ])[0])
     }
 
+    let waku2 = wakuElm
+    // document.body.appendChild(div1)
 
-    const waku_id = 'waku'
-    let wakuElm = document.getElementById(waku_id)
-    //枠がなけりゃ作る
-    if (wakuElm === null) {
-        wakuElm = document.createElement('div')
-        //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
-        wakuElm = Object.assign(wakuElm, {
-            id: waku_id,
-            onclick: function(e) {
-                this.parentNode.removeChild(this)
-            },
-            onmouseenter: function(e) {
-                wakuElm.style.opacity = 1
-            },
-            onmouseleave: function() {
-                wakuElm.style.opacity = 0
-            },
-        })
-        document.body.appendChild(wakuElm)
+    // let shadowroot = wakuElm.shadowRoot || wakuElm.attachShadow({mode: 'open'})
+    // let waku2 = shadowroot || wakuElm
 
-        //非表示ボタン
+    if (waku2.textContent === '') {//非表示ボタン
         const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
 
         //消さないボタン
         const el_a = button_tukuru('消さない', (e) => {
-            log(e)
-            e.target.parentElement.onmouseleave = null
-            e.target.parentElement.onclick = null
+            console.log(e, waku2)
+            wakuElm.onmouseleave = null
+            wakuElm.onclick = null
         })
 
         let button = button_tukuru('ログクリア', function(e) {
-            my_alert.log_clear()
+            conDoW.log_clear()
             //my_alert(this)
         })
-        my_alert(el_a0, el_a, button)
+        write('初期', el_a0, el_a, button)
     }
-    const div_every = true//毎回div作るか、1つに追加するか
-    let log_id = '17:30'
-    let log_el = document.getElementById(log_id)
-    if (div_every || log_el === null) {
-        log_el = wakuElm.appendChild(Object.assign(document.createElement('div'), {
-            className: 'hoge',
-            id: log_id,
-        }))
-    }
-    log_el = wakuElm
+    //セパレータ
+    const hr = document.createElement('hr')
+    hr.style.margin = 0
+    write(hr)
 
-    //例外、第一引数がelemなら表示させる
+    // wakuElm.appendChild(
+    //     Object.assign(
+    //         document.createElement('hr'), {
+    //             style: 'padding: 0px; margin: 0px;',
+    //     }))
 
-    for (let [key, val] of Object.entries([...msg])) {
-        if (val instanceof HTMLElement) {
-            //log('is elm? ' + (val instanceof HTMLElement))
-            log_el.insertAdjacentElement('beforeend', val)
-        } else {
-            //log(key,typeof key)
-            if (key != '0') val = ', ' + val //obj entr はstring
-            log_el.insertAdjacentHTML('beforeend', val)
+    // const div_every = true//毎回div作るか、1つに追加するか
+    // let log_el = wakuElm
+    // if (div_every || log_el === null) {
+    //     log_el = wakuElm.appendChild(Object.assign(document.createElement('div'), {
+    //         className: 'hoge',
+    //     }))
+    // }
+
+    write(...msg)
+    function write(...msg) {
+        let elem = waku2
+
+        //例外、第一引数がelemなら表示させる
+        for (let [key, val] of Object.entries(msg)) {
+            if (val instanceof HTMLElement) {
+                //log('is elm? ' + (val instanceof HTMLElement))
+                // log_el.insertAdjacentElement('beforeend', val)
+                elem.appendChild(val)
+            } else {
+                //log(key,typeof key)
+                if (key != '0') val = ', ' + val //obj entr はstring
+                val = document.createTextNode(val)
+                elem.appendChild(val)
+                // elem.insertAdjacentHTML('beforeend', val)
+            }
         }
     }
-    //log_el.insertAdjacentHTML('beforeend', String.prototype.concat(...s) + '</br>')
+    //スクロール
     wakuElm.scrollTop = wakuElm.scrollHeight
+    //log_el.insertAdjacentHTML('beforeend', String.prototype.concat(...s) + '</br>')
     //Promiseオブジェをstringにできずにエラー
     //log_el.insertAdjacentElement('beforeend', document.createElement('hr'))
     // base.innerHTML = String.prototype.concat(...s)
@@ -810,9 +989,7 @@ function maiJump(flagEdit) {
     //今いるURLから次にジャンプする、
     //ジャンプ実行フラグがついてなければ抜ける
 }
-/**
- * 
- */
+/** ボタン作る */
 function button_tukuru(text, func) {
     const css_ClassName = 'button_tukuru'
     const css_id = 'button_tukuru_css'
@@ -837,7 +1014,7 @@ function button_tukuru(text, func) {
     }
     //ボタン作る
     const el_a = document.createElement('button')
-    //wakuElm.appendChild(el_a)
+
     el_a.textContent = emoji_rand() + text
     el_a.className = css_ClassName
     //el_a.type = 'button'
@@ -865,7 +1042,7 @@ function sleep(msec) {
 }
 const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
 //main/////////////////////////////////////
-const log = my_alert
+const log = conDoW
 log(`\n${(new Date).toLocaleString()}`)
 log(`${Date.now() - time}ms main ##########################`)
 log('@version 2019.11.16.113733')
@@ -910,6 +1087,14 @@ const arr = [
             }
             fn_sessionStorage()
             cookie_view_del()
+            log(入力パネル())
+            log(button_tukuru('loop', () => {
+                !(function hoge(i = 0) {
+                    conDoW.add(i)
+                    if (50 < i) return
+                    setTimeout(() => hoge(i + 1), 1000)
+                })()
+            }))
 
         },
     },//全部b,
@@ -969,23 +1154,6 @@ const arr = [
                     }
                 }
             })
-            // // ボタンを作る
-            // mkEle(base, 'button', {
-            //     textContent: 'タスク',
-            //     onclick: (e) => {
-            //         dataSounyuF('#タスク ');
-            //     },
-            //     onmousedown: () => {return false} //アクティブ無効化
-            // });
-            // mkEle(base, 'button', {
-            //     textContent: '日付',
-            //     // style:'all: initial;',
-            //     onclick: (e) => {
-            //         dataSounyuF();
-            //         /**/
-            //     },
-            //     onmousedown: () => {return false}
-            // });
         },
     },//workflowy,
     {
@@ -1612,8 +1780,8 @@ const arr = [
             (function tryDownload() {
                 let time = new Date()
                 let el = document.querySelector('#downloadbtn')
-                log(time)
-                log(el.disabled)
+                // log(time)
+                conDoW.add(el.disabled)
                 if (!el.disabled) {
                     el.click()
                     return
@@ -1977,7 +2145,7 @@ const arr = [
                 })
                 return p
             }
-            const make_links = function(arr, title) {
+            const _make_links = function(arr, title) {
                 //let els = arr
                 title = title
                     .replace(/\//g, '@スラ')
@@ -1988,11 +2156,13 @@ const arr = [
                 let rel = 'rel="noreferrer" '
                 let hrefs = ''
                 for (let val of arr) {
-                    hrefs += `<a href="${val}" ${rel}title="${title}">a</a> `
+                    hrefs += `<a href="${val}" ${rel}title="${title}">i</a> `
                 }
-                return hrefs
+                const span = document.createElement('span')
+                span.innerHTML = hrefs
+                return span
             }
-            function text_kaiseki(fullhtml, title) {
+            function _text_kaiseki(fullhtml, title) {
                 let _text = fullhtml
                 let arr_url = _text.match(/"https:\/\/r18\.dawn.+?"/g)
                 if (!arr_url) {
@@ -2012,8 +2182,8 @@ const arr = [
              * @param {*} title 
              */
             const _kai_n_view = function(text, title, zip = false) {
-                let url_arr = text_kaiseki(text)
-                let html = make_links(url_arr, title)
+                let url_arr = _text_kaiseki(text)
+                let html = _make_links(url_arr, title)
                 console.log(html)
                 log(html)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
@@ -2028,8 +2198,8 @@ const arr = [
              */
             const _dawnfun_only = async function(url, title, zip = false) {
                 let htmltext = await _xhr_promise(url)
-                let url_arr = text_kaiseki(htmltext)
-                let html = make_links(url_arr, title)
+                let url_arr = _text_kaiseki(htmltext)
+                let html = _make_links(url_arr, title)
                 console.log(html)
                 log(html)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
@@ -2288,19 +2458,19 @@ const arr = [
         func: () => {
             //console.log(11)
             const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
-            let i = 0
-            !(function loop() {
+            // let i = 0
+            !(function loop(i = 0) {
                 //プロパティ使う方法以外は、無名関数tryも使ってみたけど無理だった。
                 //スコープ外にletが1番綺麗に書けるかな。
                 let elem = document.querySelector('.com-tv-CommentButton button')
-                log(i, typeof elem)
-                i++
+                conDoW.add(i, elem && elem.disabled)
+                // i++
 
                 if (elem && !elem.disabled) {
                     log(elem.disabled)
                     elem.click()
                 } else {
-                    setTimeout(loop, 1000)
+                    setTimeout(() => loop(i + 1), 1000)
                 }
             })()
         },
