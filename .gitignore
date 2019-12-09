@@ -3,3 +3,5 @@
 user-js/
 /node_modules/
 .DS_Store
+.DS_Store
+js/.DS_Store
