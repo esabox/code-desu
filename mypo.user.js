@@ -303,7 +303,7 @@ function emoji_rand() {
 }
 
 /** Console display on website ウェブ上にConsole.logする */
-const conDoW = function(...msg) {
+function conDoW (...msg) {
     /** 追加用 */
     conDoW.add = function(...arr) {
         // console.log(arr)
@@ -311,11 +311,11 @@ const conDoW = function(...msg) {
     }
     /** ログクリア、無理くりプロパティで作った */
     conDoW.log_clear = function() {
-        console.log(wakuElm, this)
+        //console.log(wakuElm, this)
         //
-        wakuElm.remove() //conDoW.shadow も削除する必要あり
+        mainElem.remove() //conDoW.shadow も削除する必要あり
+        // mainElem.textContent = '' //shwdow挟んでると消えない
         delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
-        //wakuElm.textContent = '' //shwdow挟んでると消えない
         // let button = button_tukuru('ログクリア', function(e) {
         //     this.log_clear()
         // })
@@ -350,7 +350,7 @@ const conDoW = function(...msg) {
     conDoW.elem = conDoW.elem || _init()
     const mainElem = conDoW.elem
     function _init() {
-        //shadow用のdiv
+        //shadow入れのdiv、shadowなけりゃ必要ない
         const div1_id = 'div1desu'
         const div1 = document.createElement('div')
         div1.id = div1_id
@@ -363,8 +363,10 @@ const conDoW = function(...msg) {
         const waku_id = 'waku'
         const wakuElm = document.createElement('div')
         wakuElm.id = waku_id
+        wakuElm.style.opacity = 0
         wakuElm.onclick = function(e) {
-            this.parentNode.removeChild(this)
+            wakuElm.style.display='none'
+            // this.parentNode.removeChild(this)
         }
         wakuElm.onmouseenter = function(e) {
             wakuElm.style.opacity = 1
