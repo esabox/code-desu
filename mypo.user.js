@@ -346,42 +346,33 @@ const conDoW = function(...msg) {
         }
     }
 
-
-
-
-
-    let shokika = 0
-    if (shokika) {
-
-    }
-
-
-    //車道DOM
-    if (!conDoW.elem) conDoW.elem = _init()
+    //初期化
+    conDoW.elem = conDoW.elem || _init()
+    const mainElem = conDoW.elem
     function _init() {
+        //shadow用のdiv
         const div1_id = 'div1desu'
-        // const div1_id = div1_id
         const div1 = document.createElement('div')
         div1.id = div1_id
         document.body.appendChild(div1)
 
+        //shadowroot挟む
         const shadowroot = div1.attachShadow({mode: 'open'})
 
+        //メインwaku作る
         const waku_id = 'waku'
-        let wakuElm = document.createElement('div')
-        //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
-        wakuElm = Object.assign(wakuElm, {
-            id: waku_id,
-            onclick: function(e) {
-                this.parentNode.removeChild(this)
-            },
-            onmouseenter: function(e) {
-                wakuElm.style.opacity = 1
-            },
-            onmouseleave: function() {
-                wakuElm.style.opacity = 0
-            },
-        })
+        const wakuElm = document.createElement('div')
+        wakuElm.id = waku_id
+        wakuElm.onclick = function(e) {
+            this.parentNode.removeChild(this)
+        }
+        wakuElm.onmouseenter = function(e) {
+            wakuElm.style.opacity = 1
+        }
+        wakuElm.onmouseleave = function() {
+            wakuElm.style.opacity = 0
+        }
+
         shadowroot.appendChild(wakuElm)
 
         //css
@@ -447,121 +438,15 @@ const conDoW = function(...msg) {
 
         return wakuElm
     }
-    // const div1_id = 'div1desu'
-    // const div1 = document.getElementById(div1_id) ||
-    //     (() => {
-    //         const el = document.createElement('div')
-    //         el.id = div1_id
-    //         document.body.appendChild(el)
-    //         return el
-    //     })()
-    // const shadowroot = div1.shadowRoot || div1.attachShadow({mode: 'open'})
+    
+    // let mainElem = conDoW.elem
 
-    // const waku_id = 'waku'
-    // let wakuElm = shadowroot.getElementById(waku_id)
-    // //枠がなけりゃ作る
-    // if (wakuElm === null) {
-    //     wakuElm = document.createElement('div')
-    //     //my_alert.waku=wakuElm //プロパティに登録、しなくてもconstもメソッドからアクセスできた。
-    //     wakuElm = Object.assign(wakuElm, {
-    //         id: waku_id,
-    //         onclick: function(e) {
-    //             this.parentNode.removeChild(this)
-    //         },
-    //         onmouseenter: function(e) {
-    //             wakuElm.style.opacity = 1
-    //         },
-    //         onmouseleave: function() {
-    //             wakuElm.style.opacity = 0
-    //         },
-    //     })
-    //     wakuElm = shadowroot.appendChild(wakuElm)
-
-    //     // wakuElm = wakuElm.attachShadow({mode: 'open'})
-    //     // var p = document.createElement('p')
-    //     // p.textContent = 'これはShadowRootの中身です。'
-    //     // wakuElm.appendChild(p)
-
-    //     // document.body.appendChild(wakuElm)
-
-
-    // }
-
-    // //css
-    // let css_id = 'my_alert_css'
-    // let css_el = shadowroot.getElementById(css_id)
-    // if (css_el === null) {
-    //     css_el = document.createElement('style')
-    //     css_el.id = css_id
-    //     shadowroot.appendChild(css_el)
-    //     css_el.insertAdjacentText('beforeend', ([`
-    // 		.hoge{
-    // 			background-color: rgba(255, 255, 255, 1);
-    // 			color:black;
-    // 			border: 1px solid silver;
-    // 			padding: 1px;
-    //         }
-    //         /* #waku,#waku>*{all:initial} */
-    // 		#${waku_id}{
-    // 			background-color: ivory;
-    // 			color:black;
-    // 			transition: all 300ms ease 0s;
-    // 			border: 2px solid silver;
-    // 			padding: 5px;
-    // 			position: fixed;
-    // 			right: 0px;
-    // 			//top: 0px;
-    // 			bottom: 0px;
-    // 			z-index: 2147483646;
-    // 			font-size:12px;
-    // 			overflow-x:auto;
-    // 			width:300px;
-    // 			max-height:90%;				
-    // 			word-break: break-all;/* 文字に関係なくきっちり折り返す */
-    // 			overflow-wrap: break-word;
-    // 			white-space: pre-wrap;/* 開業・空白そのまま、しかし折り返す */
-
-    // 		}
-    // 		#wakuxxxx {
-    // 			-moz-animation: cssAnimation 0s ease-in 5s forwards;
-    // 			/* Firefox */
-    // 			-webkit-animation: cssAnimation 0s ease-in 5s forwards;
-    // 			/* Safari and Chrome */
-    // 			-o-animation: cssAnimation 0s ease-in 5s forwards;
-    // 			/* Opera */
-    // 			animation: cssAnimation 0s ease-in 5s forwards;
-    // 			-webkit-animation-fill-mode: forwards;
-    // 			animation-fill-mode: forwards;
-    // 		}
-    // 		@keyframes cssAnimation {
-    // 			to {
-    // 				width:0;
-    // 				height:0;
-    // 				overflow:hidden;
-    // 			}
-    // 		}
-    // 		@-webkit-keyframes cssAnimation {
-    // 			to {
-    // 				width:0;
-    // 				height:0;
-    // 				visibility:hidden;
-    // 			}
-    // 		}`
-    //     ])[0])
-    // }
-
-    let waku2 = conDoW.elem
-    // document.body.appendChild(div1)
-
-    // let shadowroot = wakuElm.shadowRoot || wakuElm.attachShadow({mode: 'open'})
-    // let waku2 = shadowroot || wakuElm
-
-    if (waku2.textContent === '') {//非表示ボタン
+    if (mainElem.textContent === '') {//非表示ボタン
         const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
 
         //消さないボタン
         const el_a = button_tukuru('消さない', (e) => {
-            console.log(e, waku2)
+            console.log(e, mainElem)
             wakuElm.onmouseleave = null
             wakuElm.onclick = null
         })
@@ -572,28 +457,15 @@ const conDoW = function(...msg) {
         })
         write('初期', el_a0, el_a, button)
     }
+
     //セパレータ
     const hr = document.createElement('hr')
     hr.style.margin = 0
     write(hr)
 
-    // wakuElm.appendChild(
-    //     Object.assign(
-    //         document.createElement('hr'), {
-    //             style: 'padding: 0px; margin: 0px;',
-    //     }))
-
-    // const div_every = true//毎回div作るか、1つに追加するか
-    // let log_el = wakuElm
-    // if (div_every || log_el === null) {
-    //     log_el = wakuElm.appendChild(Object.assign(document.createElement('div'), {
-    //         className: 'hoge',
-    //     }))
-    // }
-
     write(...msg)
     function write(...msg) {
-        let elem = waku2
+        let elem = mainElem
 
         //例外、第一引数がelemなら表示させる
         for (let [key, val] of Object.entries(msg)) {
@@ -611,12 +483,7 @@ const conDoW = function(...msg) {
         }
     }
     //スクロール
-    waku2.scrollTop = waku2.scrollHeight
-    //log_el.insertAdjacentHTML('beforeend', String.prototype.concat(...s) + '</br>')
-    //Promiseオブジェをstringにできずにエラー
-    //log_el.insertAdjacentElement('beforeend', document.createElement('hr'))
-    // base.innerHTML = String.prototype.concat(...s)
-    //base.innerHTML = s.toString()
+    mainElem.scrollTop = mainElem.scrollHeight
 }
 
 /**日付関数 yyyy-MM-dd hh:mm:ss	 */
