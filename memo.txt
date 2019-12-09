@@ -87,3 +87,17 @@ fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
 汚いしバッスラのバッスラどうすんだ問題（完璧主義）で止めた。
 そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
 fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
+
+2019/12/07
+div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
+イベントの理解が低い。
+
+div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
+htmlをテキストで弄るの駄目
+div.appendChild(document.createTextNode("aaa"))
+
+node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
+とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
+
+2019/12/08
+shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
