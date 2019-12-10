@@ -101,3 +101,13 @@ node.jsでimport使えない、--experimental-modulesのオプション＋ファ
 
 2019/12/08
 shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
+
+2019/12/11
+dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
+nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
+lastchildはノードなのでややこしい、lastElementChildがelement
+
+document以外からのセレクタ
+le=get~id(#hoge)
+let.query~(#hoge)→null
+let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
