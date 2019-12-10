@@ -312,14 +312,9 @@ function conDoW (...msg) {
     /** ログクリア、無理くりプロパティで作った */
     conDoW.log_clear = function() {
         //console.log(wakuElm, this)
-        //
         mainElem.remove() //conDoW.shadow も削除する必要あり
         // mainElem.textContent = '' //shwdow挟んでると消えない
         delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
-        // let button = button_tukuru('ログクリア', function(e) {
-        //     this.log_clear()
-        // })
-        //log(button)
     }
 
     //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
@@ -437,12 +432,10 @@ function conDoW (...msg) {
 			}`
         ])[0])
 
-
         return wakuElm
     }
-    
-    // let mainElem = conDoW.elem
 
+    //空ならボタン作る
     if (mainElem.textContent === '') {//非表示ボタン
         const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
 
@@ -509,9 +502,7 @@ function mydate(format, zerofill = 1) {
     return format
 }
 
-/**
- * cssを作って返す
- */
+/** * cssを作って返す */
 function returnMyCss(cssId = 'miiyacss', cssText) {
     const d = false
     d && log('cssつくっちゃう')
@@ -787,9 +778,7 @@ function gmValuesAll() {
     }
     log(ob)
 }
-/**
- * 毎日くじ
- */
+/** * 毎日くじ */
 function maiKuji(start) {
     let mai = '毎日くじ次へ'
     log('maiKuji実行')
@@ -831,9 +820,7 @@ function maiKuji(start) {
     }
     log('まいくじ終わり', mai, GM_getValue(mai))
 }
-/**毎日くじ作り直し 
- * @param 
-*/
+/**毎日くじ作り直し * @param */
 function maiJump(flagEdit) {
     const name = '毎日ジャンプ'
     const debug = true
@@ -910,15 +897,13 @@ function sleep(msec) {
     return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
 }
 const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
+
 //main/////////////////////////////////////
 const log = conDoW
 log(`\n${(new Date).toLocaleString()}`)
 log(`${Date.now() - time}ms main ##########################`)
 log('@version 2019.11.16.113733')
 ugoiteruka('.')
-
-
-
 
 const arr = [
     {
