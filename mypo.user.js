@@ -114,7 +114,7 @@ function 入力パネル(url, text = false) {
 function arebaCli(selector, anzen_sec = 3, is_href = false) {
     const el = document.querySelector(selector)
 
-    log(`arebaCli ${selector}`)
+    conDoW(`arebaCli ${selector}`)
     if (el !== null) {
         let title = document.title
         let countD_ms = anzen_sec * 1000
@@ -130,14 +130,14 @@ function arebaCli(selector, anzen_sec = 3, is_href = false) {
             } else {
                 countD_ms -= loop_ms
 
-                //log(countD_ms);
+                //conDoW(countD_ms);
                 document.title = countD_ms / 1000 + title
                 let stoID = setTimeout(f, loop_ms)
             }
         }())
 
     } else {
-        log('クリックする箇所無し @arebaCli ' + selector)
+        conDoW('クリックする箇所無し @arebaCli ' + selector)
         return false
     }
 }
@@ -174,13 +174,13 @@ const session_fn = function() {
     let val = `${location.href}`
 
 
-    log('sessionStorage.his')
+    conDoW('sessionStorage.his')
     sessionStorage.his = Number(sessionStorage.his)
 
-    log(sessionStorage.his)
+    conDoW(sessionStorage.his)
     // // sessionStorage.his = location.href
     // if (typeof sessionStorage.his!=="number") {
-    // 	log(typeof Number(sessionStorage.his),Number(sessionStorage.his))
+    // 	conDoW(typeof Number(sessionStorage.his),Number(sessionStorage.his))
     // }
     sessionStorage.his = sessionStorage.his == 'NaN'
         ? 1
@@ -195,9 +195,9 @@ const video_top_play = function(video_elem = null, query = 'video') {
 
     if (elem) {
         //
-        //log(1)
-        log(button_tukuru('回展', () => {
-            //log(elem)
+        //conDoW(1)
+        conDoW(button_tukuru('回展', () => {
+            //conDoW(elem)
             elem.style.WebkitTransform = 'rotate(90deg)'
             elem.style.width = '100vh'
             elem.style.height = '100vw'
@@ -224,7 +224,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
             elem.autoplay = true  //こっちも同じようなもの
             elem.controls = true
             src = elem.src || elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
-            log(create_href(src))
+            conDoW(create_href(src))
             //console.log(elem.children('source'))
             //elm.play()
         }
@@ -250,7 +250,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 const cookie_view_del = function() {
     const cookie_view = () => {
         const logo = '🍪' //"🍪"
-        log(logo + document.cookie.replace(/; /g, '\n' + logo))
+        conDoW(logo + document.cookie.replace(/; /g, '\n' + logo))
     }
     const count = function() {
         return document.cookie === ''
@@ -276,7 +276,7 @@ const cookie_view_del = function() {
         let btn1 = button_tukuru('表示', () => {cookie_view()})
         //Cookie削除ボタン
         let btn = button_tukuru('全削除', () => {deleteAll(); panel()})
-        log(`Cookie[${count()}] `, btn1, btn)
+        conDoW(`Cookie[${count()}] `, btn1, btn)
     }
 
     //main
@@ -297,8 +297,8 @@ const css_instant = function(_css_id, css_text) {
 //ランダムなEmojiを返す
 function emoji_rand() {
     //大部分コピペ、数字の範囲は文字コードを整数化したやつ。
-    let rand_mm = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min
-    let emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
+    const rand_mm = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min
+    const emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
     return String.fromCodePoint(emojiCode)
 }
 
@@ -328,7 +328,7 @@ function conDoW(...msg) {
     const log = window['console'].log //省略不可、置換しないよう変則
     console.log(...msg)
 
-    //GMあれば、設定を読み取る
+    //GMあれば、設定を読み取る、無ければ終了
     if (window.GM) {
         let flag_name = 'my_alert_f'
         let my_alert_f = GM_getValue(flag_name, false)
@@ -339,7 +339,7 @@ function conDoW(...msg) {
                 //alert('Put script\'s main function here');
                 GM_setValue(flag_name, !my_alert_f)
             }, 'r')
-            //log('my_alertのアイコン内メニュー作った')
+            //conDoW('my_alertのアイコン内メニュー作った')
         }
         //表示の可否
         if (!my_alert_f) {
@@ -369,7 +369,7 @@ function conDoW(...msg) {
         const waku_id = 'waku'
         const wakuElm = document.createElement('div')
         wakuElm.id = waku_id
-        wakuElm.style.opacity = 0
+        // wakuElm.style.opacity = 0 //初期透過
         wakuElm.onclick = function(e) {
             wakuElm.style.display = 'none'
             // this.parentNode.removeChild(this)
@@ -388,12 +388,6 @@ function conDoW(...msg) {
         css_el.id = css_id
         parent.appendChild(css_el)
         css_el.insertAdjacentText('beforeend', ([`
-			.hoge{
-				background-color: rgba(255, 255, 255, 1);
-				color:black;
-				border: 1px solid silver;
-				padding: 1px;
-            }
             /* #waku,#waku>*{all:initial} */
 			#${waku_id}{
 				background-color: ivory;
@@ -469,19 +463,30 @@ function conDoW(...msg) {
 
     write(...msg)
     function write(...msg) {
-        let elem = mainElem
+        let el = mainElem
+        el = document.createElement('div')
+        mainElem.appendChild(el)
+        el.style.backgroundColor = 'black'
+        el.style.transition = 'all 1000ms ease-out'
+        el.style.boxShadow  = 'inset 0px 0px 5px 5px #29F'
+        // window.requestAnimationFrame(() => el.style.backgroundColor = 'white', 1)
+        setTimeout(() => {
+            el.style.boxShadow = 'none'
+            el.style.backgroundColor = '#0000'
+        }, 50)
+
 
         //例外、第一引数がelemなら表示させる
         for (let [key, val] of Object.entries(msg)) {
             if (val instanceof HTMLElement) {
-                //log('is elm? ' + (val instanceof HTMLElement))
+                //conDoW('is elm? ' + (val instanceof HTMLElement))
                 // log_el.insertAdjacentElement('beforeend', val)
-                elem.appendChild(val)
+                el.appendChild(val)
             } else {
-                //log(key,typeof key)
+                //conDoW(key,typeof key)
                 if (key != '0') val = ', ' + val //obj entr はstring
                 val = document.createTextNode(val)
-                elem.appendChild(val)
+                el.appendChild(val)
                 // elem.insertAdjacentHTML('beforeend', val)
             }
         }
@@ -514,7 +519,7 @@ function mydate(format, zerofill = 1) {
 /** * cssを作って返す */
 function returnMyCss(cssId = 'miiyacss', cssText) {
     const d = false
-    d && log('cssつくっちゃう')
+    d && conDoW('cssつくっちゃう')
     let el = document.getElementById(cssId)
     //無ければ作る
     if (!el) {
@@ -580,7 +585,7 @@ nsMiiya.gamen = function() {
 				z-index: 2147483646;
 			`,
         onmouseenter: (e) => {
-            //log(e.target, e.relatedTarget, this, "mouse over");
+            //conDoW(e.target, e.relatedTarget, this, "mouse over");
             //baseC.style = "display:block;"; //初期化される
             baseC.style.display = 'block'
         },
@@ -594,11 +599,11 @@ nsMiiya.gamen = function() {
     })
     mkEle(baseC, 'button', {
         textContent: 'はっげ',
-        onclick: () => log('えむ'),
+        onclick: () => conDoW('えむ'),
     })
     baseC.proMk2('button', {
         textContent: 'はっげ',
-        onclick: () => log('えむ'),
+        onclick: () => conDoW('えむ'),
     })
     mkEle(baseC, 'span', {
         textContent: 'v' + ver,
@@ -684,23 +689,23 @@ nsMiiya.gamen = function() {
             let vals = []
             let ob = {}
             for (let key of GM_listValues()) { //for of は実体を返す
-                //log(key)
+                //conDoW(key)
                 vals.push(GM_getValue(key))
                 ob[key] = GM_getValue(key)
             }
-            //log(vals);
-            log(ob)
+            //conDoW(vals);
+            conDoW(ob)
             //console.table(ob)
-            //log(GM_listValues());
+            //conDoW(GM_listValues());
         },
     })
     mkEle(baseC, 'button', {
         textContent: '小さくなる',
         // style:'all: initial;',
         // style: 'height:30px',
-        // onclick:e=>{log(this);this.style.height="11px";},
+        // onclick:e=>{conDoW(this);this.style.height="11px";},
         onclick: function() {
-            log(this); this.style.height = parseInt(this.style.height) - 1 + 'px'
+            conDoW(this); this.style.height = parseInt(this.style.height) - 1 + 'px'
         },
         //e=>{},
     })
@@ -724,8 +729,8 @@ nsMiiya.gamen = function() {
                 } catch (e) {}
             }
             //changeUserAgent('Mozilla/5.0 (Macintosh; ...');
-            log(window.navigator.userAgent)
-            log(document.referrer)
+            conDoW(window.navigator.userAgent)
+            conDoW(document.referrer)
         },
         //e=>{},
     })
@@ -736,7 +741,7 @@ nsMiiya.gamen = function() {
         style: 'height:200px;overflow-y:  scroll;     height: 100px;  /*background-color: #CCF; */ border-style: ridge;',
     })
     nsMiiya.aloging = function(s, kai = 1, num = 1) {
-        // log("miiya log->"+s);
+        // conDoW("miiya log->"+s);
         // nsMiiya.alogingDisp.textContent+="\n"+s;
         // s=""+nsMiiya.aloging.count+s;
         nsMiiya.aloging.count = nsMiiya.aloging.count ? nsMiiya.aloging.count + 1 : 1
@@ -781,43 +786,43 @@ function gmValuesAll() {
     let vals = []
     let ob = {}
     for (let key of GM_listValues()) { //for of は実体を返す
-        //log(key)
+        //conDoW(key)
         vals.push(GM_getValue(key))
         ob[key] = GM_getValue(key)
     }
-    log(ob)
+    conDoW(ob)
 }
 /** * 毎日くじ */
 function maiKuji(start) {
     let mai = '毎日くじ次へ'
-    log('maiKuji実行')
-    log(mai, GM_getValue(mai))
+    conDoW('maiKuji実行')
+    conDoW(mai, GM_getValue(mai))
     //gmValuesAll();
     if (start) {
-        log('変数セット', start)
+        conDoW('変数セット', start)
         GM_setValue(mai, start) //スタート書き換え
-        //log(mai, GM_getValue(mai));
+        //conDoW(mai, GM_getValue(mai));
     }
     let ima = GM_getValue(mai)
     if (!ima) {
-        log('枚にくじima無し、抜ける', ima)
+        conDoW('枚にくじima無し、抜ける', ima)
         return false
     }
     switch (ima) {
         case 1:
-            log('case', ima)
+            conDoW('case', ima)
             GM_setValue(mai, ima + 1)
             location.href = 'http://www.rakuten.co.jp/'
             break
         case 2:
-            log('case', ima)
+            conDoW('case', ima)
             if (location.href === 'http://www.rakuten.co.jp/') {
                 GM_setValue(mai, ima + 1)
                 list.楽天系の毎日くじ.rakuTop2kuji()
             }
             break
         case 3:
-            log('case', ima)
+            conDoW('case', ima)
             if (location.href.match('https://kuji.rakuten.co.jp/.+/.+')) {
                 GM_setValue(mai, ima + 1)
                 location.href = 'https://www.infoseek.co.jp/Luckylot'
@@ -827,19 +832,19 @@ function maiKuji(start) {
         //location.href = 'https://www.infoseek.co.jp/Luckylot';
         //http://www.rakuten.co.jp/?l2-id=shop_header_logo
     }
-    log('まいくじ終わり', mai, GM_getValue(mai))
+    conDoW('まいくじ終わり', mai, GM_getValue(mai))
 }
 /**毎日くじ作り直し * @param */
 function maiJump(flagEdit) {
     const name = '毎日ジャンプ'
     const debug = true
-    debug && log(name + 'start')
+    debug && conDoW(name + 'start')
     //フラグを書き込む
     if (flagEdit === 1) {
-        debug && log(name + 'フラグを作る')
+        debug && conDoW(name + 'フラグを作る')
         GM_setValue(name, 1)
     } else if (flagEdit === 0) {
-        debug && log(name + 'フラグを削除')
+        debug && conDoW(name + 'フラグを削除')
         GM_deleteValue(name)
     }
     //フラグが無ければ抜ける
@@ -850,7 +855,7 @@ function maiJump(flagEdit) {
         'https://kuji.rakuten.co.jp/.+/.+',
         'https://www.infoseek.co.jp/Luckylot'
     ]
-    debug && log(name + 'end')
+    debug && conDoW(name + 'end')
     //今いるURLから次にジャンプする、
     //ジャンプ実行フラグがついてなければ抜ける
 }
@@ -867,17 +872,17 @@ function button_tukuru(text, func) {
     //     document.head.appendChild(css_el)
     //     css_el.textContent = ([
     //         `
-	// 			.${css_ClassName}{
-	// 				margin: 2px;
-	// 				box-shadow: 1px 2px 3px grey;
-	// 				padding: 1px;
-	// 				/* font-size: initial; */
-	// 				border-width: thin;
-	// 			}
-	// 		`
+    // 			.${css_ClassName}{
+    // 				margin: 2px;
+    // 				box-shadow: 1px 2px 3px grey;
+    // 				padding: 1px;
+    // 				/* font-size: initial; */
+    // 				border-width: thin;
+    // 			}
+    // 		`
     //     ])[0]
     // }
-    //ボタン作る
+    //ボタン作る,cssクラスで見た目を変えたが、インラインに変更、shadowにも対応出来る
     const el = document.createElement('button')
     el.style.cssText = ([`
 					margin: 2px;
@@ -907,7 +912,45 @@ function button_tukuru(text, func) {
     // }
     return el
 }
-
+function utility() {
+    function fn_localStorage() {
+        let count = `localStorage[${localStorage.length}]`
+        let btn = button_tukuru('clera', () => {localStorage.clear()})
+        //og(btn)
+        let btn2 = button_tukuru('view all', () => {
+            let str = ''
+            for (let [key, value] of Object.entries(localStorage)) {
+                str += (`${key}: ${value}\n`)
+            }
+            conDoW(str)
+        })
+        conDoW(count, btn, btn2)
+    }
+    fn_localStorage()
+    function fn_sessionStorage() {
+        let count = `sessionStorage[${sessionStorage.length}]`
+        let btn = button_tukuru('clera', () => {sessionStorage.clear()})
+        //og(btn)
+        let btn2 = button_tukuru('view all', () => {
+            let str = ''
+            for (let [key, value] of Object.entries(sessionStorage)) {
+                str += (`${key}: ${value}\n`)
+            }
+            conDoW(str)
+        })
+        conDoW(count, btn, btn2)
+    }
+    fn_sessionStorage()
+    cookie_view_del()
+    conDoW(入力パネル())
+    conDoW(button_tukuru('loop', () =>
+        !(function hoge(i = 0) {
+            conDoW.add(i)
+            if (50 < i) return
+            setTimeout(() => hoge(i + 1), 1000)
+        })()
+    ))
+}
 function sleep(msec) {
     return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
 }
@@ -915,9 +958,9 @@ const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
 
 //main/////////////////////////////////////
 const log = conDoW
-log(`\n${(new Date).toLocaleString()}`)
-log(`${Date.now() - time}ms main ##########################`)
-log('@version 2019.11.16.113733')
+conDoW(`\n${(new Date).toLocaleString()}`)
+conDoW(`${Date.now() - time}ms main ##########################`)
+conDoW('@version 2019.11.16.113733')
 ugoiteruka('.')
 
 const arr = [
@@ -927,43 +970,8 @@ const arr = [
         end: 0,
         date: '',
         func: function() {
-            function fn_localStorage() {
-                let count = `localStorage[${localStorage.length}]`
-                let btn = button_tukuru('clera', () => {localStorage.clear()})
-                //og(btn)
-                let btn2 = button_tukuru('view all', () => {
-                    let str = ''
-                    for (let [key, value] of Object.entries(localStorage)) {
-                        str += (`${key}: ${value}\n`)
-                    }
-                    log(str)
-                })
-                log(count, btn, btn2)
-            }
-            fn_localStorage()
-            function fn_sessionStorage() {
-                let count = `sessionStorage[${sessionStorage.length}]`
-                let btn = button_tukuru('clera', () => {sessionStorage.clear()})
-                //og(btn)
-                let btn2 = button_tukuru('view all', () => {
-                    let str = ''
-                    for (let [key, value] of Object.entries(sessionStorage)) {
-                        str += (`${key}: ${value}\n`)
-                    }
-                    log(str)
-                })
-                log(count, btn, btn2)
-            }
-            fn_sessionStorage()
-            cookie_view_del()
-            log(入力パネル())
-            log(button_tukuru('loop', () =>
-                !(function hoge(i = 0) {
-                    conDoW.add(i)
-                    if (50 < i) return
-                    setTimeout(() => hoge(i + 1), 1000)
-                })()
-            ))
+
+            conDoW(button_tukuru('Utility', utility))
 
         },
     },//全部b,
@@ -972,7 +980,7 @@ const arr = [
         url: ['^http://www.ugtop.com/spill.shtml',],
         end: 0,
         date: '',
-        func: function() {log('ugtop')},
+        func: function() {conDoW('ugtop')},
     },//確認くん,
     {
         name: 'workflowy',
@@ -1004,7 +1012,7 @@ const arr = [
                 //optはmacだと変な文字入力しだす 	
                 //e.getModifierState('Shift')
                 //console.debug(e.shiftKey,e.altKey,e.keyCode,e.key,String.fromCharCode(e.keyCode))
-                //log(e)
+                //conDoW(e)
                 if (e.altKey) { //変化キーおしてるか？
                     switch (String.fromCharCode(e.keyCode)) {
                         case 'A': //A
@@ -1142,7 +1150,7 @@ const arr = [
             const base = nsMiiya.gamen()// 画面作っちゃう
             async function enaviClick() {
                 let elemList = document.querySelectorAll('[id^="position"]')// cssセレクタでhasが使えないからloop検索
-                log('クリック箇所=' + elemList.length)
+                conDoW('クリック箇所=' + elemList.length)
                 for (let i = 0; i < elemList.length; i++) {
                     if (i < 0) {
                         //前半スキップ
@@ -1150,15 +1158,15 @@ const arr = [
                     }
                     if (elemList[i].querySelector('img[src$="check.gif"]')) {
                         let s = elemList[i].querySelector('a[href^=\'javascript\']')// .textConten;
-                        // log(s.textContent);
+                        // conDoW(s.textContent);
                         s.style = 'box-shadow: 0 0 0px 3px rgba(222, 111, 222, 0.90);'
-                        log('クリック')
+                        conDoW('クリック')
                         s.click() // クリック
                         //早くしすぎると歯抜けになる
                         await new Promise((r) => setTimeout(r, 891)) // sleep
                     }
                     //
-                    // log(eles[i].querySelectorAll(".clearfix .dateArrival>img").length);
+                    // conDoW(eles[i].querySelectorAll(".clearfix .dateArrival>img").length);
                 }
             };
             //PV時に実行
@@ -1177,7 +1185,7 @@ const arr = [
         date: '',
         func: function() {
             if (location.href === 'https://www.infoseek.co.jp/Luckylot/result') {
-                log('サッカーくじ終わり')
+                conDoW('サッカーくじ終わり')
                 location.href = 'https://www.infoseek.co.jp/'
             }
             //https://www.infoseek.co.jp/Luckylot/result
@@ -1185,7 +1193,7 @@ const arr = [
             // 	GM_setValue('毎日くじ次へ', null);
             // 	location.href = 'https://www.infoseek.co.jp/';
             // } else {
-            // 	log('くじセット');
+            // 	conDoW('くじセット');
             // 	GM_setValue('毎日くじ次へ', 1);
             // }
             const base = nsMiiya.gamen()// 画面作っちゃう
@@ -1194,7 +1202,7 @@ const arr = [
                 document.querySelector('.isluckykuji_start').click()
                 await new Promise((r) => setTimeout(r, 500)) // sleep
                 document.querySelector('.isluckykuji_select:nth-of-type(1)').click()
-                log('ow')
+                conDoW('ow')
             }
             //new GM_registerMenuCommand(title, fn, 'C');
             fn()
@@ -1223,7 +1231,7 @@ const arr = [
             if (document.querySelector('#u').value !== '' &&
                 document.querySelector('#p').value !== ''
             ) {
-                log(1)
+                conDoW(1)
                 //document.querySelector('#loginButton').click();
             }
         },
@@ -1258,7 +1266,7 @@ const arr = [
             // 	GM_setValue('毎日くじ次へ', null);
             // 	rakutenTop2Kuji();
             // } else {
-            // 	log('くじセット');
+            // 	conDoW('くじセット');
             // 	GM_setValue('毎日くじ次へ', 1);
             // }
             //var this.host;
@@ -1285,7 +1293,7 @@ const arr = [
             // 	GM_setValue('毎日くじ次へ', null);
             // 	location.href = 'https://www.infoseek.co.jp/Luckylot';
             // } else {
-            // 	log('くじセット');
+            // 	conDoW('くじセット');
             // 	GM_setValue('毎日くじ次へ', 1);
             // }
             await new Promise((r) => setTimeout(r, 1000)) // sleep
@@ -1299,10 +1307,10 @@ const arr = [
         date: '',
         func: function() {
             let d = !!0
-            d && log('google no redirect')
+            d && conDoW('google no redirect')
             //Array.prototypeは[]で置き換え可能
             Array.prototype.forEach.call(document.querySelectorAll('h3.r > a'), function(elem) {
-                d && log(elem.textContent)
+                d && conDoW(elem.textContent)
                 elem.onmousedown = function() {}
             })
         },
@@ -1314,7 +1322,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !true
-            d && log('zippys')
+            d && conDoW('zippys')
             //arebaCli('.openload-link > a:nth-child(1)');
             let url = document.querySelector('.openload-link > a').href
             location.href = url
@@ -1333,12 +1341,12 @@ const arr = [
 
 
             video_top_play()
-            log(button_tukuru('video再生', video_top_play))//動かない？
-            log(button_tukuru('video再生arr', () => video_top_play()))
-            log(button_tukuru('head saku', () => {
+            conDoW(button_tukuru('video再生', video_top_play))//動かない？
+            conDoW(button_tukuru('video再生arr', () => video_top_play()))
+            conDoW(button_tukuru('head saku', () => {
                 document.head.remove() //狂って酷いことに
             }))
-            log(button_tukuru('videoのみ', () => {
+            conDoW(button_tukuru('videoのみ', () => {
                 let video = document.querySelector('video')
                 document.body.parentNode.remove()
                 document.appendChild(video)
@@ -1356,8 +1364,8 @@ const arr = [
 
 
             video_top_play()
-            log(button_tukuru('video再生', video_top_play))//動かない？
-            log(button_tukuru('video再生arr', () => video_top_play()))
+            conDoW(button_tukuru('video再生', video_top_play))//動かない？
+            conDoW(button_tukuru('video再生arr', () => video_top_play()))
             document.body.style.padding = 0
 
             document.querySelectorAll('.top-nav,.navbar')
@@ -1392,8 +1400,8 @@ const arr = [
 
 
 
-            //log(elm.src)
-            log(create_href(elm.src))
+            //conDoW(elm.src)
+            conDoW(create_href(elm.src))
             //document.body.insertAdjacentElement('afterbegin', elm)
             // if (elm) {
             // 	elm.style = `
@@ -1407,13 +1415,13 @@ const arr = [
             // 			margin-right: -50vw; */
             // 			`
             // }
-            //log(button_tukuru('moichi', kore))
+            //conDoW(button_tukuru('moichi', kore))
 
             function sc_del() {
                 let sc_elm = document.getElementsByTagName('script')
                 let i = 0
                 // for (let val of sc_elm) { //これだと半分しか削除できない、自動で詰まるから。
-                // 	log(i++,val)
+                // 	conDoW(i++,val)
                 // 	val.remove();
                 // }
                 for (let i = sc_elm.length - 1; 0 <= i; i--) { //逆から削除する。
@@ -1421,7 +1429,7 @@ const arr = [
                 }
             }
             sc_del()
-            log(button_tukuru('script削除', () => sc_del()))
+            conDoW(button_tukuru('script削除', () => sc_del()))
 
             //css_instant('saidcss', '::-webkit-scrollbar {width: 0px;}')
         },
@@ -1436,7 +1444,7 @@ const arr = [
         date: '',
         func: function() {
             const hoge = function() {
-                log('hogege')
+                conDoW('hogege')
                 let elm = document.querySelector('iframe#DMMSample_player_now')
                 if (elm) {
                     let videotag = elm.contentWindow.document.querySelector('video')
@@ -1447,18 +1455,18 @@ const arr = [
             }
 
             let obj = document.querySelector('#sample-video')
-            //log(obj)
+            //conDoW(obj)
             document.onreadystatechange = function(event) {
-                log(this.readyState)
+                conDoW(this.readyState)
             }
             arebaCli('#detail-sample-movie div a', 0)
-            //log(document.readyState)
+            //conDoW(document.readyState)
             //document.addEventListener("DOMContentLoaded", hoge)
-            //DOMContentLoaded = () => log("load1")
+            //DOMContentLoaded = () => conDoW("load1")
             //await sleep(2000)
 
             //hoge()
-            log(button_tukuru('iframe', hoge))
+            conDoW(button_tukuru('iframe', hoge))
 
 
             //let url = document.querySelector('.openload-link > a').href
@@ -1488,7 +1496,7 @@ const arr = [
             //cssセレクタではbaseURLはアリでも無しでもヒットする→嘘、ヒットしない
             //domで書き換えた後はヒットする、
             let els = document.querySelectorAll('h3>a[href*="/detail/"]')
-            d && log('cssセレクタで', els.length)
+            d && conDoW('cssセレクタで', els.length)
             for (let i = 0; i < els.length; i++) {
                 //const newel=document.createElement('a');
                 let el = els[i]
@@ -1498,7 +1506,7 @@ const arr = [
                 el.parentElement.insertBefore(cnode, el)
                 el.href = el.href.replace('/detail/', '/detail/download_zip/')
                 el.textContent = '◆' + el.textContent
-                //d && log(el.href);
+                //d && conDoW(el.href);
             }
             //プレビュー作っちゃう
             //作ろうと思ったけどサムネのURLがxhrしないとわかんないから保留
@@ -1507,7 +1515,7 @@ const arr = [
             els = document.querySelectorAll('a[onclick^="bookStand"]')
             for (let i = 0; i < els.length; i++) {
                 let el = els[i]
-                //el.onclick=()=>log(1111);//動作するがhtmlはそのまま,オートページャーで消える
+                //el.onclick=()=>conDoW(1111);//動作するがhtmlはそのまま,オートページャーで消える
                 el.setAttribute('onclick', 'aa()') //書き換わる
                 //el.textContent = '◆ぷ' + el.textContent;
             }
@@ -1537,9 +1545,9 @@ const arr = [
         func: function() {
             //Clickされたノードを判定する
             function hantei(ev) {
-                //log(e);	
-                log(ev.target.tagName, ev.target.className)
-                //log(e.target);
+                //conDoW(e);	
+                conDoW(ev.target.tagName, ev.target.className)
+                //conDoW(e.target);
                 if (ev.target.tagName == 'IMG' && ev.target.className == 'thumb') {
                     ev.preventDefault()
                     ev.stopPropagation()
@@ -1551,16 +1559,16 @@ const arr = [
             var eles = document.querySelectorAll("a>.thumb");
             var color = Math.random().toString(16).slice(2, 5);
             for (var i = 0; i < eles.length; i++) {
-                // log(eles[i].id);
-                log(window.location.href);
+                // conDoW(eles[i].id);
+                conDoW(window.location.href);
                 eles[i].style.boxShadow = "0 0 0 4px #" + color;
                 eles[i].onclick = makeThumbScreen;
-                //log(eles[i].onclick);
+                //conDoW(eles[i].onclick);
             }
             */
             function makeThumbScreen(ev) {
-                //log('hoge' + ev);
-                //log(e);
+                //conDoW('hoge' + ev);
+                //conDoW(e);
                 const base = document.body.appendChild(Object.assign(document.createElement('div'), {
                     style: `
 						transition: all 300ms 0s ease;
@@ -1582,17 +1590,17 @@ const arr = [
                     onmousewheel: function(e) {
                         e.stopPropagation()
                         //e.preventDefault();
-                        //log(e);
+                        //conDoW(e);
                         //return false;
                     },
                     onclick: function(e) {
-                        // log(this);
-                        // log(e.target);
+                        // conDoW(this);
+                        // conDoW(e.target);
                         this.parentNode.removeChild(this)
                     },
                 }))
                 let num = parseInt(ev.target.getAttribute('count'))
-                log(num, ev.target.src)
+                conDoW(num, ev.target.src)
                 let n
                 for (let i = 1; i <= 35 && i <= num; i++) {
                     if (!ev.target.src) {break}
@@ -1614,7 +1622,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !true
-            d && log('zippys')
+            d && conDoW('zippys')
             arebaCli('#dlbutton', 3, true)
             // let url = document.querySelector('#dlbutton').href
             // location.href = url
@@ -1627,7 +1635,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !true
-            d && log('zippys')
+            d && conDoW('zippys')
             arebaCli('#Downloadfre')
         },
     },//mx-sh,
@@ -1638,7 +1646,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !true
-            d && log('zippys')
+            d && conDoW('zippys')
             arebaCli('#method_free');
             //downloadbtn
             //document.querySelector("#downloadbtn").click()
@@ -1649,7 +1657,7 @@ const arr = [
             (function tryDownload() {
                 let time = new Date()
                 let el = document.querySelector('#downloadbtn')
-                // log(time)
+                // conDoW(time)
                 conDoW.add(el.disabled)
                 if (!el.disabled) {
                     el.click()
@@ -1666,14 +1674,14 @@ const arr = [
         date: '',
         func: function() {
             let d = !true
-            d && log('http://jolinfile.com')
+            d && conDoW('http://jolinfile.com')
             arebaCli('[value="Free Download"]')
             arebaCli('#dd_link');
             (function tryDownload() {
                 let time = new Date()
                 let el = document.querySelector('#downloadbtn')
-                log(time)
-                log(el.disabled)
+                conDoW(time)
+                conDoW(el.disabled)
                 if (!el.disabled) {
                     el.click()
                     return
@@ -1689,7 +1697,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !!true
-            d && log('mexa')
+            d && conDoW('mexa')
             arebaCli('.link.act-link.btn-free')
             arebaCli('.btn-download')
         },
@@ -1701,7 +1709,7 @@ const arr = [
         date: '',
         func: function() {
             let d = !!true
-            d && log('mexa')
+            d && conDoW('mexa')
             arebaCli('#Downloadfre')
             //downloadbtn
             //document.querySelector("#downloadbtn").click()
@@ -1712,8 +1720,8 @@ const arr = [
             // (function tryDownload(){
             // 	let time = new Date();
             // 	let el=document.querySelector('#downloadbtn')
-            // 	log(time);
-            // 	log(el.disabled);
+            // 	conDoW(time);
+            // 	conDoW(el.disabled);
             // 	if(!el.disabled){
             // 		el.click();
             // 		return
@@ -1730,10 +1738,10 @@ const arr = [
         func: function() {
             let d = !!true
             const $ = (...s) => document.querySelectorAll(...s)
-            d && log($('#download_pass').value)
+            d && conDoW($('#download_pass').value)
             $('#download_pass')[0].type = 'text'
             $('#download_pass')[0].value = 'dddd'
-            d && log('dddd')
+            d && conDoW('dddd')
             arebaCli('.submit')
         },
     },//dousyoko,
@@ -1798,8 +1806,8 @@ const arr = [
         date: '',
         func: async function() {
             'use strict'
-            //log('document.cookie > '+document.cookie)
-            //log()
+            //conDoW('document.cookie > '+document.cookie)
+            //conDoW()
 
             // let js_url = "http://localhost:8888/utils.js";
             // await sleep(1000);
@@ -1829,13 +1837,13 @@ const arr = [
             //document.tiltel=ver
             let hash = 'hoge'
             if (!location.hash)
-                log('はじめまして！')
+                conDoW('はじめまして！')
             else
-                log('戻ってきたなっ')
-            log('history.length', history.length, location.hash)
+                conDoW('戻ってきたなっ')
+            conDoW('history.length', history.length, location.hash)
             //history.replaceState('', '', '#' + hash)
             let url = location.href.replace(/#.*/, '') + '#' + hash
-            //log("url=",url)
+            //conDoW("url=",url)
             //location.href = url
             //location.replace(url)
 
@@ -1917,14 +1925,14 @@ const arr = [
             //クリアボタン欲しい
             const log_clear = function() {
                 let button = button_tukuru('ログクリア', function(e) {
-                    log(e, this)
+                    conDoW(e, this)
                     this.parentElement.textContent = ''
                     log_clear()
                 })
-                log(button)
+                conDoW(button)
             }
             log_clear()
-            //log(document.body.parentElement)
+            //conDoW(document.body.parentElement)
             //クリックして、通信してページ開かずURLゲットが目標
             // document.addEventListener('click', function(e){
             // 	e.preventDefault();
@@ -1934,11 +1942,11 @@ const arr = [
             document.addEventListener('click', function(ev) {
                 do {
                     if (!ev.altKey) break
-                    //log(e.buttons, e.button, e.target.tagName, e.target.rel)
+                    //conDoW(e.buttons, e.button, e.target.tagName, e.target.rel)
                     //Aが大文字な謎
                     if (ev.target.tagName == 'A' && ev.target.rel == 'bookmark') {
                         ev.preventDefault()
-                        log('これじゃ' + ev.target.innerHTML)
+                        conDoW('これじゃ' + ev.target.innerHTML)
                         _GM_xhr(ev.target.href, ev.target.innerHTML)
                     }
                 } while (false)
@@ -1946,13 +1954,13 @@ const arr = [
 
             // 右クリックも作ってみる
             document.addEventListener('contextmenu', function(ev) {
-                //log(ev.shiftKey)
+                //conDoW(ev.shiftKey)
                 if (ev.target.tagName == 'A' &&
                     ev.target.rel == 'bookmark' &&
                     ev.ctrlKey === false) {
                     ev.preventDefault()
                     ev.stopPropagation()
-                    log('◆' + ev.target.innerHTML)
+                    conDoW('◆' + ev.target.innerHTML)
                     if (ev.shiftKey) {
                         _js_xhr(ev.target.href, ev.target.textContent)
                         //_js_xhr(ev.target.href, ev.target.textContent, 'zip')
@@ -1965,7 +1973,7 @@ const arr = [
             }, false)
 
             const _GM_xhr = function(url, title) {
-                log('_GM_xhr')
+                conDoW('_GM_xhr')
                 GM_xmlhttpRequest({
                     method: 'GET',
                     url: url,//'http://localhost:8888',
@@ -1984,7 +1992,7 @@ const arr = [
             }
             //素のxhrも書いてみてる、途中
             const _js_xhr = function(url, title, zip = false) {
-                log('js_xhr')
+                conDoW('js_xhr')
                 // オリジナル画像を読み込む
                 let xhr = new XMLHttpRequest()
                 xhr.open('GET', url, true)
@@ -2003,7 +2011,7 @@ const arr = [
             //ダウンロードのみPromise＋
             const _xhr_promise = function(url) {
                 const p = new Promise((resolve, reject) => {
-                    //log('js_xhr')
+                    //conDoW('js_xhr')
                     let xhr = new XMLHttpRequest()
                     xhr.open('GET', url, true)
                     //xhr.responseType = 'text';
@@ -2036,7 +2044,7 @@ const arr = [
                 let _text = fullhtml
                 let arr_url = _text.match(/"https:\/\/r18\.dawn.+?"/g)
                 if (!arr_url) {
-                    log('みっかんない')
+                    conDoW('みっかんない')
                     return
                 }
                 arr_url = arr_url.map((ite) => ite.slice(1, -1)) //resu.mapなんてプロパティ無いとエラー、matchがNULLだった。
@@ -2055,7 +2063,7 @@ const arr = [
                 let url_arr = _text_kaiseki(text)
                 let html = _make_links(url_arr, title)
                 console.log(html)
-                log(html)
+                conDoW(html)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
             }
@@ -2071,7 +2079,7 @@ const arr = [
                 let url_arr = _text_kaiseki(fullhtml)
                 let elem = _make_links(url_arr, title)
                 console.log(elem)
-                log(elem)
+                conDoW(elem)
                 _Export_on_the_raw_web(elem)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
@@ -2108,7 +2116,7 @@ const arr = [
             const _url_arr_down = async function(url_arr, title) {
                 let zip = new JSZip()
                 for (let val of url_arr) {
-                    log(val)
+                    conDoW(val)
                     let blobimg = await _GM_xhr_promise(val)
                     console.log(blobimg)
                     let filename = new URL(val).pathname.split('/').pop()
@@ -2144,7 +2152,7 @@ const arr = [
                     urls += url + '\n'
                     hrefs += `<a href="${url}" title="${document.title}">link</a> `
                 }
-                log(hrefs)
+                conDoW(hrefs)
 
                 //専用の枠に表示
                 let waku_id = 'wakuwaku'
@@ -2174,7 +2182,7 @@ const arr = [
                         value: document.title,
                         //document.title = decodeURIComponent(s)
                         onclick: function(e) {
-                            //log(this, e)
+                            //conDoW(this, e)
                             e.target.select()
                             document.execCommand('cut')
                             let selection = getSelection()
@@ -2195,7 +2203,7 @@ const arr = [
                         type: 'button',
                         value: 'view mode',
                         onclick: function(e) {
-                            //log(this, e)
+                            //conDoW(this, e)
                             e.target.select()
                             document.execCommand('copy')
                         },
@@ -2204,7 +2212,7 @@ const arr = [
                         id: 'hoge23',
                         title: 'tttttt',
                         onclick: function(e) {
-                            log(this, e)
+                            conDoW(this, e)
                             e.target.select(0, e.target.length)
                         },
                         style: `
@@ -2252,11 +2260,11 @@ const arr = [
                 style: 'height: 7em;',
             })
             mkEle(base, 'br', {})
-            //log('t1', this);
+            //conDoW('t1', this);
             mkEle(base, 'button', {
                 textContent: 'josn書き出し',
                 onclick: () => { //アロー関数定義でthis固定
-                    log(this, this.tA)
+                    conDoW(this, this.tA)
                     tA.textContent = kuponKaiseki()
                 },
             })
@@ -2264,13 +2272,13 @@ const arr = [
                 textContent: 'josn読み込み',
                 onclick: (event) => {
                     const obj = JSON.parse(tA.textContent)
-                    log(obj)
+                    conDoW(obj)
                     for (let key in obj) if (obj.hasOwnProperty(key)) {
-                        log(key + ':' + obj[key])
+                        conDoW(key + ':' + obj[key])
                         mkEle(base, 'button', {
                             textContent: key,
                             onclick: () => {
-                                log(obj[key])
+                                conDoW(obj[key])
                             }
                         })
                     }
@@ -2345,7 +2353,7 @@ const arr = [
                 // i++
 
                 if (elem && !elem.disabled) {
-                    log(elem.disabled)
+                    conDoW(elem.disabled)
                     elem.click()
                 } else {
                     setTimeout(() => loop(i + 1), 1000)
@@ -2359,14 +2367,14 @@ const arr = [
         end: 0,
         date: '2019/10/10',
         func: async () => {
-            log('タイムテーブルから3')
+            conDoW('タイムテーブルから3')
             //alert("stop")
             //document.title="■"
             //body.onloadは使えない、その後に番組欄は作られる。
             let t = document.title
             document.body.onload = function() {
                 document.title = 'load:' + document.title
-                log('load')
+                conDoW('load')
             }
 
             document.title = '①' + document.title
@@ -2376,21 +2384,21 @@ const arr = [
                 elem = document.querySelectorAll('article span')
                 await new Promise(r => setTimeout(r, 1000))
                 // document.title = '_' + document.title
-                log('mati')
+                conDoW('mati')
             } while (!elem.length || await sleep(1000))
 
-            log('DOM作成済み')
+            conDoW('DOM作成済み')
 
             for (let val of elem) {
                 if (val.textContent.match(/^けやきヒルズ/)) {
                     document.title = '③' + t
 
-                    log('クリック')
+                    conDoW('クリック')
                     val.click()
                     let url = document
                         .querySelectorAll('.com-m-SlotCard__container--with-hover>a')[0]
                         .href
-                    log(url)
+                    conDoW(url)
                     location.href = url
                 }
             }
@@ -2406,14 +2414,14 @@ function sousa_do(obj) {
     function arr2ReStr(url_arr, url2) {
         let urlpai = url_arr.join('|').replace(/\./g, '\\.') //.は正規表現のためにエスケープ
         urlpai = urlpai.replace(/\*/g, '.*?') //ワイルドカードを実装。
-        //log(urlpai)
+        //conDoW(urlpai)
         let patt = new RegExp(urlpai, 'i')
         return patt.test(url2)
     }
 
     //main
     for (let [key, val] of Object.entries(obj)) {
-        //log(key,val)
+        //conDoW(key,val)
         let {name, url, func, exc, date} = val
         if (!date) {
             date = new Date().toLocaleString()
@@ -2422,10 +2430,10 @@ function sousa_do(obj) {
         if (!arr2ReStr(url, location.href)) continue
         //例外処理
         if (exc && arr2ReStr(exc, location.href)) {
-            log('exc->', exc)
+            conDoW('exc->', exc)
             continue
         }
-        log(`${name} $$$$$$$$$$$$$$$$$$$`)
+        conDoW(`${name} $$$$$$$$$$$$$$$$$$$`)
         //val.func() //objから実行でスコープ固定、のつもりがthisつかわないし。
         func()
     }
@@ -2469,7 +2477,7 @@ if (location.href.match('http://localhost:8888/favicon.ico')) {
         })
     // import * as lib from 'http://localhost:8888/js/mod.js'
 }
-log(`${Date.now() - time}ms エラー無し##########################`)
+conDoW(`${Date.now() - time}ms エラー無し##########################`)
 
 
 /*
@@ -2489,7 +2497,7 @@ jsでCookie追加すると後ろに追加されていく。
 
 2019/10/29 window.unsafeWindow Wがキャメルコートで途中からのは大文字なので注意。
 // @grant none を指定してない場合。
-log(window)をすると、window.unsafeWindow が見える。
+conDoW(window)をすると、window.unsafeWindow が見える。
 コンソールからwindowすると｛parent Window〜 alertでunsafeWindowが無い、これが本当のwindow
 偽物→window.unsafWindow←本物を一時避難
 //gmが終わったから？本物→偽物と上書きされ、unsafwindowが消える。
@@ -2511,7 +2519,7 @@ if (1) {
 else {
 	const a = 1
 }
-log(a)
+conDoW(a)
 
 
 2019/10/24 #js onclick=functionが正解,onclick=()=>は駄目ぽ。
