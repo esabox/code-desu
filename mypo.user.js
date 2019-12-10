@@ -347,19 +347,22 @@ function conDoW(...msg) {
         }
     }
 
+    let is_init = false //初期化するか？
     //初期化
     conDoW.elem = conDoW.elem || _init()
     const mainElem = conDoW.elem
+    /**初期化して基礎エレメントを作る */
     function _init() {
+        is_init = true
         //shadow入れのdiv、shadowなけりゃ必要ない
         const div1_id = 'div1desu'
         const div1 = document.createElement('div')
         div1.id = div1_id
         document.body.appendChild(div1)
-
         let parent = div1
+
         //shadowroot挟む
-        const shadowroot = div1.attachShadow({mode: 'open'})
+        const shadowroot = parent.attachShadow({mode: 'open'})
         parent = shadowroot
 
         //メインwaku作る
@@ -377,14 +380,11 @@ function conDoW(...msg) {
         wakuElm.onmouseleave = function() {
             wakuElm.style.opacity = 0
         }
-
-
-
         parent.appendChild(wakuElm)
 
         //css
-        let css_id = 'my_alert_css'
-        let css_el = document.createElement('style')
+        const css_id = 'my_alert_css'
+        const css_el = document.createElement('style')
         css_el.id = css_id
         parent.appendChild(css_el)
         css_el.insertAdjacentText('beforeend', ([`
@@ -445,21 +445,21 @@ function conDoW(...msg) {
         return wakuElm
     }
 
-    //空ならボタン作る
-    if (mainElem.textContent === '') {//非表示ボタン
-        const el_a0 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
+    //追加の初期化、ボタンを追加
+    if (is_init) {//非表示ボタン
+        const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
 
         //消さないボタン
-        const el_a = button_tukuru('消さない', (e) => {
+        const button2 = button_tukuru('消さない', (e) => {
             mainElem.onmouseleave = null
             mainElem.onclick = null
         })
 
-        let button = button_tukuru('ログクリア', function(e) {
+        const button = button_tukuru('ログクリア', function(e) {
             mainElem.textContent = ''
             //my_alert(this)
         })
-        write('初期', el_a0, el_a, button)
+        write(button1, button2, button)
     }
 
     //セパレータ
@@ -856,34 +856,40 @@ function maiJump(flagEdit) {
 }
 /** ボタン作る */
 function button_tukuru(text, func) {
-    const css_ClassName = 'button_tukuru'
-    const css_id = 'button_tukuru_css'
+    // const css_ClassName = 'button_tukuru'
+    // const css_id = 'button_tukuru_css'
 
-    //css無ければ作る
-    let css_el = document.getElementById(css_id)
-    if (css_el === null) {
-        css_el = document.createElement('style')
-        css_el.id = css_id
-        document.head.appendChild(css_el)
-        css_el.textContent = ([
-            `
-				.${css_ClassName}{
+    // //css無ければ作る
+    // let css_el = document.getElementById(css_id)
+    // if (css_el === null) {
+    //     css_el = document.createElement('style')
+    //     css_el.id = css_id
+    //     document.head.appendChild(css_el)
+    //     css_el.textContent = ([
+    //         `
+	// 			.${css_ClassName}{
+	// 				margin: 2px;
+	// 				box-shadow: 1px 2px 3px grey;
+	// 				padding: 1px;
+	// 				/* font-size: initial; */
+	// 				border-width: thin;
+	// 			}
+	// 		`
+    //     ])[0]
+    // }
+    //ボタン作る
+    const el = document.createElement('button')
+    el.style.cssText = ([`
 					margin: 2px;
 					box-shadow: 1px 2px 3px grey;
 					padding: 1px;
 					/* font-size: initial; */
 					border-width: thin;
-				}
-			`
-        ])[0]
-    }
-    //ボタン作る
-    const el_a = document.createElement('button')
-
-    el_a.textContent = emoji_rand() + text
-    el_a.className = css_ClassName
+			`])[0]
+    el.textContent = emoji_rand() + text
+    // el.className = css_ClassName
     //el_a.type = 'button'
-    el_a.addEventListener('click', function name(ev) {
+    el.addEventListener('click', function name(ev) {
         ev.stopPropagation()
         ev.preventDefault()
         //func(e) //thisが伝わらない,引数側を、アロー関数にすりゃいい？駄目だった。
@@ -899,7 +905,7 @@ function button_tukuru(text, func) {
     // 	//!(func.bind(this, e))() //無名関数で動かなかったのはセミコロンなかったからや。
     // 	//!(func.bind(this))(e) //これは挙動おかしい
     // }
-    return el_a
+    return el
 }
 
 function sleep(msec) {
@@ -951,13 +957,13 @@ const arr = [
             fn_sessionStorage()
             cookie_view_del()
             log(入力パネル())
-            log(button_tukuru('loop', () => {
+            log(button_tukuru('loop', () =>
                 !(function hoge(i = 0) {
                     conDoW.add(i)
                     if (50 < i) return
                     setTimeout(() => hoge(i + 1), 1000)
                 })()
-            }))
+            ))
 
         },
     },//全部b,
@@ -2053,7 +2059,7 @@ const arr = [
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
             }
-            
+
             /**
              * クリック後の処理を一つの関数に、asyncでコールバック無し
              * @param {*} url 
@@ -2393,6 +2399,7 @@ const arr = [
 ]
 //ここで走査しつつ実行
 sousa_do(arr)
+/** url専用関数の配列を、走査して実行 */
 function sousa_do(obj) {
     //配列からpatternを作り、targetでRegExp.test
     //ほぼ正規表現だが、ドットが使えず、*はワイルドカードのあつかい。配列はパイプjoin
