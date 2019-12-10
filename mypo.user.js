@@ -201,8 +201,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
             elem.style.WebkitTransform = 'rotate(90deg)'
             elem.style.width = '100vh'
             elem.style.height = '100vw'
-        }
-        ))
+        }))
         document.body.insertAdjacentElement('afterbegin', elem)
         if (elem) {
             elem.style = `
@@ -276,7 +275,7 @@ const cookie_view_del = function() {
         let btn1 = button_tukuru('表示', () => {cookie_view()})
         //Cookie削除ボタン
         let btn = button_tukuru('全削除', () => {deleteAll(); panel()})
-        conDoW(`Cookie[${count()}] `, btn1, btn)
+        conDoW([`Cookie[${count()}] `, btn1, btn])
     }
 
     //main
@@ -302,8 +301,15 @@ function emoji_rand() {
     return String.fromCodePoint(emojiCode)
 }
 
-/** Console display on website ウェブ上にConsole.logする */
-function conDoW(...msg) {
+/** Console display on website ウェブ上にConsole.logする、複数なら配列で */
+function conDoW(msg, opt = {}) {
+    const opt_push = opt.push || false //追加で表示する
+    //引数が配列じゃないなら、配列にする。
+    const msg_arr = Array.isArray(msg)
+        ? msg
+        : [msg]
+
+
     /** 追加用 */
     conDoW.add = function(...arr) {
         // console.log(arr)
@@ -313,20 +319,16 @@ function conDoW(...msg) {
     function log_clear() {
         //console.log(wakuElm, this)
         mainElem.textContent = '' //shwdow挟んでると消えない
+        // conDoW('clear')
         // mainElem.remove() //conDoW.shadow も削除する必要あり
-        // delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
+        // delete conDoW.el //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
     }
-    conDoW.log_clear = function() {
-        //console.log(wakuElm, this)
-        // mainElem.remove() //conDoW.shadow も削除する必要あり
-        mainElem.textContent = '' //shwdow挟んでると消えない
-        // delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
-    }
+
 
     //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
     //これをcos log に置き換えるから、中でlogすると無限ループ、それ回避用
     const log = window['console'].log //省略不可、置換しないよう変則
-    console.log(...msg)
+    console.log(...msg_arr)
 
     //GMあれば、設定を読み取る、無ければ終了
     if (window.GM) {
@@ -439,6 +441,27 @@ function conDoW(...msg) {
         return wakuElm
     }
 
+    const kakikomi_waku = opt_push
+        ? mainElem.lastElementChild || new_div()
+        : new_div()
+    function new_div() {
+        const el = document.createElement('div')
+        mainElem.appendChild(el)
+        el.style.backgroundColor = 'black'
+        el.style.transition = 'all 1000ms ease-out'
+        el.style.boxShadow = 'inset 0px 0px 5px 5px #29F'
+        el.style.borderBottom = ' 1px solid #999'
+        el.style.transform= 'scale(-1,1)'
+        // el.style.position= 'absolute'
+
+        // window.requestAnimationFrame(() => el.style.backgroundColor = 'white', 1)
+        setTimeout(() => {
+            el.style.transform = 'none'
+            el.style.boxShadow = 'none'
+            el.style.backgroundColor = '#0000'
+        }, 50)
+        return el
+    }
     //追加の初期化、ボタンを追加
     if (is_init) {//非表示ボタン
         const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
@@ -450,31 +473,15 @@ function conDoW(...msg) {
         })
 
         const button = button_tukuru('ログクリア', function(e) {
-            mainElem.textContent = ''
+            log_clear()
             //my_alert(this)
         })
         write(button1, button2, button)
     }
 
-    //セパレータ
-    const hr = document.createElement('hr')
-    hr.style.margin = 0
-    write(hr)
-
-    write(...msg)
+    write(...msg_arr)
     function write(...msg) {
-        let el = mainElem
-        el = document.createElement('div')
-        mainElem.appendChild(el)
-        el.style.backgroundColor = 'black'
-        el.style.transition = 'all 1000ms ease-out'
-        el.style.boxShadow  = 'inset 0px 0px 5px 5px #29F'
-        // window.requestAnimationFrame(() => el.style.backgroundColor = 'white', 1)
-        setTimeout(() => {
-            el.style.boxShadow = 'none'
-            el.style.backgroundColor = '#0000'
-        }, 50)
-
+        let el = kakikomi_waku
 
         //例外、第一引数がelemなら表示させる
         for (let [key, val] of Object.entries(msg)) {
@@ -924,7 +931,7 @@ function utility() {
             }
             conDoW(str)
         })
-        conDoW(count, btn, btn2)
+        conDoW([count, btn, btn2])
     }
     fn_localStorage()
     function fn_sessionStorage() {
@@ -938,14 +945,14 @@ function utility() {
             }
             conDoW(str)
         })
-        conDoW(count, btn, btn2)
+        conDoW([count, btn, btn2])
     }
     fn_sessionStorage()
     cookie_view_del()
     conDoW(入力パネル())
     conDoW(button_tukuru('loop', () =>
         !(function hoge(i = 0) {
-            conDoW.add(i)
+            conDoW(i, {push: true})
             if (50 < i) return
             setTimeout(() => hoge(i + 1), 1000)
         })()
