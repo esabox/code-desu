@@ -303,24 +303,30 @@ function emoji_rand() {
 }
 
 /** Console display on website ウェブ上にConsole.logする */
-function conDoW (...msg) {
+function conDoW(...msg) {
     /** 追加用 */
     conDoW.add = function(...arr) {
         // console.log(arr)
         write(...arr)
     }
     /** ログクリア、無理くりプロパティで作った */
+    function log_clear() {
+        //console.log(wakuElm, this)
+        mainElem.textContent = '' //shwdow挟んでると消えない
+        // mainElem.remove() //conDoW.shadow も削除する必要あり
+        // delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
+    }
     conDoW.log_clear = function() {
         //console.log(wakuElm, this)
-        mainElem.remove() //conDoW.shadow も削除する必要あり
-        // mainElem.textContent = '' //shwdow挟んでると消えない
-        delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
+        // mainElem.remove() //conDoW.shadow も削除する必要あり
+        mainElem.textContent = '' //shwdow挟んでると消えない
+        // delete conDoW.shadow //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
     }
 
     //デバッグ用のlogしても、ここが表示されて、箇所が分からない。
     //これをcos log に置き換えるから、中でlogすると無限ループ、それ回避用
     const log = window['console'].log //省略不可、置換しないよう変則
-    //log(...msg)
+    console.log(...msg)
 
     //GMあれば、設定を読み取る
     if (window.GM) {
@@ -351,8 +357,10 @@ function conDoW (...msg) {
         div1.id = div1_id
         document.body.appendChild(div1)
 
+        let parent = div1
         //shadowroot挟む
         const shadowroot = div1.attachShadow({mode: 'open'})
+        parent = shadowroot
 
         //メインwaku作る
         const waku_id = 'waku'
@@ -360,7 +368,7 @@ function conDoW (...msg) {
         wakuElm.id = waku_id
         wakuElm.style.opacity = 0
         wakuElm.onclick = function(e) {
-            wakuElm.style.display='none'
+            wakuElm.style.display = 'none'
             // this.parentNode.removeChild(this)
         }
         wakuElm.onmouseenter = function(e) {
@@ -370,13 +378,15 @@ function conDoW (...msg) {
             wakuElm.style.opacity = 0
         }
 
-        shadowroot.appendChild(wakuElm)
+
+
+        parent.appendChild(wakuElm)
 
         //css
         let css_id = 'my_alert_css'
         let css_el = document.createElement('style')
         css_el.id = css_id
-        shadowroot.appendChild(css_el)
+        parent.appendChild(css_el)
         css_el.insertAdjacentText('beforeend', ([`
 			.hoge{
 				background-color: rgba(255, 255, 255, 1);
@@ -441,13 +451,12 @@ function conDoW (...msg) {
 
         //消さないボタン
         const el_a = button_tukuru('消さない', (e) => {
-            console.log(e, mainElem)
-            wakuElm.onmouseleave = null
-            wakuElm.onclick = null
+            mainElem.onmouseleave = null
+            mainElem.onclick = null
         })
 
         let button = button_tukuru('ログクリア', function(e) {
-            conDoW.log_clear()
+            mainElem.textContent = ''
             //my_alert(this)
         })
         write('初期', el_a0, el_a, button)
@@ -1999,6 +2008,7 @@ const arr = [
                 })
                 return p
             }
+            /** リンク群のエレメントを作る */
             const _make_links = function(arr, title) {
                 //let els = arr
                 title = title
@@ -2043,23 +2053,31 @@ const arr = [
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
             }
-            //1つの関数にまとめたい
+            
             /**
-             * クリック後の処理を一つの関数に、コールバック無し
+             * クリック後の処理を一つの関数に、asyncでコールバック無し
              * @param {*} url 
              * @param {*} title 
              * @param {*} zip 
              */
             const _dawnfun_only = async function(url, title, zip = false) {
-                let htmltext = await _xhr_promise(url)
-                let url_arr = _text_kaiseki(htmltext)
-                let html = _make_links(url_arr, title)
-                console.log(html)
-                log(html)
+                let fullhtml = await _xhr_promise(url)
+                let url_arr = _text_kaiseki(fullhtml)
+                let elem = _make_links(url_arr, title)
+                console.log(elem)
+                log(elem)
+                _Export_on_the_raw_web(elem)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
             }
-            //promise gm_xmlで画像を一個ずつダウンロード
+
+            /** 生のウェブ上に書き出す、shadow使うとダウンロードツールが見れないから */
+            function _Export_on_the_raw_web(elem) {
+                const clone = elem.cloneNode(true)
+                document.body.insertAdjacentElement('afterbegin', clone)
+            }
+
+            /** promise gm_xmlで画像を一個ずつダウンロード */
             function _GM_xhr_promise(url) {
                 const p = new Promise((resolve, reject) => {
                     GM_xmlhttpRequest({
