@@ -1127,7 +1127,21 @@ const uo = {
         }
         return div
     },
-    hoge() {}
+    タブを開く(str = '') {
+        const popwin = window.open()
+        popwin.document.body.innerHTML = str
+    },
+    通知() {
+        setTimeout(function() {
+            Notification
+                .requestPermission()
+                .then(function() {
+                    var notification = new Notification('Hello, world!')
+                })
+        }, 3000)
+    },
+    hoge() {},
+    hoge() {},
 }
 function utility() {
     function fn_localStorage() {
@@ -1177,46 +1191,12 @@ function utility() {
         ),
         ])
     conDoW(button_tukuru('xpath', () => xpath_finder()))
-    function _選択テキスト検索ボタン() {
-        document.addEventListener('mouseup', function(ev) {
-            const sel0 = window.getSelection()
-            const str = sel0.toString()
-            // sel0.removeAllRanges() //選択できないとうぜー
 
-            const origin = new URL(location.href).origin
 
-            createEl(document.body, 'a',
-                {
-                    textContent: str, href: origin + '/?s=' + str,
-                    target: '_blank',
-                    onmouseup: function(ev) {ev.stopPropagation()}
-                },
-                {position: 'absolute', zIndex: '99', top: ev.pageY + 'px', left: ev.pageX + 'px', }
-            )
-            conDoW(str)
-        }, false)
-    }
-    function _おぺん() {
-        setTimeout(function() {
-            const popwin = window.open()
-            popwin.document.body.innerHTML = 'hoge'
-            // popwin.close()
-            setTimeout(() => popwin.close(), 1000)
-        }, 2000)
-    }
-    !function() {
-        conDoW(button_tukuru('通知', () =>
-            setTimeout(function() {
-                Notification
-                    .requestPermission()
-                    .then(function() {
-                        var notification = new Notification('Hello, world!')
-                    })
-            }, 3000)
-        ))
-    }()
-    conDoW(button_tukuru('選択テキスト検索', uo.選択テキスト検索ボタン))
-    conDoW(button_tukuru('ポップ', _おぺん))
+
+
+
+
 
 }
 function sleep(msec) {
@@ -2026,7 +2006,7 @@ const arr = [
         },
     },//rapidgator,
     {
-        name: 'mexa_sh',
+        name: 'Download mexa_sh',
         url: ['^https://mexa.sh/',],
         end: 0,
         date: '',
@@ -2040,30 +2020,11 @@ const arr = [
 
                 conDoW(el.textContent - 0, {push: true})
                 if (el.textContent - 0 < 2) {
-                    // alert('end')
-                    const win = window.open()
-                    win.document.body.innerHTML = 'カウントダウン終了'
+                    uo.タブを開く('あああ')
                     return
                 }
                 setTimeout(loop, 1000)
             }
-            //downloadbtn
-            //document.querySelector("#downloadbtn").click()
-            //document.querySelector('#downloadbtn').removeAttribute('disabled')
-            //disabled消してクリックしても巻き戻るだけ。
-            //2019/09/02 自動ダウンロードを簡易的に
-            //setintarval→clearinでもできるけど、settimeoutのほうが見やすい？
-            // (function tryDownload(){
-            // 	let time = new Date();
-            // 	let el=document.querySelector('#downloadbtn')
-            // 	conDoW(time);
-            // 	conDoW(el.disabled);
-            // 	if(!el.disabled){
-            // 		el.click();
-            // 		return
-            // 	}
-            // 	setTimeout(tryDownload,5000);
-            // }());
         },
     },//mexa_sh,
     {
@@ -2674,6 +2635,20 @@ const arr = [
             location.replace('https://www.ameba.jp/home') //replace
         },
     },//しみを時間でジャンプ,
+    {
+        name: 'abemaの寝落ちスリープしない対策',
+        url: ['https://abema.tv/now-on-air/',],
+        end: 0,
+        date: '2019/12/29',
+        func: () => {
+            const msec = 60 * 60 * 1000
+            setTimeout(() => {
+                uo.タブを開く('あべま閉じだよ')
+                location.href = 'about:blank'
+
+            }, msec)
+        },
+    },//abemaのコメ欄を自動で開く,
     {
         name: 'abemaのコメ欄を自動で開く',
         url: ['https://abema.tv/now-on-air/', 'cdpn.io',],
