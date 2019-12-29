@@ -111,3 +111,57 @@ document以外からのセレクタ
 le=get~id(#hoge)
 let.query~(#hoge)→null
 let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
+
+2019/12/13
+document.boy.parentNode
+document.htmlElemmnt?
+
+知らなかった。
+>ES6のオブジェクトのメソッドは省略記法がある
+const obj = {
+    method() {
+        console.log(this);
+    }
+}
+
+Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
+arr.__proto__:Array(0).entries()がある。
+arr.__proto__:Array(0).__proto__:Object()←には無い。
+arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
+ちなみに、
+arr.__proto__:Array(0).constructor()は、isArrayなどがある
+constructor()系は原型から呼ばないといけないぽ。
+
+Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
+
+2019/12/16
+functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
+
+2019/12/18
+中央画面MAX配置は
+position 相対的
+transform: translateX(-50%);
+left: 50%;
+ただ、動画を最上位MAXなら、position
+
+2019/12/23
+右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
+document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
+document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
+document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
+
+選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
+
+ブラウザのalertが最前面にならないから気づかない。
+window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
+
+cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
+
+あれば〜系はtryで囲ってエラーもみ消してええのか？
+ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
+//前に作ったやつ、あれば削除
+// const el = qs('#aaa')
+// if (el) el.remove()
+try {
+    qs('#aaa').remove()
+} catch (error) {}
