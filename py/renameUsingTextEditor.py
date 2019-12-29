@@ -12,6 +12,7 @@ import time
 
 #ファイルオープンコマンド **file**を開く
 default_cmd = 'open -a "Visual Studio Code.app" **file** --args -r'
+default_cmd = 'open -a "Visual Studio Code.app" **file**'
 # default_cmd = 'open -a TextEdit.app **file**'
 # default_cmd=  'open -a CotEditor.app **file**'
 
@@ -102,10 +103,12 @@ def main():
     args = get_args()
     print(args.command)
 
-    isodate = datetime.datetime.now().isoformat(timespec='seconds')
+    # isodate = datetime.datetime.now().isoformat(timespec='seconds')
+    isodate = datetime.datetime.now().strftime('%s')
     print(isodate)
-    # listfile_name = '__rename__.txt'
-    txtPath = '__rename__'+isodate+'.txt'
+    txtPath = '__rename__.txt'
+    txtPath = '__rena'+isodate
+
     # リストファイルにタイムスタンプで安全性高めようとしたけど、エディターに溜まって邪魔すぎた。
     # 排他的にしてるしまあ必要ないか、リストの最上位に乱数とかもまあいいか。
     # 同名のファイルでも消すとゾンビみたいにエディターに残って邪魔だった。
@@ -144,13 +147,16 @@ def main():
     cheak_rename(textArr, lsArr, rename=False)
 
     # リネーム実行確認
-    res = input('\n[rename？ Yes="" / No=other ]:')
-    if res == '':
+    res = input('\n[rename？ Yes="" / Yes継続=@ / No=other ]:')
+    if res == '' or res == "@":
         print('リネーム実行')
         cheak_rename(textArr, lsArr, rename=True)
 
-    # 編集ファイルを削除して終了
-    den_exit(txtPath, '正常に終了')
+    if res != "@":
+        # 編集ファイルを削除して終了
+        den_exit(txtPath, '正常に終了')
+    else:
+        main()
 
 
 if __name__ == '__main__':
