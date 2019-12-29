@@ -9,6 +9,7 @@
 // @author       山田一意太郎左衛門
 // @include *
 // @exclude     https://docs.google.com/*
+// @exclude     https://mail.google.com/*
 // @grant	GM_registerMenuCommand
 // @grant 	GM_getValue
 // @grant 	GM_setValue
@@ -42,6 +43,8 @@ alert, confirm, console, Debug, opera, prompt,GM_registerMenuCommand
 
 
 'use strict'
+// $ = document.querySelector.bind(document)
+
 
 //windowにネームスペースを作る、コンソールから使えるように。
 //GM_だとwindowとunsafe(本体）を入れ替えたりするから、それ対応。ifで書いてたけど、ブロックスコープなのでconst使えるよう変更。
@@ -59,13 +62,33 @@ temp.srl = function() {
     }))
 }
 //const log = console["log"];
-!(function() {})()
+!function() {
+    'use strict'
+
+    console.log('this', this, window)
+}()
+const qs = (s, o = document) => o.querySelector(s)
+const qsa = (s, o = document) => o.querySelectorAll(s)
+
 let time = Date.now() //時間測定
-
-
 let nsMiiya = {gamen() {} } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
 
-
+/** 簡単el作成 */
+/**
+ * 
+ * @param {*} parentEl 
+ * @param {string} [tagName=abcdef] - hoge 
+ * @param {*} prop 
+ * @param {*} style 
+ */
+function createEl(parentEl, tagName, prop = {}, style = {}) {
+    let el = document.createElement(tagName)
+    Object.assign(el, prop || {})
+    Object.assign(el.style, style || {})
+    parentEl.appendChild(el)
+    return el
+}
+// createEl(a, 'abc')
 /** ボタンを作る*/
 function mkEle(pElem, tag, obj, loca = 'beforeend') {
     let elem = document.createElement(tag)
@@ -87,35 +110,13 @@ const create_href = function(url, text = false) {
     a_elem.textContent = text || url
     return a_elem
 }
-/** タッチパネルを作る */
-function 入力パネル(url, text = false) {
-    let div = document.createElement('div')
-    div.style.fontSize = '3em'
-    div.style.fontFamily = 'monospace'
 
-    for (let i = 0; i < 10; i++) {
-
-        const elem = document.createElement('a')
-        elem.textContent = i
-        elem.href = i //これがあるとリンク下線つく
-        elem.onclick = function(ev) {
-            ev.stopPropagation()
-            ev.preventDefault()
-            conDoW.add(this.textContent)
-            const elem = document.activeElement
-            elem.value += this.textContent
-        }
-        elem.onmousedown = ev => ev.preventDefault() //focus移動しないように
-        div.appendChild(elem)
-    }
-    return div
-}
 /** あればClick @param selector cssセレクタ */
 function arebaCli(selector, anzen_sec = 3, is_href = false) {
     const el = document.querySelector(selector)
 
-    conDoW(`arebaCli ${selector}`)
-    if (el !== null) {
+    if (el) {
+        conDoW(`@arebaCli 有り ${selector}`)
         let title = document.title
         let countD_ms = anzen_sec * 1000
         let loop_ms = 100
@@ -135,11 +136,115 @@ function arebaCli(selector, anzen_sec = 3, is_href = false) {
                 let stoID = setTimeout(f, loop_ms)
             }
         }())
+        return true
 
     } else {
-        conDoW('クリックする箇所無し @arebaCli ' + selector)
+        conDoW('@arebaCli 無し ' + selector)
         return false
     }
+}
+/** xpath表示、ネットコピペ */
+function xpath_finder() {
+    var doc = document
+    function create(target, tagName, attr = {}, style = {}) {
+        const el = document.createElement(tagName)
+        for (const [key, val] of Object.entries(attr)) {
+            el.setAttribute(key, val)
+            // el[key]=val
+        }
+        for (const [key, val] of Object.entries(style)) {
+            el.style[key] = val
+        }
+        target.appendChild(el)
+        return el
+    }
+    function create(parentEl, tagName, prop = {}, style = {}) {
+        let el = document.createElement(tagName)
+        Object.assign(el, prop || {})
+        Object.assign(el.style, style || {})
+        parentEl.appendChild(el)
+        return el
+    }
+    /**/
+    var searchForm, text, numberMatched, overlayContainer
+    var overlays = []
+    // function getElmPosition(elm) {
+    //     var left = 0
+    //     var top = 0
+    //     while (elm.offsetParent) {
+    //         left += elm.offsetLeft
+    //         top += elm.offsetTop
+    //         elm = elm.offsetParent
+    //     }
+    //     return {
+    //         'left': left, 'top': top
+    //     }
+    // }
+    function getElmPosition(elm) {
+        var left = 0
+        var top = 0
+        var clientRect = elm.getBoundingClientRect()
+        // ページ内の位置
+        var left = window.pageXOffset + clientRect.left
+        var top = window.pageYOffset + clientRect.top
+        return {'left': left, 'top': top}
+    }
+
+    function selectByXPath(xpath) {
+        try {
+            return doc.evaluate(xpath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+        }
+        catch (e) {return null}
+    }
+    function removeOld() {
+        if (overlays.length > 0) {
+            for (var a = 0; a < overlays.length; a++) {
+                var elem2 = overlays[a]
+                if (elem2.parentNode) {
+                    elem2.parentNode.removeChild(elem2)
+                }
+            }
+        }
+    }
+    function highlightElements(result) {
+        if (result === null) {
+            numberMatched.innerHTML = 'invalid'
+            return
+        }
+        else
+            if (result.snapshotLength <= 0) {
+                numberMatched.innerHTML = 'not matched'
+                return
+            }
+        numberMatched.innerHTML = result.snapshotLength
+        for (var a = 0, l = result.snapshotLength; a < l; a++) {
+            var elem = result.snapshotItem(a)
+            var pos = getElmPosition(elem)
+            var borderWidth = 2
+            var overlay = create(overlayContainer, 'div', undefined, {position: 'absolute', border: 'solid red', borderWidth: borderWidth + 'px', left: (pos.left - borderWidth) + 'px', top: (pos.top - borderWidth) + 'px', width: elem.offsetWidth + 'px', height: elem.offsetHeight + 'px', opacity: '0.5'})
+            create(overlay, 'div', undefined, {border: 'solid 1px', borderColor: '#fff #000 #000 #fff', width: (elem.offsetWidth - 2) + 'px', height: (elem.offsetHeight - 2) + 'px'})
+            overlays.push(overlay)
+        }
+    }
+    function refresh() {
+        removeOld()
+        highlightElements(selectByXPath(text.value))
+    }
+    /**/
+    searchForm = create(doc.body, 'div', undefined, {position: 'fixed', left: '0', top: '0', zIndex: '1000'})
+    text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
+    // text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
+    text.focus()
+    numberMatched = create(searchForm, 'span', {'innerHTML': 100}, {background: '#fff', color: '#000', border: 'solid 1px #888'})
+    overlayContainer = create(doc.body, 'div', undefined, {zIndex: '1000', position: 'absolute', left: '0', top: '0'})      /**/
+    var refreshTimer = null
+    text.addEventListener('keydown', function() {
+        if (refreshTimer) {
+            clearTimeout(refreshTimer)
+        }
+        refreshTimer = setTimeout(refresh, 500)
+    }, false)
+
 }
 //スクリプトが動いてるか確認する目立たないもの、タイトルの一文字目を使う案も
 function ugoiteruka(str, sakujo) {
@@ -193,58 +298,89 @@ const video_top_play = function(video_elem = null, query = 'video') {
         ? video_elem
         : document.querySelector(query)
 
-    if (elem) {
-        //
-        //conDoW(1)
-        conDoW(button_tukuru('回展', () => {
-            //conDoW(elem)
-            elem.style.WebkitTransform = 'rotate(90deg)'
-            elem.style.width = '100vh'
-            elem.style.height = '100vw'
-        }))
-        document.body.insertAdjacentElement('afterbegin', elem)
-        if (elem) {
-            elem.style = `
-						width: 100vw; 
-						height: calc(100vh);
-						background-color: black;
-						/* overflow-x: hidden; */
-						/*bodyにwideやmagineあったりすると余白出来る対策*/
-						position: relative;
-						transform: translateX(-50%);
-                        left: 50%;
-                        overflow: hidden;
-                        /* -webkit-transform: rotate(90deg); */
-						`
-        }
-        //自動再生
-        if (elem.tagName === 'VIDEO') {
-            elem.preload = true //これが無いと始まらないぽい
-            elem.autoplay = true  //こっちも同じようなもの
-            elem.controls = true
-            src = elem.src || elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
-            conDoW(create_href(src))
-            //console.log(elem.children('source'))
-            //elm.play()
-        }
-        css_instant('saidcss', `
-            body {
-                overflow-y: overlay;
-                overflow-x: hidden;
-            }
+    if (!elem) return //ネスト深くしないための脱出
 
-            body::-webkit-scrollbar {
-                width: 12px;
-            }
 
-            body::-webkit-scrollbar-thumb {
-                background-color: #0005;
-            }
+    //
+    //conDoW(1)
+    conDoW(button_tukuru('0deg', () => {
+        Object.assign(elem.style, {
+            transform: 'rotate(0deg)',
+            width: '100vw',
+            height: '100vh',
+            top: '0',
+            left: '0%',
+            transformOrigin: '0 0',
+        })
+    }))
+    conDoW(button_tukuru('90deg', () => {
+        Object.assign(elem.style, {
+            transform: 'rotate(90deg)',
+            width: '100vh',
+            height: '100vw',
+            left: '100%',
+            top: '0',
+            transformOrigin: '0% 0%',
+        })
+    }))
+    conDoW(button_tukuru('180deg', () => {
+        Object.assign(elem.style, {
+            transform: 'rotate(180deg)',
+            width: '100vw',
+            height: '100vh',
+            top: '100vh',
+            left: '100%',
+            transformOrigin: '0 0',
+        })
+    }))
+    conDoW(button_tukuru('270deg', () => {
+        Object.assign(elem.style, {
+            transform: 'rotate(270deg)',
+            width: '100vh',
+            height: '100vw',
+            left: '0%',
+            top: '100vh',
+            transformOrigin: '0% 0%',
+        })
+    }))
 
-            body::-webkit-scrollbar-track {
-                background: transparent;
-            }`)
+
+
+    document.body.insertAdjacentElement('afterbegin', elem)
+
+    Object.assign(elem.style, {
+        width: '100vw',
+        height: 'calc(100vh)',
+        backgroundColor: 'black',
+        overflow: 'hidden',
+        transitionDuration: '0.5s',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+    })
+    Object.assign(document.body.style, {
+        overflowY: 'overlay',//スクロールバー別レイヤー、画面幅に含まれなくなる
+        overflowX: 'hidden',//必要か不明、x方向の飛び出しを無視
+        marginTop: '100vh',//一画面分body上を開ける
+    })
+    //自動再生
+    if (elem.tagName === 'VIDEO') {
+        elem.preload = true //これが無いと始まらないぽい
+        elem.autoplay = true  //こっちも同じようなもの
+        elem.controls = true
+        src = elem.src || elem.getElementsByTagName('source')[0].src //プロパティじゃない時もある
+        conDoW(create_href(src))
+        //console.log(elem.children('source'))
+        //elm.play()
     }
+    window.scroll(0, 0)
+    createEl(document.body, 'style', {
+        innerHTML: `
+            body::-webkit-scrollbar { width: 6px; }
+            body::-webkit-scrollbar-thumb { background-color: #0005; }
+            body::-webkit-scrollbar-track { background: transparent; }
+            `})
+    return
 }
 const cookie_view_del = function() {
     const cookie_view = () => {
@@ -311,9 +447,10 @@ function conDoW(msg, opt = {}) {
 
 
     /** 追加用 */
-    conDoW.add = function(...arr) {
+    conDoW.add = function(msg) {
         // console.log(arr)
-        write(...arr)
+        // write(msg)
+        conDoW(msg, {push: true})
     }
     /** ログクリア、無理くりプロパティで作った */
     function log_clear() {
@@ -356,16 +493,19 @@ function conDoW(msg, opt = {}) {
     /**初期化して基礎エレメントを作る */
     function _init() {
         is_init = true
+        let parentEl
+
         //shadow入れのdiv、shadowなけりゃ必要ない
         const div1_id = 'div1desu'
         const div1 = document.createElement('div')
         div1.id = div1_id
+        div1.style.all = 'initial' //二重にして外側ブロックで初期化すると、全部リセット。車道ひつようないぽ。
         document.body.appendChild(div1)
-        let parent = div1
+        parentEl = div1
 
         //shadowroot挟む
-        const shadowroot = parent.attachShadow({mode: 'open'})
-        parent = shadowroot
+        const shadowroot = parentEl.attachShadow({mode: 'open'})
+        parentEl = shadowroot
 
         //メインwaku作る
         const waku_id = 'waku'
@@ -382,13 +522,13 @@ function conDoW(msg, opt = {}) {
         wakuElm.onmouseleave = function() {
             wakuElm.style.opacity = 0
         }
-        parent.appendChild(wakuElm)
+        parentEl.appendChild(wakuElm)
 
         //css
         const css_id = 'my_alert_css'
         const css_el = document.createElement('style')
         css_el.id = css_id
-        parent.appendChild(css_el)
+        parentEl.appendChild(css_el)
         css_el.insertAdjacentText('beforeend', ([`
             /* #waku,#waku>*{all:initial} */
 			#${waku_id}{
@@ -409,6 +549,12 @@ function conDoW(msg, opt = {}) {
 				word-break: break-all;/* 文字に関係なくきっちり折り返す */
 				overflow-wrap: break-word;
 				white-space: pre-wrap;/* 開業・空白そのまま、しかし折り返す */
+
+                /* width: fit-content; */
+                height: auto;
+
+                transform-style: preserve-3d;
+                perspective: 900px;
 
 			}
 			#wakuxxxx {
@@ -451,7 +597,8 @@ function conDoW(msg, opt = {}) {
         el.style.transition = 'all 1000ms ease-out'
         el.style.boxShadow = 'inset 0px 0px 5px 5px #29F'
         el.style.borderBottom = ' 1px solid #999'
-        el.style.transform= 'scale(-1,1)'
+        // el.style.transformOrigin= 'center bottom'
+        el.style.transform = 'rotateX(90deg)'
         // el.style.position= 'absolute'
 
         // window.requestAnimationFrame(() => el.style.backgroundColor = 'white', 1)
@@ -919,6 +1066,69 @@ function button_tukuru(text, func) {
     // }
     return el
 }
+/** utility obj 関数つまってる感じ */
+const uo = {
+    name: 'hoge',
+    選択テキスト検索ボタン() {
+        document.addEventListener('click', function(ev) {
+            const sel0 = window.getSelection()
+            const str = sel0.toString()
+            if (str === '') return
+            // sel0.removeAllRanges() //選択できないとうぜー
+            const origin = new URL(location.href).origin
+
+            //前に作ったやつ、あれば削除
+            const el = qs('#aaa')
+            if (el) el.remove()
+            // try {
+            //     qs('#aaa').remove()
+            // } catch (error) {}
+
+            //作る
+            createEl(document.body, 'a',
+                {
+                    textContent: str, href: origin + '/?s=' + str,
+                    target: '_blank',
+                    id: 'aaa',
+
+                    onmouseup: function(ev) {ev.stopPropagation()}
+                },
+                {
+                    position: 'absolute', zIndex: '99', top: ev.pageY + 'px', left: ev.pageX + 'px',
+                    backgroundColor: '#FFF',
+                    border: 'ridge 0.5em #FAA',
+                    borderRadius: '5em',
+                    padding: '0.5em',
+                }
+            )
+            conDoW([str, ev.buttons, ev.button])
+        }, false)
+    },
+    /** タッチパネルを作る */
+    入力パネル() {
+        let div = document.createElement('div')
+        div.style.fontSize = '3em'
+        div.style.fontFamily = 'monospace'
+
+        for (let i = 0; i < 10; i++) {
+
+            const elem = document.createElement('a')
+            elem.textContent = i
+            elem.href = i //これがあるとリンク下線つく
+            elem.onclick = function(ev) {
+                ev.stopPropagation()
+                ev.preventDefault()
+                conDoW.add(this.textContent)
+                const elem = document.activeElement
+                elem.value += this.textContent
+            }
+            elem.onmousedown = ev => ev.preventDefault() //focus移動しないように
+            div.appendChild(elem)
+        }
+        return div
+    },
+    hoge() {}
+}
 function utility() {
     function fn_localStorage() {
         let count = `localStorage[${localStorage.length}]`
@@ -949,14 +1159,65 @@ function utility() {
     }
     fn_sessionStorage()
     cookie_view_del()
-    conDoW(入力パネル())
-    conDoW(button_tukuru('loop', () =>
-        !(function hoge(i = 0) {
-            conDoW(i, {push: true})
-            if (50 < i) return
-            setTimeout(() => hoge(i + 1), 1000)
-        })()
-    ))
+    conDoW(uo.入力パネル())
+    conDoW(
+        [button_tukuru('loop2', () =>
+            !(function hoge(i = 0) {
+                conDoW(i, {push: false})
+                if (50 < i) return
+                setTimeout(() => hoge(i + 1), 1000)
+            })()
+        ),
+        button_tukuru('loop', () =>
+            !(function hoge(i = 0) {
+                conDoW(i, {push: true})
+                if (50 < i) return
+                setTimeout(() => hoge(i + 1), 1000)
+            })()
+        ),
+        ])
+    conDoW(button_tukuru('xpath', () => xpath_finder()))
+    function _選択テキスト検索ボタン() {
+        document.addEventListener('mouseup', function(ev) {
+            const sel0 = window.getSelection()
+            const str = sel0.toString()
+            // sel0.removeAllRanges() //選択できないとうぜー
+
+            const origin = new URL(location.href).origin
+
+            createEl(document.body, 'a',
+                {
+                    textContent: str, href: origin + '/?s=' + str,
+                    target: '_blank',
+                    onmouseup: function(ev) {ev.stopPropagation()}
+                },
+                {position: 'absolute', zIndex: '99', top: ev.pageY + 'px', left: ev.pageX + 'px', }
+            )
+            conDoW(str)
+        }, false)
+    }
+    function _おぺん() {
+        setTimeout(function() {
+            const popwin = window.open()
+            popwin.document.body.innerHTML = 'hoge'
+            // popwin.close()
+            setTimeout(() => popwin.close(), 1000)
+        }, 2000)
+    }
+    !function() {
+        conDoW(button_tukuru('通知', () =>
+            setTimeout(function() {
+                Notification
+                    .requestPermission()
+                    .then(function() {
+                        var notification = new Notification('Hello, world!')
+                    })
+            }, 3000)
+        ))
+    }()
+    conDoW(button_tukuru('選択テキスト検索', uo.選択テキスト検索ボタン))
+    conDoW(button_tukuru('ポップ', _おぺん))
+
 }
 function sleep(msec) {
     return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
@@ -977,9 +1238,16 @@ const arr = [
         end: 0,
         date: '',
         func: function() {
-
             conDoW(button_tukuru('Utility', utility))
-
+        },
+    },//全部b,
+    {
+        name: 'テスト',
+        url: ['#tttt',],
+        end: 0,
+        date: '',
+        func: function() {
+            utility()
         },
     },//全部b,
     {
@@ -1364,6 +1632,7 @@ const arr = [
         name: 'kk video tokyomotion',
         url: [
             '^https://www.tokyomotion.net/video/',
+            '^https://www.tokyomotion.net/',
         ],
         end: 0,
         date: '2019/12/05',
@@ -1374,6 +1643,13 @@ const arr = [
             conDoW(button_tukuru('video再生', video_top_play))//動かない？
             conDoW(button_tukuru('video再生arr', () => video_top_play()))
             document.body.style.padding = 0
+
+            //videoにmousedownイベント使われて止まらない、
+            document.addEventListener('mousedown', function(e) {e.stopPropagation()}, true)
+            //ついでにクリックも、html5プレーヤーの操作できんくなった。
+            // document.addEventListener('click', function(e) {e.stopPropagation()}, true)
+
+
 
             document.querySelectorAll('.top-nav,.navbar')
                 .forEach((el) => el.style.position = 'initial')
@@ -1444,8 +1720,8 @@ const arr = [
     {
         name: 'ファン座で自動再生',
         url: [
-            '^https://www.dmm.co.jp/digital',
             '^https://www.dmm.com/*/',
+            '^https://www.dmm.co.jp/',
         ],
         end: 0,
         date: '',
@@ -1454,8 +1730,8 @@ const arr = [
                 conDoW('hogege')
                 let elm = document.querySelector('iframe#DMMSample_player_now')
                 if (elm) {
-                    let videotag = elm.contentWindow.document.querySelector('video')
-                    video_top_play(videotag)
+                    const video_el = elm.contentWindow.document.querySelector('video')
+                    video_top_play(video_el)
                 }
                 //
                 //document.querySelector("#dmmplayer")
@@ -1463,10 +1739,28 @@ const arr = [
 
             let obj = document.querySelector('#sample-video')
             //conDoW(obj)
+            //無理
             document.onreadystatechange = function(event) {
                 conDoW(this.readyState)
             }
-            arebaCli('#detail-sample-movie div a', 0)
+            // arebaCli('#detail-sample-movie div a', 0)
+            let el = qs('#detail-sample-movie div a')
+            // conDoW(el)
+            if (el) {
+                el.click()
+                // _lp()
+
+                !function _lp() {
+                    conDoW('探し', {push: true})
+                    let el = qs('iframe#DMMSample_player_now')
+                    if (el && qs('video', el.contentWindow.document))
+                        hoge()
+                    else
+                        setTimeout(_lp, 1000)
+                }()
+            }
+
+
             //conDoW(document.readyState)
             //document.addEventListener("DOMContentLoaded", hoge)
             //DOMContentLoaded = () => conDoW("load1")
@@ -1480,6 +1774,17 @@ const arr = [
             //location.href = url
         },
     },//ファン座で自動再生,
+    {//pornhub,
+        name: 'kk pornhub生',
+        url: [
+            '^https://jp.pornhub.com/',
+        ],
+        end: 0,
+        date: '2019/12/19',
+        func: function() {
+            video_top_play(qs('#player'))
+        },
+    },
     {
         name: 'KK_dropbooks',
         url: [
@@ -1647,6 +1952,17 @@ const arr = [
         },
     },//mx-sh,
     {
+        name: 'shorten.sh',
+        url: ['^http://shorten.sh/',],
+        end: 0,
+        date: '2019/12/24',
+        func: function() {
+
+            arebaCli('#invisibleCaptchaShortlink')
+            arebaCli('#get-link-ad')
+        },
+    },//mx-sh,
+    {
         name: 'wupfile',
         url: ['^https://wupfile.com/',],
         end: 0,
@@ -1665,7 +1981,7 @@ const arr = [
                 let time = new Date()
                 let el = document.querySelector('#downloadbtn')
                 // conDoW(time)
-                conDoW.add(el.disabled)
+                conDoW(el.disabled, {push: true})
                 if (!el.disabled) {
                     el.click()
                     return
@@ -1718,6 +2034,19 @@ const arr = [
             let d = !!true
             d && conDoW('mexa')
             arebaCli('#Downloadfre')
+            let el = qs('#countdown > div > span')
+            loop()
+            function loop(i = 0) {
+
+                conDoW(el.textContent - 0, {push: true})
+                if (el.textContent - 0 < 2) {
+                    // alert('end')
+                    const win = window.open()
+                    win.document.body.innerHTML = 'カウントダウン終了'
+                    return
+                }
+                setTimeout(loop, 1000)
+            }
             //downloadbtn
             //document.querySelector("#downloadbtn").click()
             //document.querySelector('#downloadbtn').removeAttribute('disabled')
@@ -1750,6 +2079,7 @@ const arr = [
             $('#download_pass')[0].value = 'dddd'
             d && conDoW('dddd')
             arebaCli('.submit')
+
         },
     },//dousyoko,
     {
@@ -1929,6 +2259,7 @@ const arr = [
         end: 0,
         date: '',
         func: async function() {
+            uo.選択テキスト検索ボタン()
             //クリアボタン欲しい
             const log_clear = function() {
                 let button = button_tukuru('ログクリア', function(e) {
@@ -2411,6 +2742,44 @@ const arr = [
             }
         },
     },//当日の毛や木ヒルズを自動で開く、0時すぎると無理,
+    {
+        name: 'ヤフコメ',
+        url: ['^https://headlines.yahoo.co.jp/cm/',],
+        end: 0,
+        date: '2019/12/12',
+        func: async () => {
+            await sleep(2000)
+            //contentWindow
+            const start_page = 1
+            const page_times = 10
+            const comment_num = 50
+            const frame_height = '500px'//'12000px'
+            const sleep_time = 3000
+            const insertFrame = (times, page, baseNode) => {
+                if (times <= 0) return
+                const frameURL = `https://news.yahoo.co.jp/comment/plugin/v1/full/?origin=https://headlines.yahoo.co.jp&sort=${baseNode.getAttribute('data-sort')}&order=${baseNode.getAttribute('data-order')}&page=${page}&type=t&keys=${baseNode.getAttribute('data-keys')}&full_page_url=${baseNode.getAttribute('data-full-page-url')}&comment_num=${baseNode.getAttribute('data-comment-num')}`
+                // const el = document.createElement('iframe')
+                // el.src = frameURL
+                // el.outerHTML = `<iframe class="news-comment-plguin-iframe" scrolling="yes" frameborder="0" src="${frameURL}" style="width: 100%; height: ${frame_height}; border: none;"></iframe>`
+                // baseNode.insertAdjacentElement('beforeend', el)
+                const frameNew = `<iframe class="news-comment-plguin-iframe" scrolling="yes" frameborder="0" src="${frameURL}" style="width: 100%; height: ${frame_height}; border: none;"></iframe>`
+                baseNode.insertAdjacentHTML('beforeend', frameNew)
+                conDoW(button_tukuru(times, () => insertFrame(times - 1, page + 1, baseNode)))
+                // setTimeout(() => {insertFrame(times - 1, page + 1, baseNode)}, sleep_time)
+            }
+            const replaceFrame = () => {
+                const iframes = document.querySelectorAll('iframe.news-comment-plguin-iframe')
+                const baseNode = iframes[0].parentNode
+                if (baseNode.getAttribute('data-page-type') !== 'full') return
+                iframes.forEach(iframe => baseNode.removeChild(iframe))
+                baseNode.setAttribute('data-comment-num', comment_num)
+                insertFrame(page_times, start_page, baseNode)
+            }
+            conDoW(button_tukuru('time', () => replaceFrame()))
+            // replaceFrame()
+
+        },
+    },//ヤフコメ
 ]
 //ここで走査しつつ実行
 sousa_do(arr)
