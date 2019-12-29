@@ -2726,12 +2726,18 @@ const arr = [
 	{
 		name: 'スプレッド構文、レストはややこしい',
 		date: '2019/12/07',
-		play: 0,
+		play: 1,
 		uniq: 0,
 		func: function() {
 			'use strict'
 			hoge(1, 2, 3)
 			function hoge(...arg) {
+				log(arg) //array(3)
+				log(...arg) //1 2 3
+				log([...arg]) //array(3)
+			}
+			hoge2(10)
+			function hoge2(...arg) {
 				log(arg) //array(3)
 				log(...arg) //1 2 3
 				log([...arg]) //array(3)
