@@ -1,44 +1,56 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#@がついてないファイルに更新日の@yyyymmddhhmmss-をつける。
-#けっこう危険、使い方、変えたいフォルダまでcdして、このスクリプトを起動
-#まず結果予測だけ表示、inputで最終確認
+# フォルダの中のフォルダを無圧縮zip化
 
 import os
-import datetime
 import glob
 import re
 import sys
 import shutil
 
-print(sys.version_info)
-def myrename(write=False):
-    i=0
+gomibako = '/Users/kazoku/.Trash/'
+
+
+def main():
+    print(sys.version)
+    print(sys.argv)
+    work_dir = '/Users/kazoku/Desktop/book/'
+
+    # workdirの引数があれば
+    if 1 < len(sys.argv):
+        work_dir = sys.argv[1]
+
+    os.chdir(work_dir)
+    print('pwd :'+os.getcwd())
+
+    ls = glob.glob('*/')  # フォルダのみ
+
+    zipnisuru(ls)
+    res = input('\n[rename？ Yes="" / No=other ]:')
+    if res == '':
+        print('リネーム実行')
+        zipnisuru(ls, True)
+
+    print('終了')
+
+
+def zipnisuru(ls, write=False):
     for f in ls:
-        #print(f)
-        i=i+1 #i++は無理
-        dt = datetime.datetime.fromtimestamp(os.path.getmtime(f))
-        dt= dt.strftime('@%Y%m%d%H%M%S-')
-        # nf=re.sub('.part$', '', f)
-        nf=re.sub('/', '.zip', f)
-        # print('old: '+f)
-        
+        # print(f)
+        nf = re.sub('/', '.zip', f)
+
         print('new: '+nf)
         cmd = 'zip -r --quiet -0 "' + nf + '" "' + f + '"'
-        #フォルダを圧縮するときは単一でも再帰必須
-        #--quiet
-        # print(cmd)
+        # フォルダを圧縮するときは単一でも再帰必須
+
         if write:
             os.system(cmd)
             print(cmd)
             # os.remove(f)  #ファイル一個か、空フォルダしか無理
             # shutil.rmtree(f) #ゴミ箱経由にならない
-            shutil.move(f,gomibako)
-
-        #     os.rename(f, dt+nf)
-        # if i==20:
-        #     break #テスト用
+            shutil.move(f, gomibako)
+    pass
 
 # zip -r -n ".jpg:.JPG:.jpeg:.JPEG:.gif:.GIF" "$zipf" "$zipd" -x ".DS_Store"
 # -r オプションは、ZIPの入力ファイルにディレクトリがある場合、再帰的にたどっていくことを指示します。
@@ -49,23 +61,6 @@ def myrename(write=False):
 # 最後の-xオプションは、ZIPの対象としないファイルを指定します。.DS_StoreはFinderが不可視ファイルとして作る場合がありますが、今回はZIPファイルに含める必要はないため除外するようにしています。
 # zipコマンドの詳細はターミナルからmanコマンドで調べることもできます。
 
-#main
-# print('\n')
-work_dir='/Users/kazoku/Desktop/book/'
-gomibako='/Users/kazoku/.Trash/'
 
-print('pwd :'+os.getcwd()) #Print Working Dir
-os.chdir(work_dir)
-print('pwd :'+os.getcwd())
-
-ls=glob.glob('*/') # フォルダのみ
-
-myrename()
-res = raw_input('書き換えてよい？ Y="" / N=other >')
-print res
-
-if  res == '' :
-    print 'リネーム実行'
-    myrename(True)
-
-print '終了'
+if __name__ == '__main__':
+    main()
