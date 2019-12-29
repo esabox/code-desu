@@ -62,11 +62,8 @@ temp.srl = function() {
     }))
 }
 //const log = console["log"];
-!function() {
-    'use strict'
 
-    console.log('this', this, window)
-}()
+
 const qs = (s, o = document) => o.querySelector(s)
 const qsa = (s, o = document) => o.querySelectorAll(s)
 
@@ -1191,12 +1188,6 @@ function utility() {
         ),
         ])
     conDoW(button_tukuru('xpath', () => xpath_finder()))
-
-
-
-
-
-
 
 }
 function sleep(msec) {
