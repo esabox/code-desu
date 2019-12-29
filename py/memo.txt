@@ -1,0 +1,58 @@
+2019/12/27 #ターミナル alias登録すると、どこでも短縮コマンド使える。
+初回の登録面倒
+◆ホームに移動、しなくてもいいが。
+$ cd ~ 
+◆以下追記、最後は改行必須
+$ vi ~/.bashrc
+alias renameEditor=/Users/kazoku/Desktop/code/py/renameUsingTextEditor.py
+◆プロファイルに記述
+$ vi ~/.bash_profile
+source ~/.bashrc
+◆プロファイルリロード
+source ~/.bashrc
+--
+vi面倒だから追記もやってみたが、よりムズい
+echo 'alias hoge=piyo -a' >> ~/.bashrc 
+--
+bash_profileはログインの時だけ、bashrcは毎回読み込まれるらしい、じゃあ全部bashrcで良いじゃん。
+--
+ln -s 対象 出力先 でシンボリックリンクでショートカット作ろうと思った。
+作れたけど$ ~/hoge みたいにしか呼び出せない。コマンドじゃなくてファイル
+
+2019/12/28 #py 三項演算子が無い、or and 
+print("aa") if False else print("bb") こんなのも、
+val="aa" if False else "bb" #代入もできる
+print(val) #bb
+
+2019/12/28 #ターミナル echo $PATH で表示するとごっちゃ、キレイに変換
+$ echo $PATH | tr ':' '\n'
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+/usr/local/bin
+/opt/X11/bin
+/usr/local/share/dotnet
+/Library/Frameworks/Mono.framework/Versions/Current/Commands
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+なんかめちゃ重複してる。
+--
+trは一文字の置換しかできない。
+sedは一行用らしく、改行の概念がない、
+2文字以上で改行が必要ならawkを使う。
+$ echo $PATH | awk '{ gsub(":", ":\n"); print }'
+--
+カレントフォルダをPATHに登録、一方に$が無いことに注意。
+$ export PATH=$PATH:`pwd`
+削除したいときはテキストに書き出して、削除してそれを登録
+
+シンボリックリンクは絶対パスにすべき、相対パスでも作れるが、移動させたら終わり
+ln -s 絶対パス 作る場所と名前
+ハードリンクはほぼ同じだが、本体と判別が困難。
+
+2019/12/29 #mac winファイルショートカットの代わりが無い
+alias が近いが、登録とか面倒、ln -s はデフォ引数とか無理
