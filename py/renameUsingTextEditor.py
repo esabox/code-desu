@@ -33,6 +33,8 @@ def get_args():
     parser.add_argument("-w", "--workDir", help="オプション")
     parser.add_argument("-r",
                         "--recursive", help="再帰検索・上位でやると危険かも", action="store_true")
+    parser.add_argument("-co",
+                        "--conti", help="続ける", action="store_true")
 
     # 結果を受ける
     args = parser.parse_args()
@@ -87,6 +89,7 @@ def cheak_rename(textArr, lsArr, rename=False):
                 else:
                     print('変更先に既にファイルあったからキャンセル')
             print()
+    pass
 
 
 def den_exit(txtPath, msg):
@@ -147,15 +150,19 @@ def main():
     cheak_rename(textArr, lsArr, rename=False)
 
     # リネーム実行確認
-    res = input('\n[rename？ Yes="" / Yes継続=@ / No=other ]:')
+    res = input('\n[rename？ Yes="" / Yes+終了=@ / No=other ]:')
     if res == '' or res == "@":
         print('リネーム実行')
         cheak_rename(textArr, lsArr, rename=True)
-
-    if res != "@":
+        os.remove(txtPath)
+    else:
         # 編集ファイルを削除して終了
         den_exit(txtPath, '正常に終了')
-    else:
+
+    if res == "@":
+        return
+
+    if args.conti:
         main()
 
 
