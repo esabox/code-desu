@@ -2206,7 +2206,7 @@ const arr = [
         },
     },//dawnfun.com/,
     {
-        name: 'manga314',
+        name: 'manga314で右クリックリストアップ',
         url: ['^https://manga314.com/',],
         end: 0,
         date: '',
@@ -2227,6 +2227,22 @@ const arr = [
             // document.addEventListener('click', function(e){
             // 	e.preventDefault();
             // }, false);
+            /** スタイルシートをオーバーライド */
+            !function _sss() {
+                createEl(document.body, 'style', {
+                    textContent: `
+                        .post {
+                        display: inline-block;
+                        width: 19vw;
+                        vertical-align: top;
+                        }
+                        #content {
+                        background-color: wheat;
+                        width: 98vw;
+                        margin-left: calc((50% - 49vw) );
+                        } 
+                `})
+            }()
 
             //altクリック、中クリックにイベント仕込もうと思ったけど、ホイールスクロール表示されて困って止めた。
             document.addEventListener('click', function(ev) {
