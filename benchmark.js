@@ -119,6 +119,11 @@ class Bench {
 		// setTimeout(this.print_result2,100) //呼び出せるが、先でthisがTimeout{}
 		// setTimeout(this.print_result2.bind(this), 100) //OK
 		this.print_result2()
+		// (async () => { //先にスリープすると安定しそう？
+		// 	// await new Promise(r => setTimeout(r, 100))
+		// 	await this.print_result2()
+		// })()
+		// log(222)
 	}
 	print_result2() {
 		let objArr = this.play()
@@ -204,9 +209,9 @@ b.add(() => str.replace('.', '-'))
 
 // b.print_result()
 
-b = new Bench(10, 100000, {
+b = new Bench(1, 100000, {
 	// sort: 'descend',
-	format: '// *timeStrL*ms *graf* *resultR* \n*funcL*\n'
+	// format: '// *timeStrL*ms *graf* *resultR* \n*funcL*\n'
 })
 // b.add(() => !!1)
 // b.add(() => !1)
@@ -225,12 +230,52 @@ b = new Bench(10, 100000, {
 // b.add(() => ('' + undefined))
 // b.add(() => (undefined + ''))
 b.add(() => (undefined + ''))
+b.add(() => (undefined + ''))
 b.add(() => [1, '', , 4].map(v => v + 1))
 b.add(() => [1, '', , 4].forEach(v => v + 1))
 b.add(() => Array(1, 2).map((v) => 1))
 b.add(() => {Array(100).fill(1).map(v => v * 2)})
 b.add(() => {Array(100).fill(1).forEach(v => v * 2)})
-b.add(() => {for (let i = 0, arr = Array(100).fill(1); i < arr.length; i++) {arr[i] * 2} })
-b.add(() => {for (let i = 0, arr = Array(100).fill(1), l = arr.length; i < l; i++) {arr[i] * 2} })
+// b.add(() => {for (let i = 0, arr = Array(100).fill(1); i < arr.length; i++) {arr[i] * 2} })
+// b.add(() => {for (let i = 0, arr = Array(100).fill(1), l = arr.length; i < l; i++) {arr[i] * 2} })
 
 b.print_result()
+log(111)
+
+function settimeo() {
+	// let i = 0
+	const p = new Promise((resolve, reject) => {
+		//conDoW('js_xhr')
+		let time = performance.now() //時間測定this.this.	
+		!function aaaa(i = 0) {
+			// log(i)
+			if (i == 100) {
+				time = performance.now() - time
+				log(i, time.toFixed(1))
+				resolve()
+				return
+			}
+			setTimeout(aaaa, 0, i + 1)
+		}()
+	})
+	return p
+}
+function setin() {
+	let time = performance.now() //時間測定this.this.	
+	let i = 0
+	let timer = setInterval(() => {
+		++i
+		if (i == 1000) {
+			time = performance.now() - time
+			log(i, time.toFixed(1))
+			clearInterval(timer)
+			return
+		}
+	})
+}
+async function hogea() {
+	await settimeo()
+	log(2222)
+}
+// log(111)
+// setin()
