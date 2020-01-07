@@ -70,21 +70,26 @@ const qsa = (s, o = document) => o.querySelectorAll(s)
 let time = Date.now() //時間測定
 let nsMiiya = {gamen() {} } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
 
-/** 簡単el作成 */
-/**
- * 
- * @param {*} parentEl 
- * @param {string} [tagName=abcdef] - hoge 
- * @param {*} prop 
- * @param {*} style 
- */
+/** el作成 */
 function createEl(parentEl, tagName, prop = {}, style = {}) {
     let el = document.createElement(tagName)
     Object.assign(el, prop || {})
     Object.assign(el.style, style || {})
-    parentEl.appendChild(el)
+    if (parentEl)
+        parentEl.appendChild(el)
     return el
 }
+function createEl2(insert = {}, tagName, prop = {}, style = {}) {
+    const el = document.createElement(tagName)
+    Object.assign(el, prop || {})
+    Object.assign(el.style, style || {})
+    if (parentEl) {
+        const position = insert.position || 'beforeend'
+        insert.parentEl.insertAdjacentElement(position, el)
+    }
+    return el
+}
+// createEl2({pEl: document.body, pos: 'afterbeguin'})
 // createEl(a, 'abc')
 /** ボタンを作る*/
 function mkEle(pElem, tag, obj, loca = 'beforeend') {
@@ -116,7 +121,7 @@ function arebaCli(selector, anzen_sec = 3, is_href = false) {
         conDoW(`@arebaCli 有り ${selector}`)
         let title = document.title
         let countD_ms = anzen_sec * 1000
-        let loop_ms = 100
+        let loop_ms = 1000
         !(function f() {
             if (countD_ms <= 0) {
                 //clearTimeout(stoID)
@@ -453,6 +458,7 @@ function conDoW(msg, opt = {}) {
     function log_clear() {
         //console.log(wakuElm, this)
         mainElem.textContent = '' //shwdow挟んでると消えない
+        初期ボタン()
         // conDoW('clear')
         // mainElem.remove() //conDoW.shadow も削除する必要あり
         // delete conDoW.el //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
@@ -531,7 +537,7 @@ function conDoW(msg, opt = {}) {
 			#${waku_id}{
 				background-color: ivory;
 				color:black;
-				transition: all 300ms ease 0s;
+				transition: all 900ms ease 0s;
 				border: 2px solid silver;
 				padding: 5px;
 				position: fixed;
@@ -554,31 +560,7 @@ function conDoW(msg, opt = {}) {
                 perspective: 900px;
 
 			}
-			#wakuxxxx {
-				-moz-animation: cssAnimation 0s ease-in 5s forwards;
-				/* Firefox */
-				-webkit-animation: cssAnimation 0s ease-in 5s forwards;
-				/* Safari and Chrome */
-				-o-animation: cssAnimation 0s ease-in 5s forwards;
-				/* Opera */
-				animation: cssAnimation 0s ease-in 5s forwards;
-				-webkit-animation-fill-mode: forwards;
-				animation-fill-mode: forwards;
-			}
-			@keyframes cssAnimation {
-				to {
-					width:0;
-					height:0;
-					overflow:hidden;
-				}
-			}
-			@-webkit-keyframes cssAnimation {
-				to {
-					width:0;
-					height:0;
-					visibility:hidden;
-				}
-			}`
+		`
         ])[0])
 
         return wakuElm
@@ -607,7 +589,9 @@ function conDoW(msg, opt = {}) {
         return el
     }
     //追加の初期化、ボタンを追加
-    if (is_init) {//非表示ボタン
+    if (is_init) 初期ボタン()
+    function 初期ボタン() {
+        //非表示ボタン
         const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
 
         //消さないボタン
@@ -621,6 +605,7 @@ function conDoW(msg, opt = {}) {
             //my_alert(this)
         })
         write(button1, button2, button)
+
     }
 
     write(...msg_arr)
@@ -1128,6 +1113,11 @@ const uo = {
         const popwin = window.open()
         popwin.document.body.innerHTML = str
     },
+    タブを開くインライン(str = 'だふぉ') {
+        createEl(document.body, 'script', {
+            textContent: `window.open().document.body.innerHTML = "${str}"`
+        })
+    },
     通知() {
         setTimeout(function() {
             Notification
@@ -1188,7 +1178,7 @@ function utility() {
         ),
         ])
     conDoW(button_tukuru('xpath', () => xpath_finder()))
-
+    conDoW.add(button_tukuru('タブを開くインライン', () => uo.タブを開くインライン()))
 }
 function sleep(msec) {
     return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
@@ -1409,7 +1399,7 @@ const arr = [
                         conDoW('クリック')
                         s.click() // クリック
                         //早くしすぎると歯抜けになる
-                        await new Promise((r) => setTimeout(r, 891)) // sleep
+                        await sleep(900) // sleep
                     }
                     //
                     // conDoW(eles[i].querySelectorAll(".clearfix .dateArrival>img").length);
@@ -1444,9 +1434,9 @@ const arr = [
             // }
             const base = nsMiiya.gamen()// 画面作っちゃう
             let fn = async function() {
-                await new Promise((r) => setTimeout(r, 500)) // sleep
+                await sleep(500) // sleep
                 document.querySelector('.isluckykuji_start').click()
-                await new Promise((r) => setTimeout(r, 500)) // sleep
+                await sleep(500) // sleep
                 document.querySelector('.isluckykuji_select:nth-of-type(1)').click()
                 conDoW('ow')
             }
@@ -1472,7 +1462,7 @@ const arr = [
         end: 0,
         date: '',
         func: async function() {
-            await new Promise((r) => setTimeout(r, 1500)) // sleep
+            await sleep(1500) // sleep
             //chromeのオートコンプリートでパスワードはあるように見えるが空欄状態、画面Clickで値が入る
             if (document.querySelector('#u').value !== '' &&
                 document.querySelector('#p').value !== ''
@@ -1542,7 +1532,7 @@ const arr = [
             // 	conDoW('くじセット');
             // 	GM_setValue('毎日くじ次へ', 1);
             // }
-            await new Promise((r) => setTimeout(r, 1000)) // sleep
+            await sleep(1500) // sleep
             arebaCli('#entry')
         },
     },//楽天系のくじの自動Click,
@@ -1990,10 +1980,9 @@ const arr = [
         end: 0,
         date: '',
         func: function() {
-            let d = !!true
-            d && conDoW('mexa')
+            // https://rapidgator.net/download/captcha
             arebaCli('.link.act-link.btn-free')
-            arebaCli('.btn-download')
+            // arebaCli('.btn-download')
         },
     },//rapidgator,
     {
@@ -2002,19 +1991,20 @@ const arr = [
         end: 0,
         date: '',
         func: function() {
-            let d = !!true
-            d && conDoW('mexa')
             arebaCli('#Downloadfre')
             let el = qs('#countdown > div > span')
             loop()
             function loop(i = 0) {
+                const sec = el.textContent - 0
+                document.title = document.title.replace(/^\[.+?\]/, '')
+                document.title = `[${sec}]` + document.title
 
-                conDoW(el.textContent - 0, {push: true})
-                if (el.textContent - 0 < 2) {
-                    uo.タブを開く('あああ')
+                conDoW(sec + ',', {push: true})
+                if (sec < 2) {
+                    uo.タブを開くインライン()
                     return
                 }
-                setTimeout(loop, 1000)
+                setTimeout(loop, 5000)
             }
         },
     },//mexa_sh,
@@ -2054,7 +2044,7 @@ const arr = [
                 window.location.href = url
             }
             //await sleep(1000)
-            await new Promise((r) => setTimeout(r, 4500)) // sleep
+            await sleep(4500) // sleep
             arebaCli('#invisibleCaptchaShortlink')
             //await sleep(3000)
             //await new Promise((r) => setTimeout(r, 3500)); // sleep
@@ -2213,34 +2203,27 @@ const arr = [
         func: async function() {
             uo.選択テキスト検索ボタン()
             //クリアボタン欲しい
-            const log_clear = function() {
-                let button = button_tukuru('ログクリア', function(e) {
-                    conDoW(e, this)
-                    this.parentElement.textContent = ''
-                    log_clear()
-                })
-                conDoW(button)
-            }
-            log_clear()
             //conDoW(document.body.parentElement)
             //クリックして、通信してページ開かずURLゲットが目標
             // document.addEventListener('click', function(e){
             // 	e.preventDefault();
             // }, false);
+
             /** スタイルシートをオーバーライド */
             !function _sss() {
                 createEl(document.body, 'style', {
                     textContent: `
-                        .post {
-                        display: inline-block;
-                        width: 19vw;
-                        vertical-align: top;
-                        }
+                        h2+div.navigation{display: none}
                         #content {
                         background-color: wheat;
                         width: 98vw;
                         margin-left: calc((50% - 49vw) );
                         } 
+                        .post {
+                        display: inline-block;
+                        width: 19vw;
+                        vertical-align: top;
+                        }
                 `})
             }()
 
@@ -2274,7 +2257,7 @@ const arr = [
                     }
                     ev.altKey
                         ? _GM_xhr(ev.target.href, ev.target.textContent)
-                        : _dawnfun_only(ev.target.href, ev.target.textContent)
+                        : _dawnfun_only(ev)
                 }
             }, false)
 
@@ -2350,8 +2333,8 @@ const arr = [
                 let _text = fullhtml
                 let arr_url = _text.match(/"https:\/\/r18\.dawn.+?"/g)
                 if (!arr_url) {
-                    conDoW('みっかんない')
-                    return
+                    // conDoW('みっかんない')
+                    return false
                 }
                 arr_url = arr_url.map((ite) => ite.slice(1, -1)) //resu.mapなんてプロパティ無いとエラー、matchがNULLだった。
                 //console.log(resu)
@@ -2360,11 +2343,7 @@ const arr = [
 
                 return arr_url
             }
-            /**
-             * 解析＋表示
-             * @param {*} text 
-             * @param {*} title 
-             */
+            /** * 解析＋表示 * @param {*} text * @param {*} title */
             const _kai_n_view = function(text, title, zip = false) {
                 let url_arr = _text_kaiseki(text)
                 let html = _make_links(url_arr, title)
@@ -2380,21 +2359,34 @@ const arr = [
              * @param {*} title 
              * @param {*} zip 
              */
-            const _dawnfun_only = async function(url, title, zip = false) {
-                let fullhtml = await _xhr_promise(url)
-                let url_arr = _text_kaiseki(fullhtml)
-                let elem = _make_links(url_arr, title)
-                console.log(elem)
-                conDoW(elem)
-                _Export_on_the_raw_web(elem)
+            const _dawnfun_only = async function(ev, zip = false) {
+                const url = ev.target.href
+                const title = ev.target.textContent
+                const pEl = ev.target.parentElement.parentElement
+                const fullhtml = await _xhr_promise(url)
+                const url_arr = _text_kaiseki(fullhtml)
+
+                const el = (url_arr)
+                    ? _make_links(url_arr, title)
+                    : Object.assign(document.createElement('span'), {textContent: '◎みっかんない'})
+                const hakkenn = (url_arr)
+                    ? true
+                    : false
+                console.log(el)
+                conDoW(el)
+                _Export_on_the_raw_web(el, pEl, hakkenn)
                 // ブラウザで圧縮ダウンロード完結、遅い・・・
                 if (zip) _url_arr_down(url_arr, title)
             }
 
             /** 生のウェブ上に書き出す、shadow使うとダウンロードツールが見れないから */
-            function _Export_on_the_raw_web(elem) {
+            function _Export_on_the_raw_web(elem, pelm, flag) {
                 const clone = elem.cloneNode(true)
-                document.body.insertAdjacentElement('afterbegin', clone)
+                const color = flag
+                    ? '#f00'
+                    : '#0f0'
+                pelm.insertAdjacentElement('afterbegin', clone)
+                pelm.style.boxShadow = color + ' 0px 0px 0px 16px inset'
             }
 
             /** promise gm_xmlで画像を一個ずつダウンロード */
@@ -2652,7 +2644,6 @@ const arr = [
             setTimeout(() => {
                 uo.タブを開く('あべま閉じだよ')
                 location.href = 'about:blank'
-
             }, msec)
         },
     },//abemaのコメ欄を自動で開く,
@@ -2679,6 +2670,18 @@ const arr = [
                     setTimeout(() => loop(i + 1), 1000)
                 }
             })()
+        },
+    },//abemaのコメ欄を自動で開く,
+    {
+        name: 'abemaビデオの自動読み込みを禁止する',
+        url: ['https://abema.tv/video/episode/',],
+        end: 0,
+        date: '',
+        func: () => {
+            // window.onbeforeunload = function(e) {
+            //     e.preventDefault();
+            //     e.returnValue = 'ページ移動？'
+            // }
         },
     },//abemaのコメ欄を自動で開く,
     {
