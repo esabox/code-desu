@@ -40,25 +40,30 @@ export function obj_to_txt(obj, indent = 0) {
     }
 
     //外側の括弧をつける
-    if (is_arr) str = `[${str}${ind}]`
-    else str = `{${str}${ind}}` //例外処理
-    //例外処理、コメントを外に
-    let kome = obj.name ? `,//${obj.name}` : ''
-    str += kome
+    if (is_arr)
+        str = `[${str}${ind}]`
+    else
+        //str = `{${str}${ind}}` //例外処理の為にエスケープ
+        //例外処理、コメントを外に
+        str = (obj.name)
+            ? `{/* ${obj.name} */${str}${ind}}`
+            : `{${str}${ind}}`
     return str
 }
 //htmlに表示させてclickコピー
 export function dom_copy(str) {
-    let d = document.body
-    d.style.backgroundColor = '#222'
-    d.style.color = '#fff'
-    d.style.whiteSpace = 'pre'
-    d.style.tabSize = 4
-    d.style.MozTabSize = 4 //firefox用
-    d.style.fontFamily = 'Monaco, monospace'
-    d.style.fontSize = '14px'
-    d.textContent = str
-    d.onclick = function(e) {
+    const el = document.body
+    Object.assign(el.style, {
+        backgroundColor: '#222',
+        color: '#fff',
+        whiteSpace: 'pre',
+        tabSize: 4,
+        MozTabSize: 4, //firefox用,
+        fontFamily: 'Monaco, monospace',
+        fontSize: '14px',
+    })
+    el.textContent = str
+    el.onclick = function(e) {
         let selection = getSelection()
         selection.selectAllChildren(this)
         document.execCommand('copy')
