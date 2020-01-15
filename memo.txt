@@ -6,6 +6,7 @@ function decodeHtml(html) {
     return txt.value;
 }
 
+2019/11/16 #js
 JSZip.jsの読み込みに苦労うした。JsZipとタイポしてたから余計にきつかった。
 user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
 この場合、メインもreuireで読み込まなければ同じスコープにならない。
@@ -18,7 +19,8 @@ console.log(hoge.fn) //undefined
 //const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
 けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
 
-2019/11/20 #js importする場合、scriptタグにtype="module"が必要。
+2019/11/20 #js
+importする場合、scriptタグにtype="module"が必要。
 
 2019/12/03 #js arr.mapで返り値捨てるタイプで代入
 arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
@@ -198,3 +200,20 @@ let timer = setInterval(() => {
 }()
 
 benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
+
+2020/01/10
+css flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
+そのごは簡単にできた。
+
+2020/01/14 #npm 久しぶりに使ってほぼ忘れてた。
+package.jsonあるフォルダにcdして、nmp install -g でグローバルにそれをインストールする。
+npm list --depth=0 -g で表示させて。名前をコピーして
+nmp uninstall namae -g でアンインストール
+
+2020/01/14 #js shebangでnode.js
+#!/usr/bin/env node
+先頭にこれかく
+https://qiita.com/tom-u/items/34cf26fa4fa129f93095
+便利なものインストール
+$ npm i commander co-prompt co shelljs --save
+$ npm list --depth=0
