@@ -24,30 +24,30 @@ arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
 // arr.map(val => val=(' '.repeat(maxlen) + val).slice(-maxlen))
 //上は無理、valはobjじゃないから、参照無し、thisarray使えば出来る。
 
-for(const [key, value] of arr.entries()) 
+2019/12/03 #js for(const [key, value] of arr.entries()) 
 みたいに変換関数噛ますと、カーボンコピーだから代入は無理？
 
-プリミティブ型を変換するのに、String(111)とかやるけど、これnewが本当は必要ぽい。
+2019/12/03 #js プリミティブ型を変換するのに、String(111)とかやるけど、これnewが本当は必要ぽい。
 newつけたほうが速い。
 嘘ちがたった。
 newつけるとobject型になるし、遅い。
 
-後ろの引数だけを使いたい、前は空にしたいときはundefined、nullじゃ無理。hoge(,1)も駄目。
+2019/12/03 #js 後ろの引数だけを使いたい、前は空にしたいときはundefined、nullじゃ無理。hoge(,1)も駄目。
 hoge(undefined,10)
 
-全角の長さを2でカウントしたい。decodeURIは空白も変換して無理そう。
+2019/12/03 #js 全角の長さを2でカウントしたい。decodeURIは空白も変換して無理そう。
 正規表現で日本語を2文字に変換するのを予想。
 日本語が3バイトでUTF16で処理されてるらしい。
 関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
 str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
 str.length // => 17
 
-2019/12/05 elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
+2019/12/05 #js elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
 なので、cssセレクタでcss設定されたものは探せない。
 
-array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
+2019/12/05 #js array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
 
-settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
+2019/12/05 #js settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
 // setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
 // setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
 // setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
@@ -59,9 +59,9 @@ fn=0x2342 的な。
 hoge.bbb=100
 hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
 
-fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
+2019/12/05 #js fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
 
-2019/12/06 クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
+2019/12/06 #js クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
 イメージ的にはスコープ繋がったけど、違った。
 let hoge=()=>{console.log(this.xxx)}で見れた。
 アロー関数はthisを束縛するってやつ。
@@ -74,9 +74,9 @@ obj.f = () =>      {log(this.a)}; obj.f() //11
 obj.f = function() {log(this.a)}; obj.f() //22
 thisは毎回混乱する、設計が悪いんや！
 
-asc desc が覚えられん、ascedは英語の「上がる」、階段を上がっていくイメージ
+2019/12/06 #js asc desc が覚えられん、ascedは英語の「上がる」、階段を上がっていくイメージ
 
-textフォーマット構文から、出力する処理を書いた。
+2019/12/06 #js textフォーマット構文から、出力する処理を書いた。
 最初はテンプレートリテラルぽいのを作ったけど、後ろ点で囲むと本物と混ざって混乱しそうで止めた。
 fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
 --次に、*hoge* みたいな奴にしてみた。エスケープでバッスラ考えたけど、苦しんで出来たけど、
@@ -84,31 +84,31 @@ fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
 そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
 fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
 
-2019/12/07 div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
+2019/12/07 #js #dom div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
 イベントの理解が低い。
 
-div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
+2019/12/07 #js div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
 htmlをテキストで弄るの駄目
 div.appendChild(document.createTextNode("aaa"))
 
-node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
+2019/12/07 #js node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
 とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
 
-2019/12/08 shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
+2019/12/08 #js #dom shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
 
-2019/12/11 dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
+2019/12/11 #js dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
 nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
 lastchildはノードなのでややこしい、lastElementChildがelement
 
-document以外からのセレクタ
+2019/12/11 #js document以外からのセレクタ
 le=get~id(#hoge)
 let.query~(#hoge)→null
 let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
 
-2019/12/13 document.boy.parentNode
+2019/12/13 #js document.boy.parentNode
 document.htmlElemmnt?
 
-知らなかった。
+2019/12/13 #js 知らなかった。
 >ES6のオブジェクトのメソッドは省略記法がある
 const obj = {
     method() {
@@ -116,7 +116,7 @@ const obj = {
     }
 }
 
-Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
+2019/12/13 #js Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
 arr.__proto__:Array(0).entries()がある。
 arr.__proto__:Array(0).__proto__:Object()←には無い。
 arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
@@ -124,29 +124,29 @@ arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
 arr.__proto__:Array(0).constructor()は、isArrayなどがある
 constructor()系は原型から呼ばないといけないぽ。
 
-Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
+2019/12/13 #js Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
 
-2019/12/16 functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
+2019/12/16 #js functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
 
-2019/12/18 中央画面MAX配置は
+2019/12/18 #js #css 中央画面MAX配置は
 position 相対的
 transform: translateX(-50%);
 left: 50%;
 ただ、動画を最上位MAXなら、position
 
-2019/12/23 右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
+2019/12/23 #js 右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
 document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
 document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
 document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
 
-選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
+2019/12/23 #js 選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
 
-ブラウザのalertが最前面にならないから気づかない。
+2019/12/23 #js ブラウザのalertが最前面にならないから気づかない。
 window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
 
-cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
+2019/12/23 #js cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
 
-あれば〜系はtryで囲ってエラーもみ消してええのか？
+2019/12/23 #js あれば〜系はtryで囲ってエラーもみ消してええのか？
 ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
 //前に作ったやつ、あれば削除
 // const el = qs('#aaa')
@@ -155,15 +155,15 @@ try {
     qs('#aaa').remove()
 } catch (error) {}
 
-2020/01/04 setTimeout等がバックグラウンドだと1s間隔まで遅くなる、のでカウントダウン系は進むのがすごく遅くなる。
+2020/01/04 #js setTimeout等がバックグラウンドだと1s間隔まで遅くなる、のでカウントダウン系は進むのがすごく遅くなる。
 
-2020/01/05 abema寝落ち対策でページ移動時に警告するbeforunloadEVENT使おうとしたら、無反応。
+2020/01/05 #js abema寝落ち対策でページ移動時に警告するbeforunloadEVENT使おうとしたら、無反応。
 リロードだけ反応、reactとか仮想DOM使ってるからEVENT発生しないぽい。
 
-JSON.stringfire？オブジェクト構造をJSONにしてくれる関数、似たようなの作ろうとブラウザjsを調べようとしたらNativeとだけ表示。
+2020/01/05 #js JSON.stringfire？オブジェクト構造をJSONにしてくれる関数、似たようなの作ろうとブラウザjsを調べようとしたらNativeとだけ表示。
 node.jsなら多分表示できるぽい。もう作っちゃったけど。
 
-2020/01/06 Loop処理のintervalもtimeoutも速度はほぼ変わらない
+2020/01/06 #js Loop処理のintervalもtimeoutも速度はほぼ変わらない
 //setInterval
 let i = 1
 let timer = setInterval(() => {
@@ -183,9 +183,9 @@ let timer = setInterval(() => {
 	setTimeout(aaaa, 0, i + 1)
 }()
 
-benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
+2020/01/06 #js benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
 
-2020/01/10 css flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
+2020/01/10 #js #css flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
 そのごは簡単にできた。
 
 2020/01/14 #npm 久しぶりに使ってほぼ忘れてた。
@@ -212,13 +212,9 @@ const {a: val1, c: val2} = obj;
 console.log(val1); // 10
 console.log(val2); // 30
 
-gomi
-
 2020/01/15 #js #node node.jsのコードをデバッグで見るも、jsdocは無かった。
 
-aaa
-
-str.matchとregexp.execはほぼ同じ、
+2020/01/15 #js str.matchとregexp.execはほぼ同じ、
 こういう、123,234,345みたいな事が出来ると書いてあったが、ゴツくすればmatchもindex返すし出来そう。
 var str = '123456789';
 var ex = /\d{3}/g;
