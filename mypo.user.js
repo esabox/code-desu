@@ -1050,8 +1050,7 @@ function button_tukuru(text, func) {
 }
 /** utility obj 関数つまってる感じ */
 const uo = {
-    name: 'hoge',
-    選択テキスト検索ボタン() {
+    選択テキスト検索ボタン(fmt = '/?s=%word%') {
         document.addEventListener('click', function(ev) {
             const sel0 = window.getSelection()
             const str = sel0.toString()
@@ -1069,7 +1068,9 @@ const uo = {
             //作る
             createEl(document.body, 'a',
                 {
-                    textContent: str, href: origin + '/?s=' + str,
+                    textContent: str,
+                    // href: origin + '/?s=' + str,
+                    href: origin + fmt.replace('%word%', str),
                     target: '_blank',
                     id: 'aaa',
 
@@ -1192,36 +1193,33 @@ conDoW(`${Date.now() - time}ms main ##########################`)
 conDoW('@version 2019.11.16.113733')
 ugoiteruka('.')
 
+/** サイト別の関数リスト */
 const arr = [
-    {
+    {/* 全部b */
         name: '全部b',
         url: ['^http',],
-        end: 0,
         date: '',
         func: function() {
             conDoW(button_tukuru('Utility', utility))
         },
-    },//全部b,
-    {
+    },
+    {/* テスト */
         name: 'テスト',
         url: ['#tttt',],
-        end: 0,
         date: '',
         func: function() {
             utility()
         },
-    },//全部b,
-    {
+    },
+    {/* 確認くん */
         name: '確認くん',
         url: ['^http://www.ugtop.com/spill.shtml',],
-        end: 0,
         date: '',
         func: function() {conDoW('ugtop')},
-    },//確認くん,
-    {
+    },
+    {/* workflowy */
         name: 'workflowy',
         url: ['^https://workflowy.com/',],
-        end: 0,
         date: '',
         func: function() {
             //const base = nsMiiya.gamen();// 画面作っちゃう
@@ -1268,11 +1266,10 @@ const arr = [
                 }
             })
         },
-    },//workflowy,
-    {
+    },
+    {/* ルーターログイン */
         name: 'ルーターログイン',
         url: ['^https?://192.168.\\d+.\\d+',],
-        end: 0,
         date: '',
         func: function() {
             const base = nsMiiya.gamen()// 画面作っちゃう
@@ -1287,11 +1284,10 @@ const arr = [
                 onclick: fff,
             })
         },
-    },//ルーターログイン,
-    {
+    },
+    {/* 楽天スーパーヒーロー */
         name: '楽天スーパーヒーロー',
         url: ['^https://campaign.rakuten.jp/heroes/',],
-        end: 0,
         date: '',
         func: function() {
             const base = nsMiiya.gamen()// 画面作っちゃう	
@@ -1335,24 +1331,22 @@ const arr = [
                 this.hitNumArr = this.shuffle(this.hitNumArr)
              */
         },
-    },//楽天スーパーヒーロー,
-    {
+    },
+    {/* infoの報告 */
         name: 'infoの報告',
         url: [
             '^https://pointmail.rakuten.co.jp/subcard/complete',
         ],
-        end: 0,
         date: '',
         func: function() {
             document.querySelector('#completionReportBtn').click()
         },
-    },//infoの報告,
-    {
+    },
+    {/* メールdeポイント */
         name: 'メールdeポイント',
         url: [
             '^https://member.pointmail.rakuten.co.jp/box/*',
         ],
-        end: 0,
         date: '',
         func: function() {
             const title = 'メールポイント'
@@ -1376,11 +1370,10 @@ const arr = [
                 arebaCli('.point_url>a') //spanClickしても数字減ったけど記録されず
             }
         },
-    },//メールdeポイント,
-    {
+    },
+    {/* 楽天enaviでクリックポイント */
         name: '楽天enaviでクリックポイント',
         url: ['^https://www.rakuten-card.co.jp/*',],
-        end: 0,
         date: '',
         func: function() {
             const base = nsMiiya.gamen()// 画面作っちゃう
@@ -1413,11 +1406,10 @@ const arr = [
                 onclick: enaviClick,
             })
         },
-    },//楽天enaviでクリックポイント,
-    {
+    },
+    {/* Infoseekのラッキーくじサッカー */
         name: 'Infoseekのラッキーくじサッカー',
         url: ['^https://www.infoseek.co.jp/Luckylot*',],
-        end: 0,
         date: '',
         func: function() {
             if (location.href === 'https://www.infoseek.co.jp/Luckylot/result') {
@@ -1443,23 +1435,21 @@ const arr = [
             //new GM_registerMenuCommand(title, fn, 'C');
             fn()
         },
-    },//Infoseekのラッキーくじサッカー,
-    {
+    },
+    {/* infoミニくじ */
         name: 'infoミニくじ',
         url: ['^https://www.infoseek.co.jp/(\\?.+)?$',],
-        end: 0,
         date: '',
         func: function() {
             const el = document.querySelector('area.islot_lot')
             if (el !== null) {el.click()}
         },
-    },//infoミニくじ,
-    {
+    },
+    {/* enavi自動ログイン */
         name: 'enavi自動ログイン',
         url: [
             '^https://www.rakuten-card.co.jp/e-navi/index.xhtml',
         ],
-        end: 0,
         date: '',
         func: async function() {
             await sleep(1500) // sleep
@@ -1471,8 +1461,8 @@ const arr = [
                 //document.querySelector('#loginButton').click();
             }
         },
-    },//enavi自動ログイン,
-    {
+    },
+    {/* 楽天系の毎日くじ */
         name: '楽天系の毎日くじ',
         url: [
             '^https://www.infoseek.co.jp/',
@@ -1482,7 +1472,6 @@ const arr = [
             '^https://isbingo.www.infoseek.co.jp/isbingo/getCard',
             '^https://pointmail.rakuten.co.jp/subcard/complete',
         ],
-        end: 0,
         date: '',
         func: function() {
             const base = nsMiiya.gamen()// 画面作っちゃう	
@@ -1518,11 +1507,10 @@ const arr = [
             // 	arebaCli('a[href^="https://rd.rakuten.co.jp/s/?R2=https%3A%2F%2Fkuji.rakuten.co.jp"]');
             // }
         },
-    },//楽天系の毎日くじ,
-    {
+    },
+    {/* 楽天系のくじの自動Click */
         name: '楽天系のくじの自動Click',
         url: ['^https?://kuji.rakuten.co.jp/',],
-        end: 0,
         date: '',
         func: async function() {
             // if (GM_getValue('毎日くじ次へ')) {
@@ -1535,11 +1523,10 @@ const arr = [
             await sleep(1500) // sleep
             arebaCli('#entry')
         },
-    },//楽天系のくじの自動Click,
-    {
+    },
+    {/* google */
         name: 'google',
         url: ['^https?://www.google.(?:com|co.jp)/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !!0
@@ -1550,11 +1537,10 @@ const arr = [
                 elem.onmousedown = function() {}
             })
         },
-    },//google,
-    {
+    },
+    {/* kkonload */
         name: 'kkonload',
         url: ['^https://openloadpro.com/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !true
@@ -1563,19 +1549,16 @@ const arr = [
             let url = document.querySelector('.openload-link > a').href
             location.href = url
         },
-    },//kkonload,
-    {
+    },
+    {/* kkビデオタグあったら全画面にして上に */
         name: 'kkビデオタグあったら全画面にして上に',
         url: [
             '^https://xn--icktho51ho02a0dc.com/*/',
             'https://asianclub.tv/',
             'https://embed.media/',
         ],
-        end: 0,
         date: '',
         func: function() {
-
-
             video_top_play()
             conDoW(button_tukuru('video再生', video_top_play))//動かない？
             conDoW(button_tukuru('video再生arr', () => video_top_play()))
@@ -1588,16 +1571,17 @@ const arr = [
                 document.appendChild(video)
             }))
         },
-    },//kkビデオタグあったら全画面にして上に,
-    {
+    },
+    {/* kk video tokyomotion */
         name: 'kk video tokyomotion',
         url: [
             '^https://www.tokyomotion.net/video/',
             '^https://www.tokyomotion.net/',
         ],
-        end: 0,
         date: '2019/12/05',
         func: function() {
+            document.title = document.title.replace('VIDEOS - Search Results For ', '')
+            uo.選択テキスト検索ボタン(famt = '/search?search_query=%word%&search_type=videos')
 
 
             video_top_play()
@@ -1610,24 +1594,133 @@ const arr = [
             //ついでにクリックも、html5プレーヤーの操作できんくなった。
             // document.addEventListener('click', function(e) {e.stopPropagation()}, true)
 
-
-
+            //fix追従バーを動かさない
             document.querySelectorAll('.top-nav,.navbar')
-                .forEach((el) => el.style.position = 'initial')
+                .forEach((el) => el.style.position = 'relative')
+            //staticだと検索窓がクリックで消える、absoだと上に最上位にきてビデオの邪魔
 
-            // css_instant('pos1223', '*{position: initial !important;}') 
-            //videoとかconsoleとか全部だめになる、インポ無いと優先順位低すぎて無視されるし。
+            //サムネイル画像を表示したい
+            //https://cdn.tokyo-motion.net/media/videos/tmb34/1090246/1.jpg
+            //10584 10584/108=98
+            //横192、縦108、動画の長さによってトータル高さは変わる。
+            document.addEventListener('contextmenu', function(ev) {
+                conDoW([ev.target.className, ev.target.tagName])
 
-            // elems = document.querySelectorAll('[position=fixed]')
-            // elems.forEach((el) =>
-            //     el.style.position = null
-            // )
+                if (ev.target.tagName == 'IMG' &&
+                    // ev.target.className == 'duration' &&
+                    ev.target.classList.contains('img-responsive')) {
+                    ev.preventDefault()
+                    conDoW('ヒット')
+                    //ev.stopPropagation()
+
+                    //動画ナンバーを取得
+                    const pEl = ev.target.parentElement.parentElement
+                    console.log(pEl.href)
+                    const videoNum = pEl.href.match(/(?<=video\/)\d+/)[0]
+                    //サムネURL作る
+                    //https://cdn.tokyo-motion.net/media/videos/vjsslides/1079/1079130_progressthumb.jpg
+                    //https://www.tokyomotion.net/video/1079130/
+                    const vn4 = videoNum.slice(0, -3)
+                    const thumb_url = `https://cdn.tokyo-motion.net/media/videos/vjsslides/${vn4}/${videoNum}_progressthumb.jpg`
+                    // conDoW(videoNum)
+                    conDoW(thumb_url)
+
+                    //ラッパー作って中に画像表示
+                    const divIni = createEl(document.body, 'div', 0, {all: 'initial'})
+                    divIni.onclick = function() {
+                        divIni.remove()
+                    }
+                    const div = createEl(divIni, 'div', undefined, {
+                        // all:'initial',
+                        position: 'fixed',
+                        top: 0,
+                        zIndex: 1111,
+                        backgroundColor: '#00F5',
+                        padding: '0.6em',
+                        // margin: '0.5em',
+                        overflow: 'hidden',
+                        height: '100vh',
+                        //textAlign: 'center',
+
+                        /* text-align: center; */
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        justifyContent: 'center',
+
+
+                    })
+                    const style = createEl(div, 'style', {
+                        textContent: `
+                            img.unoThumb{
+                            outline: #0005 1px solid;
+                            /* outline: auto #f00 3px; */
+                            outline-offset: -0px;
+                            /* margin: 2px; */
+                            /* transform: scale(1.3); */
+                            }
+                        `,
+                    })
+
+                    let nHeight
+                    画像のサイズ()
+                    function 画像のサイズ(params) {
+                        var image = new Image()
+
+                        // コールバックを設定
+                        image.onload = function() {
+                            console.log('load complete', image.naturalHeight)
+                            nHeight = image.naturalHeight
+                            さむね画像いっぱい表示()
+
+                        }
+
+                        // srcに画像パスを設定することで読み込み処理が実行されます。
+                        image.src = thumb_url
+                    }
+
+                    /** 巨大画像からサムネをクロッピング */
+                    function thumb(num, div) {
+                        const img = createEl(div, 'img', {
+                            src: thumb_url,
+                            className: 'unoThumb',
+                        }, {
+                            objectFit: 'none',
+                            objectPosition: '0 ' + -108 * (num - 1) + 'px',
+                            height: '108px',
+                            width: '192px',
+                            //transform: 'scale(1.2)',
+                            //verticalAlign: 'top',
+                            // border: '10px solid gray',
+                            //     boxSizing: 'border-box',
+                            // outline: '4px ridge #f00a',
+                            // outlineOffset: '-4px',
+                        })
+                    }
+                    function さむね画像いっぱい表示(params) {
+                        thumMax = nHeight / 108
+                        conDoW([thumMax])
+                        let thumb_disp_max = 36
+                        let av = thumMax / thumb_disp_max
+                        for (let i = 1; i <= thumb_disp_max; i++) {
+                            let num = Math.round(av * i - av / 2)
+                            thumb(num, div)
+                            console.log(num)
+                        }
+
+
+                        // const img2 = createEl(div, 'img', {
+                        //     src: thumb_url,
+                        // }, {})
+                    }
+                }
+            }, false)
         },
-    },//,
-    {
+    },
+    {/* javmix大画面 */
         name: 'javmix大画面',
         url: ['^https://javmix.tv/video/*/',],
-        end: 0,
         date: '',
         func: function() {
             //let playerDiv = document.querySelector('#player-embed')
@@ -1677,14 +1770,13 @@ const arr = [
 
             //css_instant('saidcss', '::-webkit-scrollbar {width: 0px;}')
         },
-    },//javmix大画面,
-    {
+    },
+    {/* ファン座で自動再生 */
         name: 'ファン座で自動再生',
         url: [
             '^https://www.dmm.com/*/',
             '^https://www.dmm.co.jp/',
         ],
-        end: 0,
         date: '',
         func: function() {
             const hoge = function() {
@@ -1734,26 +1826,22 @@ const arr = [
             //let url = document.querySelector('.openload-link > a').href
             //location.href = url
         },
-    },//ファン座で自動再生,
-    {//pornhub,
+    },
+    {/* kk pornhub生 */
         name: 'kk pornhub生',
-        url: [
-            '^https://jp.pornhub.com/',
-        ],
-        end: 0,
+        url: ['^https://jp.pornhub.com/',],
         date: '2019/12/19',
         func: function() {
             video_top_play(qs('#player'))
         },
     },
-    {
+    {/* KK_dropbooks */
         name: 'KK_dropbooks',
         url: [
             '^https://dropbooks.tv/',
             '^http://dlbooks.to/',
             '^http://xbooks.to/',
         ],
-        end: 0,
         date: '',
         func: function() {
             const d = !true
@@ -1809,11 +1897,10 @@ const arr = [
                 }
             } while (false)
         },
-    },//KK_dropbooks,
-    {
+    },
+    {/* KKsmvto */
         name: 'KKsmvto',
         url: ['^http://smv.to/*',],
-        end: 0,
         date: '',
         func: function() {
             //Clickされたノードを判定する
@@ -1887,11 +1974,10 @@ const arr = [
                 }
             }
         },
-    },//KKsmvto,
-    {
+    },
+    {/* zippyshare */
         name: 'zippyshare',
         url: ['^https://www*.zippyshare.com/v/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !true
@@ -1900,33 +1986,30 @@ const arr = [
             // let url = document.querySelector('#dlbutton').href
             // location.href = url
         },
-    },//zippyshare,
-    {
+    },
+    {/* mx-sh */
         name: 'mx-sh',
         url: ['^https://mx-sh.net/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !true
             d && conDoW('zippys')
             arebaCli('#Downloadfre')
         },
-    },//mx-sh,
-    {
+    },
+    {/* shorten.sh */
         name: 'shorten.sh',
         url: ['^http://shorten.sh/',],
-        end: 0,
         date: '2019/12/24',
         func: function() {
 
             arebaCli('#invisibleCaptchaShortlink')
             arebaCli('#get-link-ad')
         },
-    },//mx-sh,
-    {
+    },
+    {/* wupfile */
         name: 'wupfile',
         url: ['^https://wupfile.com/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !true
@@ -1950,11 +2033,10 @@ const arr = [
                 setTimeout(tryDownload, 5000)
             }())
         },
-    },//wupfile,
-    {
+    },
+    {/* jolinfile */
         name: 'jolinfile',
         url: ['^https?://jolinfile.com',],
-        end: 0,
         date: '',
         func: function() {
             let d = !true
@@ -1973,22 +2055,21 @@ const arr = [
                 setTimeout(tryDownload, 5000)
             }())
         },
-    },//jolinfile,
-    {
+    },
+    {/* rapidgator */
         name: 'rapidgator',
         url: ['^https://rapidgator.net/',],
-        end: 0,
         date: '',
         func: function() {
             // https://rapidgator.net/download/captcha
-            arebaCli('.link.act-link.btn-free')
+            // arebaCli('.link.act-link.btn-free')
             // arebaCli('.btn-download')
+            // <span class="seconds">9</span>
         },
-    },//rapidgator,
-    {
+    },
+    {/* Download mexa_sh */
         name: 'Download mexa_sh',
         url: ['^https://mexa.sh/',],
-        end: 0,
         date: '',
         func: function() {
             arebaCli('#Downloadfre')
@@ -2007,11 +2088,10 @@ const arr = [
                 setTimeout(loop, 5000)
             }
         },
-    },//mexa_sh,
-    {
+    },
+    {/* dousyoko */
         name: 'dousyoko',
         url: ['^https?://.+.dousyoko.net/',],
-        end: 0,
         date: '',
         func: function() {
             let d = !!true
@@ -2023,15 +2103,14 @@ const arr = [
             arebaCli('.submit')
 
         },
-    },//dousyoko,
-    {
+    },
+    {/* z2icom */
         name: 'z2icom',
         url: [
             '^https://z2i.com/',
             '^https://im1.io/',
             '^https://shrinx.net',
         ],
-        end: 0,
         date: '',
         func: async function() {
             let d = !true
@@ -2052,14 +2131,13 @@ const arr = [
             arebaCli('a[href*="zippyshare.com"]', null, true)
             //location.href = document.querySelector().href
         },
-    },//z2icom,
-    {
+    },
+    {/* 表示禁止サイト */
         name: '表示禁止サイト',
         url: [
             '^https://playingcards.jp',
             '^ahttps://smcb.jp/',
         ],
-        end: 0,
         date: '',
         func: function() {
             //画面真っ白に、飛ばされてる感覚がなくなる、<html から削除
@@ -2072,8 +2150,8 @@ const arr = [
             // meta.setAttribute('content', '0;url=https://news.google.co.jp')
             // document.head.appendChild(meta)
         },
-    },//表示禁止サイト,
-    {
+    },
+    {/* localhostとfile:/// */
         name: 'localhostとfile:///',
         url: [
             '^https://www.ugtop.com/',
@@ -2081,7 +2159,6 @@ const arr = [
             'localhost',
             'file:///',
         ],
-        end: 0,
         date: '',
         func: async function() {
             'use strict'
@@ -2127,11 +2204,10 @@ const arr = [
             //location.replace(url)
 
         },
-    },//localhostとfile:///,
-    {
+    },
+    {/* dawnfun.com/ */
         name: 'dawnfun.com/',
         url: ['^https://r18.dawnfun.com/',],
-        end: 0,
         date: '',
         func: async function() {
             let images = []  // この配列にbase64のデータを入れる
@@ -2194,11 +2270,10 @@ const arr = [
                 }
             })
         },
-    },//dawnfun.com/,
-    {
+    },
+    {/* manga314で右クリックリストアップ */
         name: 'manga314で右クリックリストアップ',
         url: ['^https://manga314.com/',],
-        end: 0,
         date: '',
         func: async function() {
             uo.選択テキスト検索ボタン()
@@ -2212,6 +2287,7 @@ const arr = [
             /** スタイルシートをオーバーライド */
             !function _sss() {
                 createEl(document.body, 'style', {
+                    //tagA+tagB 直後の兄弟B
                     textContent: `
                         h2+div.navigation{display: none}
                         #content {
@@ -2523,8 +2599,8 @@ const arr = [
             }
 
         },
-    },//manga314,
-    {
+    },
+    {/* サークルKクーポン */
         name: 'サークルKクーポン',
         url: [
             '^https://www.circleksunkus.jp/mypage/coupon/index.html',
@@ -2597,18 +2673,17 @@ const arr = [
                 },
             })
         },
-    },//サークルKクーポン,
-    {
+    },
+    {/* サークルKスロット */
         name: 'サークルKスロット',
         url: ['^https?://app.circleksunkus.jp/slot_top.php',],
         end: 1,
         date: '',
         func: () => {document.querySelector('a[href*="slot"').click()},
-    },//サークルKスロット,
-    {
+    },
+    {/* keepaAmazonトラッカーが見づらすぎCSS */
         name: 'keepaAmazonトラッカーが見づらすぎCSS',
         url: ['https://keepa.com/#!manage*',],
-        end: 0,
         date: '2019/10/23',
         func: () => {
             document.title += '@'
@@ -2619,38 +2694,44 @@ const arr = [
             var style = document.createElement('style')
             document.head.appendChild(style)
             style.textContent = `
-#grid-wrapper-manage {height: 15000px !important;}
-#subPanel,#topPanel {position: static !important;}
-`
+            #grid-wrapper-manage {height: 15000px !important;}
+            #subPanel,#topPanel {position: static !important;}
+            `
         },
-    },//keepaAmazonトラッカーが見づらすぎCSS,
-    {
+    },
+    {/* しみを時間でジャンプ */
         name: 'しみを時間でジャンプ',
         url: ['https://smcb.jp/',],
-        end: 0,
         date: '2019/10/29',
         func: async () => {
             await new Promise(r => setTimeout(r, 10 * 60 * 1000))
             location.replace('https://www.ameba.jp/home') //replace
         },
-    },//しみを時間でジャンプ,
-    {
+    },
+    {/* abemaの寝落ちスリープしない対策 */
         name: 'abemaの寝落ちスリープしない対策',
         url: ['https://abema.tv/now-on-air/',],
-        end: 0,
         date: '2019/12/29',
         func: () => {
-            const msec = 60 * 60 * 1000
-            setTimeout(() => {
-                uo.タブを開く('あべま閉じだよ')
-                location.href = 'about:blank'
-            }, msec)
+            const min_close = 50
+            const new_url = 'https://abema.tv/account'
+            let min = min_close
+            function hoge() {
+                if (min === 0) {
+                    // uo.タブを開く('あべま閉じだよ')
+                    location.href = new_url
+                }
+                document.title = `"${min}"` + document.title.replace(/^".*?"/, '')
+                min = min - 1
+                setTimeout(() => hoge(), 60 * 1000)
+            }
+            hoge()
+
         },
-    },//abemaのコメ欄を自動で開く,
-    {
+    },
+    {/* abemaのコメ欄を自動で開く */
         name: 'abemaのコメ欄を自動で開く',
         url: ['https://abema.tv/now-on-air/', 'cdpn.io',],
-        end: 0,
         date: '2019/11/25',
         func: () => {
             //console.log(11)
@@ -2671,11 +2752,10 @@ const arr = [
                 }
             })()
         },
-    },//abemaのコメ欄を自動で開く,
-    {
+    },
+    {/* abemaビデオの自動読み込みを禁止する */
         name: 'abemaビデオの自動読み込みを禁止する',
         url: ['https://abema.tv/video/episode/',],
-        end: 0,
         date: '',
         func: () => {
             // window.onbeforeunload = function(e) {
@@ -2683,11 +2763,10 @@ const arr = [
             //     e.returnValue = 'ページ移動？'
             // }
         },
-    },//abemaのコメ欄を自動で開く,
-    {
+    },
+    {/* 当日の毛や木ヒルズを自動で開く、0時すぎると無理 */
         name: '当日の毛や木ヒルズを自動で開く、0時すぎると無理',
         url: ['^https://abema.tv/timetable#keyaki',],
-        end: 0,
         date: '2019/10/10',
         func: async () => {
             conDoW('タイムテーブルから3')
@@ -2726,11 +2805,10 @@ const arr = [
                 }
             }
         },
-    },//当日の毛や木ヒルズを自動で開く、0時すぎると無理,
-    {
+    },
+    {/* ヤフコメ */
         name: 'ヤフコメ',
         url: ['^https://headlines.yahoo.co.jp/cm/',],
-        end: 0,
         date: '2019/12/12',
         func: async () => {
             await sleep(2000)
@@ -2764,8 +2842,9 @@ const arr = [
             // replaceFrame()
 
         },
-    },//ヤフコメ
+    },
 ]
+
 //ここで走査しつつ実行
 sousa_do(arr)
 /** url専用関数の配列を、走査して実行 */
