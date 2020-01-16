@@ -1,224 +1,269 @@
 2019/11/16 #js htmlエンティティをデコードはDOMを使うと簡単らしい。&amp;←こいうの。
-function decodeHtml(html) {
-    var txt = document.createElement("textarea");
-    txt.innerHTML = html;
-    return txt.value;
-}
-
+	function decodeHtml(html) {
+		var txt = document.createElement("textarea");
+		txt.innerHTML = html;
+		return txt.value;
+	}
 2019/11/16 #js JSZip.jsの読み込みに苦労うした。JsZipとタイポしてたから余計にきつかった。
-user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
-この場合、メインもreuireで読み込まなければ同じスコープにならない。
-commonjsのimportは対応してないぽい？
-
+	user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
+	この場合、メインもreuireで読み込まなければ同じスコープにならない。
+	commonjsのimportは対応してないぽい？
 2019/11/18 #js functionにprototypeつけれない。
-function hoge(){}
-hoge.prototype.fn=function(){}
-console.log(hoge.fn) //undefined
-//const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
-けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
-
+	function hoge(){}
+	hoge.prototype.fn=function(){}
+	console.log(hoge.fn) //undefined
+	//const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
+	けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
 2019/11/20 #js importする場合、scriptタグにtype="module"が必要。
-
 2019/12/03 #js arr.mapで返り値捨てるタイプで代入
-arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
-// arr.map(val => val=(' '.repeat(maxlen) + val).slice(-maxlen))
-//上は無理、valはobjじゃないから、参照無し、thisarray使えば出来る。
-
+	arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
+	// arr.map(val => val=(' '.repeat(maxlen) + val).slice(-maxlen))
+	//上は無理、valはobjじゃないから、参照無し、thisarray使えば出来る。
 2019/12/03 #js for(const [key, value] of arr.entries()) 
-みたいに変換関数噛ますと、カーボンコピーだから代入は無理？
-
+	みたいに変換関数噛ますと、カーボンコピーだから代入は無理？
 2019/12/03 #js プリミティブ型を変換するのに、String(111)とかやるけど、これnewが本当は必要ぽい。
-newつけたほうが速い。
-嘘ちがたった。
-newつけるとobject型になるし、遅い。
-
+	newつけたほうが速い。
+	嘘ちがたった。
+	newつけるとobject型になるし、遅い。
 2019/12/03 #js 後ろの引数だけを使いたい、前は空にしたいときはundefined、nullじゃ無理。hoge(,1)も駄目。
-hoge(undefined,10)
-
+	hoge(undefined,10)
 2019/12/03 #js 全角の長さを2でカウントしたい。decodeURIは空白も変換して無理そう。
-正規表現で日本語を2文字に変換するのを予想。
-日本語が3バイトでUTF16で処理されてるらしい。
-関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
-str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
-str.length // => 17
-
+	正規表現で日本語を2文字に変換するのを予想。
+	日本語が3バイトでUTF16で処理されてるらしい。
+	関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
+	str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
+	str.length // => 17
 2019/12/05 #js elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
-なので、cssセレクタでcss設定されたものは探せない。
-
+	なので、cssセレクタでcss設定されたものは探せない。
 2019/12/05 #js array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
-
 2019/12/05 #js settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
-// setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
-// setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
-// setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
-// setTimeout(this.hoge.bind(this),100) //OK 行の時点で、固定した関数を返す
-Timeout.fn()的な実行される。this.hoge が呼べるのは、これが関数のアドレスだからだと予想。
-fn=0x2342 的な。
-こう見ると、アロー関数が特異なのが分かる、無名関数渡してるだけなのに。無名関数のthisを固定決定してる。
-アロー関数がthisを持ってないとネットに書いてあったが。
-hoge.bbb=100
-hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
-
+	// setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
+	// setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
+	// setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
+	// setTimeout(this.hoge.bind(this),100) //OK 行の時点で、固定した関数を返す
+	Timeout.fn()的な実行される。this.hoge が呼べるのは、これが関数のアドレスだからだと予想。
+	fn=0x2342 的な。
+	こう見ると、アロー関数が特異なのが分かる、無名関数渡してるだけなのに。無名関数のthisを固定決定してる。
+	アロー関数がthisを持ってないとネットに書いてあったが。
+	hoge.bbb=100
+	hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
 2019/12/05 #js fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
-
 2019/12/06 #js クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
-イメージ的にはスコープ繋がったけど、違った。
-let hoge=()=>{console.log(this.xxx)}で見れた。
-アロー関数はthisを束縛するってやつ。
-!(function() {log(typeof this)})() //undefined
-!(() =>      {log(typeof this)})() //object
---分かりやすく
-this.a = 11
-let obj = {a: 22}
-obj.f = () =>      {log(this.a)}; obj.f() //11
-obj.f = function() {log(this.a)}; obj.f() //22
-thisは毎回混乱する、設計が悪いんや！
-
+	イメージ的にはスコープ繋がったけど、違った。
+	let hoge=()=>{console.log(this.xxx)}で見れた。
+	アロー関数はthisを束縛するってやつ。
+	!(function() {log(typeof this)})() //undefined
+	!(() =>      {log(typeof this)})() //object
+	--分かりやすく
+	this.a = 11
+	let obj = {a: 22}
+	obj.f = () =>      {log(this.a)}; obj.f() //11
+	obj.f = function() {log(this.a)}; obj.f() //22
+	thisは毎回混乱する、設計が悪いんや！
 2019/12/06 #js asc desc が覚えられん、ascedは英語の「上がる」、階段を上がっていくイメージ
-
 2019/12/06 #js textフォーマット構文から、出力する処理を書いた。
-最初はテンプレートリテラルぽいのを作ったけど、後ろ点で囲むと本物と混ざって混乱しそうで止めた。
-fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
---次に、*hoge* みたいな奴にしてみた。エスケープでバッスラ考えたけど、苦しんで出来たけど、
-汚いしバッスラのバッスラどうすんだ問題（完璧主義）で止めた。
-そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
-fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
-
+	最初はテンプレートリテラルぽいのを作ったけど、後ろ点で囲むと本物と混ざって混乱しそうで止めた。
+	fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
+	--次に、*hoge* みたいな奴にしてみた。エスケープでバッスラ考えたけど、苦しんで出来たけど、
+	汚いしバッスラのバッスラどうすんだ問題（完璧主義）で止めた。
+	そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
+	fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
 2019/12/07 #js #dom div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
-イベントの理解が低い。
-
+	イベントの理解が低い。
 2019/12/07 #js div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
-htmlをテキストで弄るの駄目
-div.appendChild(document.createTextNode("aaa"))
-
+	htmlをテキストで弄るの駄目
+	div.appendChild(document.createTextNode("aaa"))
 2019/12/07 #js node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
-とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
-
+	とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
 2019/12/08 #js #dom shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
-
 2019/12/11 #js dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
-nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
-lastchildはノードなのでややこしい、lastElementChildがelement
-
+	nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
+	lastchildはノードなのでややこしい、lastElementChildがelement
 2019/12/11 #js document以外からのセレクタ
-le=get~id(#hoge)
-let.query~(#hoge)→null
-let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
-
+	le=get~id(#hoge)
+	let.query~(#hoge)→null
+	let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
 2019/12/13 #js document.boy.parentNode
-document.htmlElemmnt?
-
+	document.htmlElemmnt?
 2019/12/13 #js 知らなかった。
->ES6のオブジェクトのメソッドは省略記法がある
-const obj = {
-    method() {
-        console.log(this);
-    }
-}
-
+	>ES6のオブジェクトのメソッドは省略記法がある
+	const obj = {
+		method() {
+			console.log(this);
+		}
+	}
 2019/12/13 #js Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
-arr.__proto__:Array(0).entries()がある。
-arr.__proto__:Array(0).__proto__:Object()←には無い。
-arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
-ちなみに、
-arr.__proto__:Array(0).constructor()は、isArrayなどがある
-constructor()系は原型から呼ばないといけないぽ。
-
+	arr.__proto__:Array(0).entries()がある。
+	arr.__proto__:Array(0).__proto__:Object()←には無い。
+	arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
+	ちなみに、
+	arr.__proto__:Array(0).constructor()は、isArrayなどがある
+	constructor()系は原型から呼ばないといけないぽ。
 2019/12/13 #js Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
-
 2019/12/16 #js functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
-
 2019/12/18 #js #css 中央画面MAX配置は
-position 相対的
-transform: translateX(-50%);
-left: 50%;
-ただ、動画を最上位MAXなら、position
-
+	position 相対的
+	transform: translateX(-50%);
+	left: 50%;
+	ただ、動画を最上位MAXなら、position
 2019/12/23 #js 右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
-document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
-document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
-document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
-
+	document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
+	document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
+	document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
 2019/12/23 #js 選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
-
 2019/12/23 #js ブラウザのalertが最前面にならないから気づかない。
-window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
-
+	window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
 2019/12/23 #js cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
-
 2019/12/23 #js あれば〜系はtryで囲ってエラーもみ消してええのか？
-ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
-//前に作ったやつ、あれば削除
-// const el = qs('#aaa')
-// if (el) el.remove()
-try {
-    qs('#aaa').remove()
-} catch (error) {}
-
+	ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
+	//前に作ったやつ、あれば削除
+	// const el = qs('#aaa')
+	// if (el) el.remove()
+	try {
+		qs('#aaa').remove()
+	} catch (error) {}
 2020/01/04 #js setTimeout等がバックグラウンドだと1s間隔まで遅くなる、のでカウントダウン系は進むのがすごく遅くなる。
-
 2020/01/05 #js abema寝落ち対策でページ移動時に警告するbeforunloadEVENT使おうとしたら、無反応。
-リロードだけ反応、reactとか仮想DOM使ってるからEVENT発生しないぽい。
-
+	リロードだけ反応、reactとか仮想DOM使ってるからEVENT発生しないぽい。
 2020/01/05 #js JSON.stringfire？オブジェクト構造をJSONにしてくれる関数、似たようなの作ろうとブラウザjsを調べようとしたらNativeとだけ表示。
-node.jsなら多分表示できるぽい。もう作っちゃったけど。
-
+	node.jsなら多分表示できるぽい。もう作っちゃったけど。
 2020/01/06 #js Loop処理のintervalもtimeoutも速度はほぼ変わらない
-//setInterval
-let i = 1
-let timer = setInterval(() => {
-	if (i == 1000) {
-		log(i)
-		clearInterval(timer)
-		return
-	}
-	++i
-})
-//timeout
-!function aaaa(i = 1) {
-	if (i == 1000) {
-		log(i, time.toFixed(1))
-		return
-	}
-	setTimeout(aaaa, 0, i + 1)
-}()
-
+	//setInterval
+	let i = 1
+	let timer = setInterval(() => {
+		if (i == 1000) {
+			log(i)
+			clearInterval(timer)
+			return
+		}
+		++i
+	})
+	//timeout
+	!function aaaa(i = 1) {
+		if (i == 1000) {
+			log(i, time.toFixed(1))
+			return
+		}
+		setTimeout(aaaa, 0, i + 1)
+	}()
 2020/01/06 #js benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
-
 2020/01/10 #js #css flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
-そのごは簡単にできた。
-
+	そのごは簡単にできた。
 2020/01/14 #npm 久しぶりに使ってほぼ忘れてた。
-package.jsonあるフォルダにcdして、nmp install -g でグローバルにそれをインストールする。
-npm list --depth=0 -g で表示させて。名前をコピーして
-nmp uninstall namae -g でアンインストール
-
+	package.jsonあるフォルダにcdして、nmp install -g でグローバルにそれをインストールする。
+	npm list --depth=0 -g で表示させて。名前をコピーして
+	nmp uninstall namae -g でアンインストール
 2020/01/14 #js shebangでnode.js
-#!/usr/bin/env node
-先頭にこれかく
-https://qiita.com/tom-u/items/34cf26fa4fa129f93095
-便利なものインストール
-$ npm i commander co-prompt co shelljs --save
-$ npm list --depth=0
-
+	#!/usr/bin/env node
+	先頭にこれかく
+	https://qiita.com/tom-u/items/34cf26fa4fa129f93095
+	便利なものインストール
+	$ npm i commander co-prompt co shelljs --save
+	$ npm list --depth=0
 2020/01/15 #js shebangのnode.jsで引数
-#!/usr/bin/env node
-console.log(process.argv)
-const args = process.argv.slice(2)
-
+	#!/usr/bin/env node
+	console.log(process.argv)
+	const args = process.argv.slice(2)
 2020/01/15 #js 分割代入でまた混乱、忘れすぎ。
-const obj = {a: 10, b: 20, c: 30};
-const {a: val1, c: val2} = obj;
-console.log(val1); // 10
-console.log(val2); // 30
-
+	const obj = {a: 10, b: 20, c: 30};
+	const {a: val1, c: val2} = obj;
+	console.log(val1); // 10
+	console.log(val2); // 30
 2020/01/15 #js #node node.jsのコードをデバッグで見るも、jsdocは無かった。
-
 2020/01/15 #js str.matchとregexp.execはほぼ同じ、
-こういう、123,234,345みたいな事が出来ると書いてあったが、ゴツくすればmatchもindex返すし出来そう。
-var str = '123456789';
-var ex = /\d{3}/g;
-while((arr = ex.exec(str)) != null){
-    console.log(arr);
-    ex.lastIndex -= 2;
-}
+	こういう、123,234,345みたいな事が出来ると書いてあったが、ゴツくすればmatchもindex返すし出来そう。
+	var str = '123456789';
+	var ex = /\d{3}/g;
+	while((arr = ex.exec(str)) != null){
+		console.log(arr);
+		ex.lastIndex -= 2;
+	}
+2020/01/15 #js "XaaaX".split('aa+')がnullで10分混乱した。/aa+/になってねえ。
+2020/01/15 #js const arr にしてたけど、arr=conv(arr) でだめだな、当然。
+2019/12/27 #ターミナル alias登録すると、どこでも短縮コマンド使える。
+	初回の登録面倒
+	◆ホームに移動、しなくてもいいが。
+	$ cd ~ 
+	◆以下追記、最後は改行必須
+	$ vi ~/.bashrc
+	alias renameEditor=/Users/kazoku/Desktop/code/py/renameUsingTextEditor.py
+	◆プロファイルに記述
+	$ vi ~/.bash_profile
+	source ~/.bashrc
+	◆プロファイルリロード
+	source ~/.bashrc
+	--
+	vi面倒だから追記もやってみたが、よりムズい
+	echo 'alias hoge=piyo -a' >> ~/.bashrc 
+	--
+	bash_profileはログインの時だけ、bashrcは毎回読み込まれるらしい、じゃあ全部bashrcで良いじゃん。
+	--
+	ln -s 対象 出力先 でシンボリックリンクでショートカット作ろうと思った。
+	作れたけど$ ~/hoge みたいにしか呼び出せない。コマンドじゃなくてファイル
+2019/12/28 #py 三項演算子が無い、or and 
+	print("aa") if False else print("bb") こんなのも、
+	val="aa" if False else "bb" #代入もできる
+	print(val) #bb
+2019/12/28 #ターミナル echo $PATH で表示するとごっちゃ、キレイに変換
+	$ echo $PATH | tr ':' '\n'
+	/usr/bin
+	/bin
+	/usr/sbin
+	/sbin
+	/usr/local/bin
+	/opt/X11/bin
+	/usr/local/share/dotnet
+	/Library/Frameworks/Mono.framework/Versions/Current/Commands
+	/Users/kazoku/.nodebrew/current/bin
+	/Users/kazoku/.nodebrew/current/bin
+	/Users/kazoku/.nodebrew/current/bin
+	/Users/kazoku/.nodebrew/current/bin
+	/Users/kazoku/.nodebrew/current/bin
+	なんかめちゃ重複してる。
+	--
+	trは一文字の置換しかできない。
+	sedは一行用らしく、改行の概念がない、
+	2文字以上で改行が必要ならawkを使う。
+	$ echo $PATH | awk '{ gsub(":", ":\n"); print }'
+	--
+	カレントフォルダをPATHに登録、一方に$が無いことに注意。
+	$ export PATH=$PATH:`pwd`
+	削除したいときはテキストに書き出して、削除してそれを登録
+2019/12/28 #ターミナル シンボリックリンクは絶対パスにすべき、相対パスでも作れるが、移動させたら終わり
+	ln -s 絶対パス 作る場所と名前
+	ハードリンクはほぼ同じだが、本体と判別が困難。
+2019/12/29 #mac #ターミナル winファイルショートカットの代わりが無い
+	alias が近いが、登録とか面倒、ln -s はデフォ引数とか無理
+2019/12/29 #ターミナル コマンドは./が無いやつ、つまりPATH限定。もしくはalias
+2019/12/29 #ターミナル コマンドを展開する、同じ
+	$ echo `pwd`
+	$ echo $(pwd)
+	変数を展開、結果同じ
+	$ echo ~+
+	$ echo $PWD
+2019/12/29 #ターミナル 戻る、両方同じ
+	$ cd ~-
+	$ cd $OLDPWD
+	環境変数を調べるprintenvで、いろいろ分かる
+	使うのは、HOME TMPDIR PWD PATHぐらいか？
+2020/01/15 #js メモ帳のフォーマットを弄る。
+	テキストのフォーマット変換プログラムを作る。
+	pyじゃなくてshebangのnode.jsでやったので凄い楽だった。
+	テキストエディタを使う：置換が簡単、コーディング中に書きやすい。日付が面倒
+	二重改行：エディターを選ばない。
+	タブ分け：そのままworkfloyに貼り付けれる、構造化出来る
+2020/01/15 #スプレッドシート csvをインポート。
+	.text拡張子だと弾かれる。txtにする。
+	ダブクォ無し、カンマ区切り、文字カンマエスケープじゃ、エスケープ無視でカンマ切られる。
+	ダブクオ無し、タブ区切り、成功。タブエスケは\<tab>は無理。
+		\t \nを復元すると、文字の\nも改行に変換してしまう。
+	\\n、\n を復元しようとすると、\\優先で、indexを同時進行しないと無理じゃね？
+	しんくぉで囲ってもOK,ばっくぉはNG、\もそのまま表示される。\nも当然そのまま。
+2020/01/16 #js #nodeJS 一行評価してプリント、$node -p "1+1"
+	-eオプだとevaluate評価のみ
+2020/01/16 #js ’と”の違い無し、phpだと’だとエスケープそのままとかだったかな。
+2020/01/16 #スプレッドシート タブは数式欄だとタブだが、ダブルクリック編集だとスペース8個ぐらいになってる
+	ペーストでタブに置き換えてもなんかスペースになったり安定しない。
+改行の入力で半日悩んだが、Download→csvにしたら、普通に生改行だった。インポートしても再現出来る。
+	ダウンロードcsv，改行かカンマがある場合のみダブクォ囲み、改行そのまま、ダブクォ→””、
+	tsvはタブ＋ダブクォ無し、再変換すると改行もタブも消えた。
