@@ -1,21 +1,16 @@
 #!/usr/bin/env node
-console.log(process.argv)
-const args = process.argv.slice(2)
+//自分用記録メモフォーマットを整形するスクリプト
 
-console.log(args)
-const filePath = args[0] || 'memo.txt'
-const fs = require('fs').promises//require('fs')
-
-function 改行分けtextをParse(text) {
+function parse連続改行分け(text) {
   const arr = text.trim().split(/\n\n+/)
   return arr
 }
-function textをインデントParse(text) {
+function parseインデント(text) {
   const arr = text.trim().split(/\n(?=\S)/)
   return arr.map(v => v.replace(/\n\t/g, '\n'))
 }
 
-function 日付なければ上の日付(arr) {
+function conv日付なければ上の日付(arr) {
   arr.forEach((val, i) => {
     const result = val.match(/^[\d/]{10}( #\S+ )*/)
     if (result)
@@ -25,12 +20,11 @@ function 日付なければ上の日付(arr) {
       arr[i] = lastDate + val
     }
   })
-  return arr
 }
-function インデント分け(arr) {
+function convインデント分け(arr) {
   arr.forEach((val, i) => arr[i] = val.replace(/\n/g, '\n\t'))
 }
-function 二重改行にする(arr) {
+function conv二重改行にする(arr) {
   arr.forEach((val, i) => arr[i] = val + '\n')
 }
 function convGoogleスプレッドシート用csv(arr) {
@@ -40,25 +34,42 @@ function convGoogleスプレッドシート用csv(arr) {
     // content = content.replace(/\n/g, '\\n').replace(/\t/g, '\\t')
     content = content.replace(/"/g, '""')//.replace(/\t/g, '\\t')
 
-    arr[i] = `${date},${tag},"${content}"`
-
+    arr[i] = `"${date}","${tag}","${content}"`
   })
+  return arr
 }
 async function main() {
+  const fs = require('fs').promises//require('fs')
+
+  console.log(process.argv)
+  const args = process.argv.slice(2)
+
+  console.log(args)
+  const filePath = args[0] || 'memo.txt'
+
   const text = await fs.readFile(filePath, 'utf-8')
   let lastDate
+
+  //Parseして配列に
   let arr
-  if (0) arr = 改行分けtextをParse(text)
-  if (1) arr = textをインデントParse(text)
+  if (0) arr = parse連続改行分け(text)
+  if (1) arr = parseインデント(text)
 
-  arr = 日付なければ上の日付(arr) //参照渡しだから、式にする必要無いけど、
-  convGoogleスプレッドシート用csv(arr)
-  if (0) インデント分け(arr)
-  if (0) 二重改行にする(arr)
+  //変換
+  if (!0) conv日付なければ上の日付(arr) //参照渡しだから、式にする必要無いけど、
+  if (!0) {
+    //スプレッドシート用csvを書き出す
+    const newArr = convGoogleスプレッドシート用csv(arr.slice())
+    const buff = newArr.join('\n')
+    fs.writeFile(filePath + '.google.csv', buff)//
+  }
+  if (!0) convインデント分け(arr)
+  if (0) conv二重改行にする(arr)
 
+  //書き出す
   let buff
   buff = arr.join('\n')
-  await fs.writeFile(filePath + '.out.txt', buff)//
+  await fs.writeFile(filePath, buff)//+ '.out.txt'
 
   console.log(arr.length, '#'.repeat(20))
 }
