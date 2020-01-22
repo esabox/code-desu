@@ -2140,8 +2140,10 @@ const arr = [
         ],
         date: '',
         func: function() {
+            window.stop()
+            alert(111)
             //画面真っ白に、飛ばされてる感覚がなくなる、<html から削除
-            document.body.parentNode.remove() //window.document.firstChild.remove()
+            //document.body.parentNode.remove() //window.document.firstChild.remove()
             //戻るボタン押せるa
             //window.location.href = 'https://news.google.co.jp';
             //戻るボタン押せない、firefoxでデフォで無効
