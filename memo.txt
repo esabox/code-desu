@@ -1,3 +1,44 @@
+2019/11/12 #js function をconst リテラルで書くと、変なとこから呼び出されて未定義エラー
+	実行が不規則なのが悪いんだけど。
+2019/10/30 #js hoge=(obj.prop={}) //は作ったオブジェの参照がhogeとpropに入る。
+2019/10/30 #js 条件付きconstはifに入れるとスコープ無理だから、三項演算子など式で代入する必要ある。
+	それでも無理なら即時関数＋returnで。
+2019/10/30 #js user.jsでドメイン超えて、セッションID的なものが欲しい、クリックループを防ぐことができるし。
+	historyは無理、リファラーでURLにハッシュでTIMEくっつければできそうだけど、URL汚すのは嫌や。
+	Cookieかローカルストレージを調べてる。GM_*valueもできるけど、セッションIDは無理そう。
+2019/10/30 #js jsでCookie追加すると後ろに追加されていく。
+2019/10/29 #js window.unsafeWindow Wがキャメルコートで途中からのは大文字なので注意。
+	// @grant none を指定してない場合。
+	conDoW(window)をすると、window.unsafeWindow が見える。
+	コンソールからwindowすると｛parent Window〜 alertでunsafeWindowが無い、これが本当のwindow
+	偽物→window.unsafWindow←本物を一時避難
+	//gmが終わったから？本物→偽物と上書きされ、unsafwindowが消える。
+2019/10/29 #js スクリプトでwindow.)unsafeWindow.hoge←などプロパティに書くと、
+	戻されたあとは、window.)hogeになる。
+2019/10/29 #js user.jsが最後まで達すると？window = window.unsafeWindow となる。unが元々のwin。
+	GM_関数はコンソールからは使えないが、定義済み関数からは使える。
+2019/10/29 #js セミコロン省略すると変なとこで詰まる。次の行が()スタートだと関数実行とみなされる。
+2019/10/29 #js importをすると、exp以外もすべて一回実行する。
+2019/10/24 #js ブロックでスコープが見つからない。
+	if (1) {
+		const a = 0
+	}
+	else {
+		const a = 1
+	}
+	conDoW(a)
+2019/10/24 #js onclick=functionが正解,onclick=()=>は駄目ぽ。
+	element.onclick()と呼ばれるので、アロー関数だとthisがwindowになってしまう。
+2019/10/24 #js insertAdjacentText("beforbegin","外側")、textContent+=より速いらしい。記憶。
+2019/10/24 #js user.jsで戻った時に実行したくない、自動ジャンプだと戻れなくなるから。
+	history.replaceで#hogeとつけることで、実行回避できた。
+	location+=#hogeでもできる、ただ失敗するとこっちはループする危険もある。
+2019/01/07 #js firefox greasemonkey で@require したらcacheが出来て更新できない。
+	拡張フォルダに作られるタイプで、cacheクリアとかほぼ無理
+	もう嫌だと、ローカル鯖にしよう
+	mac なら 公開したいフォルダに移動して python -m SimpleHTTPServer 8888
+	終了はC-c
+	http://localhost:8888/mypo.user.js
 2019/11/16 #js htmlエンティティをデコードはDOMを使うと簡単らしい。&amp;←こいうの。
 	function decodeHtml(html) {
 		var txt = document.createElement("textarea");
@@ -273,3 +314,24 @@
 	一旦テキストにする、JSONが使われるが、関数やNumberとか出来ない。
 	var variable2 = JSON.parse(JSON.stringify(variable1));
 	単純な一次元配列ならarr.slice()で良いと思う、一番速いし。
+2020/01/23 #js array.reduceはforeachで代用できるが、accumlator蓄電池を最初から用意してるのが使い所。
+2020/01/23 #js 文字のparseは正規表現が複雑になる、それを単純化してみた。
+	let [, date, tag, content] = val.match(/^([\d/]{10}) ((?:#\S+ )*)([\S\s]+)/)
+	↓
+	let v1, v2, v3
+	val
+		.replace(/^[\d/]{10} /, s => {v1 = s; return ''})
+		.replace(/^(#\S+ )*/, s => {v2 = s; return ''})
+		.replace(/^[\S\s]+/, s => {v3 = s; return ''})
+	行数は増えるが、正規表現はシンプルになる。
+	reduceも考えたけど、あんまり。
+2020/01/23 #js 文字をindexで切って配列で返す関数が無い、ぐぐったら
+	const splitAt = index => x => [x.slice(0, index), x.slice(index)]
+2020/01/23 #js #削除コード スクリプト読み込む
+	let s = document.createElement( 'script' );
+	s.type = 'text/javascript';
+	s.src = ( 'http://localhost:8888/mypo.user.js'); //+"?"+Date.now() //引数あるとvscodeで止まらない、logの行数だけは移動できた。
+	document.body.appendChild( s );
+2020/01/23 CANONの複合機、デバイスでwsがついてるのが、windowsに元から用意されたドライバ。スキャナは出来ない。
+	公式ドライバーをインストールして、プログラムにscanなんたら作られるからそれ実行でスキャン。
+	デバイスからは無理ぽい。

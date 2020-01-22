@@ -1,7 +1,7 @@
 'use strict'
 
 
-const performance = (typeof exports === 'object')
+const performance = (typeof exports === 'object') //nodejs or ブラウザ判定
 	? require('perf_hooks').performance
 	: window.performance
 const log = console['log']
