@@ -2036,7 +2036,7 @@ const arr = [
     },
     {/* jolinfile */
         name: 'jolinfile',
-        url: ['^https?://jolinfile.com',],
+        url: ['^https?://jolinfile.com', '^https?://jolinfile.net',],
         date: '',
         func: function() {
             let d = !true
@@ -2209,7 +2209,7 @@ const arr = [
     },
     {/* dawnfun.com/ */
         name: 'dawnfun.com/',
-        url: ['^https://r18.dawnfun.com/',],
+        url: ['^あhttps://r18.dawnfun.com/',],
         date: '',
         func: async function() {
             let images = []  // この配列にbase64のデータを入れる
@@ -2843,6 +2843,17 @@ const arr = [
             conDoW(button_tukuru('time', () => replaceFrame()))
             // replaceFrame()
 
+        },
+    },
+    {/*  */
+        name: 'kk chakue',
+        url: ['^https://xn--icktho51ho02a0dc.com/',],
+        date: '2020/01/24',
+        func: async () => {
+            //https://着エロ動画.comじゃ無理だった。元の関数書き換えれば対応出来るだろうけど。
+            createEl(document.body, 'style', {
+                textContent: '.eyecatch__cat{opacity: 0.0; }'
+            })
         },
     },
 ]
