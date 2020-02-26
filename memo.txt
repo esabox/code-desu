@@ -372,3 +372,30 @@
 	bodyにappendする従来。
 2020/02/24 #js downThemAllで失敗した時用に、ファイル書き出し。しかしtitle属性が消えてしまう。descは残ったのでそれに対応するuserjsを書いた。
 	しかしインポートするとその情報も読み込まれない。無意味だった。
+2020/02/26 #js docにクリックイベントを付けた場合
+	let el = ev.target
+	//qsa式、親まで走査しようとすると大変過ぎる？。でもcssセレクタ使える。css3ではhasが使えない。
+	const result = Array.from(document.querySelectorAll('img.lazyloaded'))
+		.some(v => v === el)
+	if (result) {}
+	//2式、条件が自在、処理が軽い、親までさん探せる
+	while (el) {
+		// conDoW([el.tagName, el.className])
+		//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
+		if (el.tagName == 'DIV' &&
+			el.className == 'post' &&
+			ev.ctrlKey === false) break
+		el = el.parentElement //上の要素へ
+		if (el.tagName === 'HTML')
+			return false //走査終了
+2020/02/26 #css 枠を付けて要素の全面にする。zindexもできそう。
+	.className:after {
+	content: "";
+	position: absolute;
+	/* top: 0; */
+	left: 0;
+	width: 100%;
+	height: 100%;
+	/* display: block; */
+	border: 20px solid #f008;
+	}
