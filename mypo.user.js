@@ -1112,12 +1112,12 @@ const uo = {
 		})
 		ball.onmousedown = function(event) { // (1) 処理を開始
 			// const waku=document.querySelector('#waku') //Shadowなので無理
-			const waku=ball.parentElement.parentElement
+			const waku = ball.parentElement.parentElement
 			// (2) 移動のための準備: absolute にし、z-index でトップにする
 
 			let shiftX = event.clientX - waku.getBoundingClientRect().left
 			let shiftY = event.clientY - waku.getBoundingClientRect().top
-		
+
 			waku.style.position = 'absolute'
 			waku.style.zIndex = 1000
 			// 現在の親から body へ直接移動させ、body に対して相対配置をする
@@ -2637,7 +2637,6 @@ const arr = [
 				width:400px;
 				height:80px;
 				//white-space: pre;
-
 				overflow: scroll;
 				background-color: ivory;
 				color: black;
@@ -2918,34 +2917,152 @@ const arr = [
 		func: function() {
 			// 右クリックも作ってみる
 			document.addEventListener('contextmenu', function(ev) {
-				ev.preventDefault()
+				//alt抜け
+				if (ev.altKey) return
+
 				let el = ev.target
-				if()
+				//判定
 				while (el) {
 					// conDoW([el.tagName, el.className])
 					//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
-					if (el.tagName == 'DIV' &&
-						el.className == 'post' &&
+					if (el.tagName == 'A' &&
+						el.className == 'cover target-by-blank' &&
 						ev.ctrlKey === false) break
-
-					el = el.parentElement //上の要素へ
-					if (el.tagName === 'HTML')
-						return false //走査終了
+					//上の要素へ
+					el = el.parentElement
+					//HTMLまで来たら終了
+					if (el.tagName === 'HTML') return false //走査終了	
 				}
-				if (ev.ctrlKey === false) {
-					// ev.stopPropagation()
-					// conDoW('◆' + el.innerHTML)
-					if (ev.shiftKey) {
-						_js_xhr(el.href, el.textContent)
-						//_js_xhr(el.href, el.textContent, 'zip')
-						return
+				//ダウンロードのみPromise＋
+				const _xhr_promise = function(url) {
+					const p = new Promise((resolve, reject) => {
+						//conDoW('js_xhr')
+						let xhr = new XMLHttpRequest()
+						xhr.open('GET', url, true)
+						//xhr.responseType = 'text';
+						xhr.onload = function() {
+							resolve(xhr.response)
+						}
+						xhr.send()
+					})
+					return p
+				}
+				function _text_kaiseki(fullhtml, title) {
+					let _text = fullhtml
+					//上コンマある方が誤爆が減る。
+					let arr_url = _text.match(/"https:..search.pstatic.net.+?(\d+t).(png|jpg)"/g)
+					if (!arr_url) {
+						// conDoW('みっかんない')https://search.pstatic.net/common?src=https://t.nyahentai.net/galleries/1543265/8t.jpg
+						return false
 					}
-					ev.altKey
-						? _GM_xhr(el.href, el.textContent)
-						: _dawnfun_only(el)
+					//重複削除
+					arr_url = Array.from(new Set(arr_url))
+					//コンマトリミング
+					arr_url = arr_url.map((ite) => ite.slice(1, -1)) //resu.mapなんてプロパティ無いとエラー、matchがNULLだった。
+					//変換
+					arr_url = arr_url.map((val) => val
+						.replace('t.nyahentai', 'i.nyahentai')
+						.replace('t.jpg', '.jpg')
+					)
+
+					console.log(arr_url)
+					//let resu = resp.responseText.match(/(?<=")https:\/\/r18\.dawn.+?(?=")/g)
+					//↑の正規表現がfirefox tamper でSyntaxエラー
+
+					return arr_url
 				}
+				/** 生のウェブ上に書き出す、shadow使うとダウンロードツールが見れないから */
+				function _色つけ(elem, flag = 1) {
+					createEl(elem, 'div', null, {
+						position: 'absolute',
+						height: '100%',
+						width: '100%',
+						border: '20px solid #f005',
+					})
+					// const id = 'mycss'
+					// const class1 = '_iro'
+					// const class2 = '_iro2'
+					// if (!document.getElementById(id)) {
+					// 	createEl(document.body, 'style', {
+					// 		id: id,
+					// 		textContent:
+					// 			`
+					// 		.${class1}:after {
+					// 		border: 20px solid #f008;
+					// 		content: "";
+					// 		position: absolute;
+					// 		/* top: 0; */
+					// 		left: 0;
+					// 		width: 100%;
+					// 		height: 100%;
+					// 		/* display: block; */
+					// 		}
+					// 		.${class2}:after {
+					// 			border: 20px solid #0f08;
+					// 			content: "";
+					// 			position: absolute;
+					// 			/* top: 0; */
+					// 			left: 0;
+					// 			width: 100%;
+					// 			height: 100%;
+					// 			/* display: block; */
+					// 			}
+					// 	`,
+					// 	})
+					// }
+					// if (flag == 1) {
+					// 	elem.classList.add('_iro')
+					// }
+					// if (flag == 2) {
+					// 	elem.classList.add('_iro2')
+					// 	elem.classList.remove('_iro')
+					// }
+				}
+				/** リンク群のエレメントを作る */
+				const _make_links = function(arr, title) {
+					//let els = arr
+					title = title
+						.replace(/\//g, '@スラ')
+						.replace(/~/g, '〜')
+						.replace(/.zip|.rar|\//, '')
+
+					title = mydate('@yyyyMMddhhmmss-') + title
+					let rel = 'rel="noreferrer" '
+					let hrefs = ''
+					for (let [key, val] of arr.entries()) {
+						// const numStr=('00'+(key+1)).slice(-3)
+						const url = val
+						const filename = url.substring(url.lastIndexOf('/')+1)
+						const numStr=('000'+filename).slice(-7)
+						hrefs += `<a href="${val}" ${rel}title="${title}/${numStr}.jpg" >${numStr},</a>`
+					}
+					const span = document.createElement('span')
+					span.innerHTML = hrefs
+					return span
+				}
+				dofo(el)
+				async function dofo(el) {
+					console.log('dofo')
+					_色つけ(el, 1)
+					const rootEL = el//.parentElement
+					const url = rootEL.href
+					const caption = rootEL.querySelector('div').textContent
+					console.log(url, caption)
+					const fullhtml = await _xhr_promise(url)
+					const url_arr = _text_kaiseki(fullhtml)
+					const span = _make_links(url_arr, caption)
+					Object.assign(span.style, {
+						position: 'relative',
+						display: 'inline-flex',
+					})
+					rootEL.appendChild(span)
+
+				}
+
+
+
 			}, !false)
-			
+
 		},
 	},
 	{/* ヤフコメ */
