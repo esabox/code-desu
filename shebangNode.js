@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-//自分用記録メモフォーマットを整形するスクリプト
+//自分用記録memo.txt、メモフォーマットを整形するスクリプト
 
 function parse連続改行分け(text) {
   const arr = text.trim().split(/\n\n+/)
