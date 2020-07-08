@@ -39,5 +39,11 @@ MY_SITEINFO = [
     url: '^http://buhidoh/\\.net/',
     nextLink: '//.nextpostslink',
     pageElement: '//body'
-  }
-];
+  },
+  {
+    url: '^https://ja.nyahentai.com/',
+    nextLink: '//a[@rel="next"]',
+    pageElement: '//*[@id="content"]/div[2]' //'//body' //
+  },
+
+]
