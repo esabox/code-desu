@@ -6,4 +6,5 @@ py/test/
 memo.txt.google.csv
 memo.txt.out.txt
 js/.DS_Store
-.DS_Store
+\.DS_Store
+js/.DS_Store
