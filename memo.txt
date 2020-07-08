@@ -388,7 +388,7 @@
 		el = el.parentElement //上の要素へ
 		if (el.tagName === 'HTML')
 			return false //走査終了
-2020/02/26 #css 枠を付けて要素の全面にする。zindexもできそう。
+2020/02/26 #css 枠を付けて要素の最全面にする。zindexもできそう。
 	.className:after {
 	content: "";
 	position: absolute;
@@ -399,3 +399,11 @@
 	/* display: block; */
 	border: 20px solid #f008;
 	}
+	--もっと簡単ぽいもの、対象要素にdivappendして。style以下
+	position: 'absolute',
+	height: '100%',
+	width: '100%',
+	border: '20px solid #f009',
+2020/07/07 #js googleフォト削除をujsでやろうと思う。
+	document.dispatchEvent(new KeyboardEvent('keypress',{keyCode:120})) 
+	↑やってみるも無理、ctrl:false,code,"K
