@@ -3175,6 +3175,15 @@ const arr = [
 			})
 		},
 	},
+	{/* seesaawiki.jp/spacebattleshipstory */
+		name: 'seesaawiki.jp/spacebattleshipstory',
+		url: ['^https://seesaawiki.jp/spacebattleshipstory/',],
+		date: '2020/07/10',
+		func: () => {
+			uo.選択テキスト検索ボタン('/spacebattleshipstory/search?search_type=2&search_target=all&keywords=%word%&x=38&y=23')
+			//https://seesaawiki.jp/spacebattleshipstory/search?search_type=2&search_target=all&keywords=%word%&x=38&y=23
+		},
+	},
 	{/* google photo */
 		name: 'google photo',
 		url: ['^https://photos.google.com/',],
@@ -3204,7 +3213,137 @@ const arr = [
 			}, !false)
 		},
 	},
+	{// タイピングゲームに枠を付ける 
+		name: 'タイピングゲームに枠を付ける',
+		url: ['^https://vignette.wikia.nocookie.net/', '^http://typingx0.net/easy/'],
+		date: '2020/07/29',
+		func: () => {
+			console.log('タイピング')
+			console.log('https://vignette.wikia.nocookie.net/soul-knight/images/f/fe/Stub.png/revision/latest/smart/width/53/height/53?cb=20190306044310')
+
+			function w枠作る(aKey) {
+				const storageKey = aKey
+				let el_mouse_offset_Obj = {}
+				let evBindFunc = {}
+
+				//div作る
+				let div1 = createEl(document.body, 'div',
+					{
+						// onmouseup: function(ev) {ev.stopPropagation()},
+						// onmouseenter: function() {},
+					},
+					{
+						position: 'absolute', zIndex: '99',
+						top: '10px',
+						backgroundColor: '#FFF0',
+
+						width: '100px',
+						height: '200px',
+						cursor: 'move',
+						resize: 'both',
+						overflow: 'hidden',//これが無いとresize発動しない
+						border: '3px solid #FF4A',
+						borderRadius: '5px',
+
+					}
+				)
+				//設定を読み込んで移動リサイズ
+				load_setting_move_resize(div1)
+
+				//ドロップする。mousemoveイベント解除
+				//doc指定しないと、最前面になにかあると反応しない。
+				document.addEventListener('mouseup', function() {
+					console.log('up2')
+					document.removeEventListener('mousemove', evBindFunc)
+					save_setting(div1)
+				}, {capture: false, once: false})
+
+				//マウス押しイベント、プロパティで作る、バブリング。
+				div1.onmousedown = function(event) { // (1) 処理を開始
+					console.log('down')
+					let el = event.currentTarget
+
+					//右下10px以外なら抜ける
+					if (el.clientHeight - event.offsetY < 15
+						&& el.clientWidth - event.offsetX < 15) return
+					//シフトコンビ
+					if (!event.shiftKey) return
+					// event.preventDefault() //focus移動しないように
+
+					//el基準で、マウス座標を記憶
+					// el_mouse_offset_Obj.x = event.offsetX
+					// el_mouse_offset_Obj.y = event.offsetY
+
+					//el基準で、マウス座標を記憶
+					//イベント関数をグローバルに保存
+					//bind方式
+					// evBindFunc = mouseUgoku.bind(null, event.offsetX, event.offsetY, div1)
+					//handleEvent方式
+					evBindFunc = {
+						handleEvent: mouseUgoku, args: {
+							el: div1,
+							offsetX: event.offsetX,
+							offsetY: event.offsetY,
+						}
+					}
+
+					evBindFunc.handleEvent = mouseUgoku
+					evBindFunc.args = {
+						el: div1,
+						offsetX: event.offsetX,
+						offsetY: event.offsetY,
+					}
+					// ドラッグ移動のイベントリスナー
+					document.addEventListener('mousemove', evBindFunc)
+				}
+
+				//関数郡
+				function save_setting(el) {
+					console.log(el.style.height)
+					let obj = {
+						'left': el.style.left,
+						'top': el.style.top,
+						'height': el.style.height,
+						'width': el.style.width,
+					}
+					let setjson = JSON.stringify(obj)
+					localStorage.setItem(storageKey, setjson)
+				}
+				function load_setting_move_resize(el) {
+					let getjson = localStorage.getItem(storageKey)
+					if (!getjson) return
+					let obj = JSON.parse(getjson)
+					el.style.left = obj.left
+					el.style.top = obj.top
+					el.style.height = obj.height
+					el.style.width = obj.width
+				}
+				//マウスが動いた所に要素を移動、つまりドラッグ
+				// function mouseUgoku(x, y, el, event) {
+				function mouseUgoku(ev) {
+					//分割代入
+					const {el, offsetX, offsetY} = this.args
+					console.log(this.args, arguments)
+					el.style.left = ev.pageX - offsetX + 'px'
+					el.style.top = ev.pageY - offsetY + 'px'
+				}
+			}
+			//main
+			w枠作る('枠1個目')
+			w枠作る('枠2個目')
+
+		},
+	},
 ]
+/*
+{// 
+	name: '',
+	url: ['^',],
+	date: '',
+	func:  () => {
+	},
+},
+*/
 
 //ここで走査しつつ実行
 sousa_do(arr)
