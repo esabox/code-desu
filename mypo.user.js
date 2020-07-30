@@ -4,7 +4,7 @@
 // @namespace    miiya
 // @updateURL    https://gist.github.com/esabox/8213a51ef2f1a6be4313ece316421762/raw/mypo.user.js
 // @homepageURL  https://gist.github.com/esabox/8213a51ef2f1a6be4313ece316421762/edit
-// @version 1.1.202002031
+// @version 1.1.20200730
 // @description  3aa山彦が鯉をやる気にさせなかったり夢の地下室の本当の予想。
 // @author       山田一意太郎左衛門
 // @include *
