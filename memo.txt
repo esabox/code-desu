@@ -407,3 +407,40 @@
 2020/07/07 #js googleフォト削除をujsでやろうと思う。
 	document.dispatchEvent(new KeyboardEvent('keypress',{keyCode:120})) 
 	↑やってみるも無理、ctrl:false,code,"K
+2020/07/29 #js addEventListenerで入れ子だとmouseupが伝わらないのでcaptchaが必要だった。
+	--
+	obj.存在しない←これを使おうとしてもエラーが出ない。
+	var a
+	console.log(a.b)
+	//Uncaught TypeError: Cannot read property 'b' of undefined
+	var a={}
+	console.log(a.b)
+	//undefined
+	--
+	el.onclickと el.addEventListener('click',f) の違いは、
+	プロパティは、nullでどこからでも消せる、一つしか登録できない、バブリングのみ。
+	addEventListenerは消すのに、関数名が必要なので、スコープ離れてる設計じゃ無理。
+	--
+	document.addEventListener('mousemove',f)のevent.targetはマウス直下のものになる。
+	event.currentTargetが最初の限定ぽい
+	--
+	addEventListener(click,f)でfに引数渡そうとすると
+	function(ev){f(ev,99)}とするあるある方法、しかし無名関数なので解除できない。
+	名前をつけたとて、スコープ外では解除できない。ハンドル二重にすればできるかも、酷いけど。
+	handleEventかbindを使いえば多少きれいになる。	
+	--
+	addEventListener('click',{handleEvent:f,arg1:999})
+	第二をオブジェクトにするとthis.arg1で参照できる、が一旦変数に入れないと、解除ができない。
+	addEventListener('clikc',obj)
+	removeEven~('click',obj)
+	みたいな
+	bindでも一緒、解除するなら変数必要、objだとthis使うから気持ち悪いかなあ。
+	event.currentTarget.removeEventListener('click', this); //解除
+	でも解除できるらしいけど試してない。
+	関数でグローバル変数使いたくない派としては厳しい。
+	bindでグローバルにハンドル変数作っておくのが良いかなあ。
+	bindすると、eventが最後になるのが良くない。
+	--
+	mousemoveでは飛び出すと効かなるなるのでdoc指定する必要あり、
+	ev.targetは直下、ev.currentTargetはdocになり、前者は外れると変わる
+	ので、evからの指定は安定しないので使えない。
