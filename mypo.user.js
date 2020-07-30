@@ -2,9 +2,9 @@
 // ==UserScript==
 // @name         mypo.user.js
 // @namespace    miiya
-// @updateURL    https://gist.github.com/esabox/8213a51ef2f1a6be4313ece316421762/raw/mypo.user.js
+// @updateURL    https://github.com/esabox/code-desu/raw/master/mypo.user.js
 // @homepageURL  https://gist.github.com/esabox/8213a51ef2f1a6be4313ece316421762/edit
-// @version 1.1.20200730
+// @version 1.1.30200731
 // @description  3aa山彦が鯉をやる気にさせなかったり夢の地下室の本当の予想。
 // @author       山田一意太郎左衛門
 // @include *
@@ -23,6 +23,7 @@
 //
 // 外したオプション
 // @run-at document-start
+// @updateURL    https://gist.github.com/esabox/8213a51ef2f1a6be4313ece316421762/raw/mypo.user.js
 // オプションはローダー側に書く必要あり
 // @require       https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js
 // @exclude     https://*.visualstudio.com/*
@@ -3224,7 +3225,7 @@ const arr = [
 			function w枠作る(aKey) {
 				const storageKey = aKey
 				let el_mouse_offset_Obj = {}
-				let evBindFunc = {}
+				let handleEvMouseMove = {}
 
 				//div作る
 				let div1 = createEl(document.body, 'div',
@@ -3254,7 +3255,7 @@ const arr = [
 				//doc指定しないと、最前面になにかあると反応しない。
 				document.addEventListener('mouseup', function() {
 					console.log('up2')
-					document.removeEventListener('mousemove', evBindFunc)
+					document.removeEventListener('mousemove', handleEvMouseMove)
 					save_setting(div1)
 				}, {capture: false, once: false})
 
@@ -3263,38 +3264,38 @@ const arr = [
 					console.log('down')
 					let el = event.currentTarget
 
-					//右下10px以外なら抜ける
+					if (!event.shiftKey) {
+						event.preventDefault() //focus移動しないように
+						return
+					}
+					//右下10px以外なら抜ける、リサイズへ
 					if (el.clientHeight - event.offsetY < 15
 						&& el.clientWidth - event.offsetX < 15) return
 					//シフトコンビ
-					if (!event.shiftKey) return
-					// event.preventDefault() //focus移動しないように
 
-					//el基準で、マウス座標を記憶
-					// el_mouse_offset_Obj.x = event.offsetX
-					// el_mouse_offset_Obj.y = event.offsetY
-
-					//el基準で、マウス座標を記憶
 					//イベント関数をグローバルに保存
 					//bind方式
 					// evBindFunc = mouseUgoku.bind(null, event.offsetX, event.offsetY, div1)
 					//handleEvent方式
-					evBindFunc = {
-						handleEvent: mouseUgoku, args: {
+					handleEvMouseMove = {
+						handleEvent: mouseUgoku,
+						args: {
+							//対象el
 							el: div1,
+							//el基準で、マウス座標を記憶
 							offsetX: event.offsetX,
 							offsetY: event.offsetY,
 						}
 					}
 
-					evBindFunc.handleEvent = mouseUgoku
-					evBindFunc.args = {
-						el: div1,
-						offsetX: event.offsetX,
-						offsetY: event.offsetY,
-					}
+					// evBindFunc.handleEvent = mouseUgoku
+					// evBindFunc.args = {
+					// 	el: div1,
+					// 	offsetX: event.offsetX,
+					// 	offsetY: event.offsetY,
+					// }
 					// ドラッグ移動のイベントリスナー
-					document.addEventListener('mousemove', evBindFunc)
+					document.addEventListener('mousemove', handleEvMouseMove)
 				}
 
 				//関数郡
