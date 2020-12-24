@@ -2140,7 +2140,7 @@ const arr = [
 			if (inputEl) inputEl.focus()
 
 			conDoW(uo.入力パネル())
-			arebaCli('[value="Free Download"]')
+			arebaCli('[type="submit"][value="Free Download"]')
 			arebaCli('#dd_link');
 			(function tryDownload() {
 				let time = new Date()
@@ -2387,6 +2387,8 @@ const arr = [
 
 			/** スタイルシートをオーバーライド */
 			!function _sss() {
+				if (!location.href.match('category|tag')) return
+
 				createEl(document.body, 'style', {
 					//tagA+tagB 直後の兄弟B
 					textContent:
@@ -2523,13 +2525,13 @@ const arr = [
 			}
 			function _text_kaiseki(fullhtml, title) {
 				let _text = fullhtml
-				let arr_url = _text.match(/"https:\/\/r18\.dawn.+?"/g)
+				let arr_url = _text.match(/"https:\/\/r18\.manga314.+?"/g)
 				if (!arr_url) {
 					// conDoW('みっかんない')
 					return false
 				}
 				arr_url = arr_url.map((ite) => ite.slice(1, -1)) //resu.mapなんてプロパティ無いとエラー、matchがNULLだった。
-				//console.log(resu)
+				//console.log(resu)https://r18.manga314.com/20181026doujin/20180322169/01.jpg
 				//let resu = resp.responseText.match(/(?<=")https:\/\/r18\.dawn.+?(?=")/g)
 				//↑の正規表現がfirefox tamper でSyntaxエラー
 
@@ -2827,6 +2829,7 @@ const arr = [
 		url: ['https://abema.tv/',],
 		date: '2019/12/29',
 		func: () => {
+			// alert(111)
 			const min_close = 60
 			const new_url = 'https://abema.tv/account'
 			let min = min_close
@@ -2854,24 +2857,46 @@ const arr = [
 			!(function loop(i = 0) {
 				//プロパティ使う方法以外は、無名関数tryも使ってみたけど無理だった。
 				//スコープ外にletが1番綺麗に書けるかな。
-				let elem = document.querySelector('.com-tv-CommentButton button')
-				conDoW.add(i, elem && elem.disabled)
+				let elem = document.querySelector('.com-tv-LinearFooterCommentButton > button:nth-child(1)')
+				// conDoW.add(i, elem && elem.disabled)
+				console.log(i, elem && elem.disabled)
 				// i++
 
 				if (elem && !elem.disabled) {
-					conDoW(elem.disabled)
-					elem.click()
+					// conDoW(elem.disabled)
+					sleep(3000)
+
+					console.log('click', elem.disabled, !elem.disabled)
+					setTimeout(() => {
+						console.log('aa', elem.disabled, !elem.disabled)
+						// console.log('c')
+						elem.click()
+					}, 3500)
+
 				} else {
-					setTimeout(() => loop(i + 1), 1000)
+					setTimeout(() => loop(i + 1), 500)
 				}
 			})()
 		},
 	},
 	{/* abemaビデオの自動読み込みを禁止する */
 		name: 'abemaビデオの自動読み込みを禁止する',
-		url: ['https://abema.tv/video/episode/',],
+		url: ['https://abema.tv/',],
 		date: '',
 		func: () => {
+			const observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					console.log(mutation)
+					// alert(mutation.target)
+
+				})
+			})
+			const config = {attributes: false, childList: true, characterData: false, subtree: false}
+			// const config = {attributes: true, childList: true, characterData: true, subtree: true }
+			observer.observe(document.head, config)
+			// window.addEventListener('popstate', function(e) {
+			// 	alert(999)
+			// })
 			//仮想DOMだから、移動警告効かない。
 			// window.onbeforeunload = function(e) {
 			//     e.preventDefault();
@@ -2953,6 +2978,11 @@ const arr = [
 			conDoW.add(button_tukuru('日本語フィルタ', () => {
 				document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
 			}))
+			conDoW.add(button_tukuru('ダウソ履歴', () => {
+				//let el =
+				document.querySelectorAll('.gallery').forEach(v => console.log(v.firstElementChild.href))
+				//console.log(el)
+			}))
 			// 右クリックも作ってみる
 			document.addEventListener('contextmenu', function(ev) {
 				//alt抜け
@@ -2991,10 +3021,24 @@ const arr = [
 				})
 				return p
 			}
+			const _xhr_promise2dom = function(url) {
+				const p = new Promise((resolve, reject) => {
+					//conDoW('js_xhr')
+					let xhr = new XMLHttpRequest()
+					xhr.open('GET', url, true)
+					xhr.responseType = 'document'
+					xhr.onload = function() {
+						resolve(xhr.response)
+					}
+					xhr.send()
+				})
+				return p
+			}
 			function _text_kaiseki(fullhtml, png) {
 				let _text = fullhtml
 				//上コンマある方が誤爆が減る。
-				let arr_url = _text.match(/"https:..search.pstatic.net.+?(\d+t).(png|jpg)"/g)
+				// let arr_url = _text.match(/"https:..search.pstatic.net.+?(\d+t).(png|jpg)"/g)
+				let arr_url = _text.match(/"https:..t0.nyacdn.com.+?(\d+t).(png|jpg)"/g)
 				if (!arr_url) {
 					// conDoW('みっかんない')https://search.pstatic.net/common?src=https://t.nyahentai.net/galleries/1543265/8t.jpg
 					return false
@@ -3006,6 +3050,7 @@ const arr = [
 				//変換
 				arr_url = arr_url.map((val) => val
 					.replace('t.nyahentai', 'i.nyahentai')
+					.replace('t0.nyacdn.com', 'i0.nyacdn.com')
 					.replace('mt.404cdn.com', 'mi.404cdn.com')
 					.replace('t.jpg', '.jpg')
 					.replace('t.png', '.png')
@@ -3084,10 +3129,17 @@ const arr = [
 				//let rel = 'rel="noreferrer" '
 				let htmlText = ''
 				htmlText += arr.length
+				//変数追加用、変数無しだとdownthemがポンコツでDL出来ないことある
+				let ms = '?' + new Date().getTime()
 				for (let [key, val] of arr.entries()) {
 					// const numStr=('00'+(key+1)).slice(-3)
 					const url = val
-					const filename = url.substring(url.lastIndexOf('/') + 1)
+					let s
+					s = url.substring(url.lastIndexOf('/') + 1)
+					//後ろに？引数オプションが付いてたら消す
+					s = s.replace(/\?.+/, '')
+					const filename = s
+
 					const numStr = ('000' + filename).slice(-7)
 					htmlText += `<a href="${val}" title="${title}/${numStr}" >i</a>`
 				}
@@ -3096,15 +3148,81 @@ const arr = [
 				span.innerHTML = htmlText
 				return span
 			}
+			/**以前はサムネからDLのURLを作ってたから変換してた、今は要らない？ */
+			const _henkan = (arr_url) => {
+				//変換
+				return arr_url.map((val) => val
+					.replace('t.nyahentai', 'i.nyahentai')
+					.replace('t1.nyacdn.com', 'i0.nyacdn.com')
+					// .replace('t1.nyacdn.com', 'i1.nyacdn.com')
+					.replace('mt.404cdn.com', 'mi.404cdn.com')
+					.replace('t.jpg', '.jpg')
+					.replace('t.png', '.png')
+				)
+			}
+			/** ダウンロード履歴 */
+			const LSclass = class {
+				constructor(storageKey) {
+					this.storageKey = storageKey
+				}
+				down履歴保存(str) {
+					let csv = localStorage.getItem(this.storageKey)
+					if (csv === null)
+						csv = ''
+					else
+						str = ',' + str
+					localStorage.setItem(this.storageKey, csv + str)
+				}
+				down履歴取り出しarr() {
+					let csv = localStorage.getItem(this.storageKey)
+					if (csv === null)
+						csv = ''
+					let arr = csv.split(',')
+					console.log(arr)
+					return arr
+				}
+
+			}
+
 			async function _main(el, png = 0) {
 				console.log('dofo')
 				_色つけ(el, 1)
 				const rootEL = el//.parentElement
-				const url = rootEL.href
+				const url = rootEL.href + '/list2/'
 				const caption = rootEL.querySelector('div').textContent
 				console.log(url, caption)
 				const fullhtml = await _xhr_promise(url)
-				const url_arr = _text_kaiseki(fullhtml, png)
+				const newDoc = await _xhr_promise2dom(url)
+				let urlArrFromDom = [...newDoc.querySelectorAll('section>img.list-img')].map(v => v.dataset.src)
+				// console.log(newDoc, elArr)
+
+				//ダウンロード履歴
+				let hoo = downzumi
+				//https://ja.nyahentai.com/g/338113/list2/
+				const pageId = url.match(/(?<=g\/)\d+/)
+				hoo.down履歴取り出しarr()
+				hoo.down履歴保存(pageId)
+
+				//追記、それ以外にもブラウザ表示出来るのにDownthemallでダウンロード失敗するファイルが存在する
+				//https://i0.nyacdn.com/galleries/1778723/75.jpg
+				//後ろに?randを付けるとダウンロードできる、めちゃおそ。新しい環境作っても同じ。
+				if (0) {
+					let ms = new Date().getTime()
+					urlArrFromDom.forEach((val, i, arr) =>
+						arr[i] += '?' + ms
+					)
+				}
+				//オプションpngの拡張子に変える,追記、DL失敗するのはPNGだからかと思ったらURL自体死んでた。
+				if (png) {
+					// alert('png')
+					let copyArr = [...urlArrFromDom]
+					copyArr = copyArr.map((val) => val
+						.replace('.jpg', '.png'))
+					urlArrFromDom.push(...copyArr)
+				}
+				console.log(urlArrFromDom)
+				// urlArrFromDom = _henkan(urlArrFromDom) //サムネからURL推測してた遺産
+				const url_arr = urlArrFromDom//_text_kaiseki(fullhtml, png)
 				const span = _make_links(url_arr, caption)
 				Object.assign(span.style, {
 					position: 'absolute',
@@ -3119,13 +3237,50 @@ const arr = [
 				})
 				rootEL.appendChild(span)
 			}
+			//elをリストアップして、ダウソ済みに色
+			const down済みに色 = function(el) {
+				el.querySelectorAll('.gallery').forEach(v => {
+					//console.log(v.firstElementChild.href)
+					let el = v.firstElementChild
+					let id = v.firstElementChild.href.match(/\d+/)[0]
+					let result = downedIdArr.includes(id)
+					if (result) {
+						console.log(id)
+
+						// _色つけ(v.firstElementChild)
+						createEl(el, 'div', null, {
+							position: 'absolute',
+							height: '100%',
+							width: '100%',
+							border: '20px solid #0f09',
+						})
+
+					}
+				})
+			}
+
+			//日本語以外をフィルター
+			const japaneseFillter = (el) =>
+				el.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
+
+			//main
+			const downzumi = new LSclass('downzumi')
+			let downedIdArr = downzumi.down履歴取り出しarr()
+			down済みに色(document)
+			japaneseFillter(document)
+
 			//オートページャーで再発火
 			document.body.addEventListener('AutoPagerize_DOMNodeInserted', function(evt) {
 				let node = evt.target
 				//var requestURL = evt.newValue;
 				//var parentNode = evt.relatedNode;
-				document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
+				japaneseFillter(node)
+				down済みに色(node)
 			}, false)
+
+
+
+
 		},
 	},
 	{/* ヤフコメ */
@@ -3333,10 +3488,110 @@ const arr = [
 			w枠作る('枠1個目')
 			w枠作る('枠2個目')
 
+			// スクロール位置記憶
+			let keyscroll = 'スクロール位置'
+			let scrollPx = localStorage.getItem(keyscroll)
+			console.log(scrollPx)
+			document.documentElement.scrollTop = scrollPx
+
+			var timer = null;
+
+			function func() {
+				clearTimeout(timer);
+				timer = setTimeout(function() {
+					scrollPx = document.documentElement.scrollTop
+					console.log(scrollPx)
+					localStorage.setItem(keyscroll, scrollPx)
+
+				}, 1000 / 60 * 10);
+			}
+
+			document.addEventListener('scroll', func, {passive: true});
+
+		},
+	},
+
+	{// 
+		name: 'YouTubeのラジオダウンロード、YouTube Video and Audio Downloader',
+		url: ['^https://www.youtube.com/', 'https://cdn.profile-image.st-hatena.com/'],
+		date: '2020/07/31',
+		func: () => {
+			console.log('222')
+
+			const _文字列の日付ぽいものに7日足す = function(str) {
+				// let url = decodeURI(window.location.href)
+				console.log(str)
+				str = str.replace(/(\d{4})(.)(\d+)(.)(\d+)/, (all, year, s1, month, s2, day) => {
+					// console.log(all, year, s1, month, s2, day)
+					let date = new Date(`${year}-${month}-${day}`)
+					date.setDate(date.getDate() + 7)
+					// console.log(date, date.getMonth(), date.getDate());
+					const m = ('0' + (date.getMonth() + 1)).slice(-2)
+					const d = ('0' + (date.getDate() + 0)).slice(-2)
+					return date.getFullYear() + s1 + m + s2 + d
+				})
+				return str
+			}
+
+			conDoW.add(button_tukuru('日付＋7', () => {
+				let url = decodeURI(window.location.href)
+				console.log(url)
+				url = _文字列の日付ぽいものに7日足す(url)
+				window.location.href = url
+			}))
+			conDoW.add(button_tukuru('ボックス日付＋7', () => {
+				let url = decodeURI(window.location.href)
+				let el = document.querySelector('input.ytd-searchbox')
+				el.value = _文字列の日付ぽいものに7日足す(el.value)
+				document.querySelector("#search-icon-legacy").click()
+				// console.log(url)
+				// url = _文字列の日付ぽいものに7日足す(url)
+				// window.location.href = url
+			}))
+
+
+
+
+			//await new Promise(r => setTimeout(r, 3000))
+			if (location.href.match('https://www.youtube.com/watch')) {
+
+				!(function loop(i = 0) {
+					console.log(i)
+					let elem = document.querySelector('div.iaextractor-new-button')
+					if (elem) {elem.click(); return }
+					setTimeout(() => loop(i + 1), 300)
+				})()
+			}
+
+			// function loop2(i = 0) {
+			// 	//拡張のiframeは操作できないぽい
+			// 	console.log('ifra' + i)
+			// 	let elem = document.querySelectorAll('iframe').forEach(item => {
+			// 		let doc = item.contentWindow.document
+			// 		let el = Array.from(doc.querySelectorAll('span'))
+			// 			.find(el => el.textContent === 'WEBM audio-only - OPUS 48K')
+			// 		if (el) return (el)
+			// 	})
+			// 	if (elem) {elem.parentElement.parentElement.click(); return }
+			// 	setTimeout(() => loop2(i + 1), 300)
+			// 	// document.querySelector('iframe[src^="moz-extension"]')
+			// }
+
+
+		},
+	},
+	{
+		name: 'youtube',
+		url: ['^https://www.youtube.com/',],
+		date: '2020/08/04',
+		func: () => {
+
+
 		},
 	},
 ]
 /*
+
 {// 
 	name: '',
 	url: ['^',],
@@ -3344,6 +3599,7 @@ const arr = [
 	func:  () => {
 	},
 },
+
 */
 
 //ここで走査しつつ実行
