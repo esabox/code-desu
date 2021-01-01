@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript</title>
+  <style>
+    .table {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -300px;
+      margin-left: -300px;
+      border: 5px solid black;
+    }
+
+    .button {
+      width: 80px;
+      height: 80px;
+      background-color: #0f0;
+      text-align: center;
+      font-size: 50px;
+      cursor: pointer;
+      border: 3px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <table class="table" id="sampleButton">
+    <p>
+      <span id="sampleOutput" style="margin-left: 500px;"></span>
+      <tr>
+        <td>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+          <button class="button"> </button>
+        </td>
+      </tr>
+    </p>
+  </table>
+  <script type="text/javascript">
+    window.onload = function() {
+      document.getElementById("sampleButton").onmousedown = function($event) {
+        sampleFn($event);
+      };
+    }
+    function sampleFn($event) {
+      console.log($event)
+      const el = $event.target
+      if ($event.button == 0) {
+        el.innerHTML = "●";
+      } else if ($event.button == 1) {
+        el.innerHTML = " ";
+      } else {
+        el.innerHTML = "○";
+      }
+    }
+  </script>
+
+</body>
+
+</html>
