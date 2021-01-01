@@ -69,7 +69,7 @@ const qs = (s, o = document) => o.querySelector(s)
 const qsa = (s, o = document) => o.querySelectorAll(s)
 
 let time = Date.now() //時間測定
-let nsMiiya = {gamen() {} } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
+let nsMiiya = {gamen() { } } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
 
 /** el作成 parent無ければappendしない*/
 function createEl(parentEl, tagName, prop = {}, style = {}) {
@@ -266,7 +266,7 @@ function ugoiteruka(str, sakujo) {
 				font-size:18px;
 			`
 	}
-	el.innerHTML += str
+	// el.innerHTML += str
 	if (sakujo) {
 
 
@@ -870,7 +870,7 @@ nsMiiya.gamen = function() {
 							return ua
 						}
 					}
-				} catch (e) {}
+				} catch (e) { }
 			}
 			//changeUserAgent('Mozilla/5.0 (Macintosh; ...');
 			conDoW(window.navigator.userAgent)
@@ -1204,8 +1204,8 @@ const uo = {
 				})
 		}, 3000)
 	},
-	hoge() {},
-	hoge() {},
+	hoge() { },
+	hoge() { },
 }
 function utility() {
 	function fn_localStorage() {
@@ -1611,7 +1611,7 @@ const arr = [
 			//Array.prototypeは[]で置き換え可能
 			Array.prototype.forEach.call(document.querySelectorAll('h3.r > a'), function(elem) {
 				d && conDoW(elem.textContent)
-				elem.onmousedown = function() {}
+				elem.onmousedown = function() { }
 			})
 		},
 	},
@@ -3345,28 +3345,51 @@ const arr = [
 		url: ['^https://photos.google.com/',],
 		date: '2020/07/07',
 		func: async () => {
-			// 右クリックも作ってみる
-			document.addEventListener('mousedown', function(ev) {
-				if (ev.which !== 2) return
-				//alert(ev.which)
-				ev.preventDefault()
-				document.querySelector('button[title="削除"]').click()
-				!(function loop(i = 0) {
-					log(i)
-					let elem = Array.from(document.querySelectorAll('span'))
-						.find(el => el.textContent === 'ゴミ箱に移動')
 
-					if (elem && i > 3) {
-						elem.click()
-						return
+			const _sakujo = function() {
+
+
+				if (Array.from(document.querySelectorAll('span'))
+					.find(el => el.textContent === '選択中')) {
+					alert('選択中は簡単削除はできない仕様')
+					return
+				}
+				document.querySelector('button[title="削除"]').click()
+				!(function loop(loopCount = 0) {
+					log(loopCount)
+					//ディレイ
+					if (loopCount > 3) {
+
+						let elem = Array.from(document.querySelectorAll('span'))
+							.find(el => el.textContent === 'ゴミ箱に移動')
+
+						if (elem) {
+							elem.click()
+							return
+						}
 					}
-					if (i > 30) return
-					setTimeout(() => loop(i + 1), 100)
+
+					if (loopCount > 30) return //強制抜け
+					setTimeout(() => loop(loopCount + 1), 100)
 				})()
 				//qsでcontain()
 				// Array.from(document.querySelectorAll('span')).find(el => el.textContent === 'ゴミ箱に移動').click()
+				//選択＋一枚表示の時は#削除効かない、スクリプトで削除すると選択関係なく削除される。
+				//ので選択中は削除イベント無効にしたい。
+			}
 
-			}, !false)
+			const _evFunc = function(ev) {
+				// console.log(ev)
+				//mouseEv.button 1がホイール
+				if (ev.button !== 1) return
+				//alert(ev.which)
+				ev.preventDefault()
+				_sakujo()
+			}
+
+			//main
+			document.addEventListener('mousedown', _evFunc, !false)
+
 		},
 	},
 	{// タイピングゲームに枠を付ける 
@@ -3494,19 +3517,19 @@ const arr = [
 			console.log(scrollPx)
 			document.documentElement.scrollTop = scrollPx
 
-			var timer = null;
+			var timer = null
 
 			function func() {
-				clearTimeout(timer);
+				clearTimeout(timer)
 				timer = setTimeout(function() {
 					scrollPx = document.documentElement.scrollTop
 					console.log(scrollPx)
 					localStorage.setItem(keyscroll, scrollPx)
 
-				}, 1000 / 60 * 10);
+				}, 1000 / 60 * 10)
 			}
 
-			document.addEventListener('scroll', func, {passive: true});
+			document.addEventListener('scroll', func, {passive: true})
 
 		},
 	},
@@ -3543,7 +3566,7 @@ const arr = [
 				let url = decodeURI(window.location.href)
 				let el = document.querySelector('input.ytd-searchbox')
 				el.value = _文字列の日付ぽいものに7日足す(el.value)
-				document.querySelector("#search-icon-legacy").click()
+				document.querySelector('#search-icon-legacy').click()
 				// console.log(url)
 				// url = _文字列の日付ぽいものに7日足す(url)
 				// window.location.href = url
