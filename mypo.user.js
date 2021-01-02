@@ -2372,7 +2372,7 @@ const arr = [
 			})
 		},
 	},
-	{/* manga314で右クリックリストアップ */
+	{/* kk manga314で右クリックリストアップ */
 		name: 'kk manga314で右クリックリストアップ',
 		url: ['^https://manga314.com/',],
 		date: '',
@@ -2947,7 +2947,7 @@ const arr = [
 			}
 		},
 	},
-	{/* 5chのリンク */
+	{/* --off-- 5chのリンク */
 		name: '--off-- 5chのリンク',
 		url: ['^https://*.5ch.net/test/read.cgi/',],
 		date: '2020/02/10',
@@ -2959,9 +2959,12 @@ const arr = [
 			})
 		},
 	},
-	{/* 12 */
+	{/* kk 漫画 nyahentai */
 		name: 'kk 漫画 nyahentai',
-		url: ['^https://ja.nyahentai.com/', '^https://ja.nyahentai.org/',],
+		url: [
+			'^https://ja.nyahentai.com/',
+			'^https://ja.nyahentai.org/',
+		],
 		date: '2020/02/26',
 		func: function() {
 
@@ -3392,9 +3395,12 @@ const arr = [
 
 		},
 	},
-	{// タイピングゲームに枠を付ける 
+	{/* タイピングゲームに枠を付ける */
 		name: 'タイピングゲームに枠を付ける',
-		url: ['^https://vignette.wikia.nocookie.net/', '^http://typingx0.net/easy/'],
+		url: [
+			'^https://vignette.wikia.nocookie.net/',
+			'^http://typingx0.net/easy/',
+		],
 		date: '2020/07/29',
 		func: () => {
 			console.log('タイピング')
@@ -3533,10 +3539,12 @@ const arr = [
 
 		},
 	},
-
-	{// 
+	{/* YouTubeのラジオダウンロード、YouTube Video and Audio Downloader */
 		name: 'YouTubeのラジオダウンロード、YouTube Video and Audio Downloader',
-		url: ['^https://www.youtube.com/', 'https://cdn.profile-image.st-hatena.com/'],
+		url: [
+			'^https://www.youtube.com/',
+			'https://cdn.profile-image.st-hatena.com/',
+		],
 		date: '2020/07/31',
 		func: () => {
 			console.log('222')
@@ -3603,7 +3611,7 @@ const arr = [
 
 		},
 	},
-	{
+	{/* youtube */
 		name: 'youtube',
 		url: ['^https://www.youtube.com/',],
 		date: '2020/08/04',
