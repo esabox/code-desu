@@ -25,7 +25,7 @@ MY_SITEINFO = [
     //pageElement: '//body', //
   },
   {
-    url: '^https://www.tokyomotion.net/user/.+/videos',
+    url: '^https://www.tokyomotion.net/', //user/.+/videos',
     nextLink: '//a[contains(text(), "»")]',
     pageElement: '//body',
     //https://www.tokyomotion.net/user/t_t_t_t_t_t_t_t/videos?page=2
@@ -43,7 +43,38 @@ MY_SITEINFO = [
   {
     url: '^https://ja.nyahentai.com/',
     nextLink: '//a[@rel="next"]',
-    pageElement: '//*[@id="content"]/div[2]' //'//body' //
+    pageElement: '//*[@class="container index-container"]' //'//body' //
+    //pageElement: '//*[@id="content"]/div[2]' //'//body' //
   },
+  {
+    url: '^https://jav.re/.+/|^https://jav.com.se/',
+    nextLink: '//a[contains(text(), "»")]',
+    pageElement: '//body' //
+  },
+  {
+    url: '^https://dlraw.net/filter/',
+    nextLink: '//a[contains(text(), "Next →")]',
+    pageElement: '//div[@class="gradient"]' //
+  },
+  // {
+  //   url: '^',
+  //   nextLink: '//a[contains(text(), "»")]',
+  //   pageElement: '//body' //
+  // },
+  // {
+  //   url: '^',
+  //   nextLink: '//a[contains(text(), "»")]',
+  //   pageElement: '//body' //
+  // },
+  // {
+  //   url: '^',
+  //   nextLink: '//a[contains(text(), "»")]',
+  //   pageElement: '//body' //
+  // },
+  // {
+  //   url: '^',
+  //   nextLink: '//a[contains(text(), "»")]',
+  //   pageElement: '//body' //
+  // },
 
 ]
