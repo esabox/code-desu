@@ -1,516 +1,967 @@
-2019/11/12 #js function をconst リテラルで書くと、変なとこから呼び出されて未定義エラー
-	実行が不規則なのが悪いんだけど。
-2019/10/30 #js hoge=(obj.prop={}) //は作ったオブジェの参照がhogeとpropに入る。
-2019/10/30 #js 条件付きconstはifに入れるとスコープ無理だから、三項演算子など式で代入する必要ある。
-	それでも無理なら即時関数＋returnで。
-2019/10/30 #js user.jsでドメイン超えて、セッションID的なものが欲しい、クリックループを防ぐことができるし。
-	historyは無理、リファラーでURLにハッシュでTIMEくっつければできそうだけど、URL汚すのは嫌や。
-	Cookieかローカルストレージを調べてる。GM_*valueもできるけど、セッションIDは無理そう。
-2019/10/30 #js jsでCookie追加すると後ろに追加されていく。
-2019/10/29 #js window.unsafeWindow Wがキャメルコートで途中からのは大文字なので注意。
-	// @grant none を指定してない場合。
-	conDoW(window)をすると、window.unsafeWindow が見える。
-	コンソールからwindowすると｛parent Window〜 alertでunsafeWindowが無い、これが本当のwindow
-	偽物→window.unsafWindow←本物を一時避難
-	//gmが終わったから？本物→偽物と上書きされ、unsafwindowが消える。
-2019/10/29 #js スクリプトでwindow.)unsafeWindow.hoge←などプロパティに書くと、
-	戻されたあとは、window.)hogeになる。
-2019/10/29 #js user.jsが最後まで達すると？window = window.unsafeWindow となる。unが元々のwin。
-	GM_関数はコンソールからは使えないが、定義済み関数からは使える。
-2019/10/29 #js セミコロン省略すると変なとこで詰まる。次の行が()スタートだと関数実行とみなされる。
-2019/10/29 #js importをすると、exp以外もすべて一回実行する。
-2019/10/24 #js ブロックでスコープが見つからない。
-	if (1) {
-		const a = 0
+
+,,,2019/11/12 #js
+function をconst リテラルで書くと、変なとこから呼び出されて未定義エラー
+実行が不規則なのが悪いんだけど。
+
+,,,2019/10/30 #js
+hoge=(obj.prop={}) //は作ったオブジェの参照がhogeとpropに入る。
+
+,,,2019/10/30 #js #javascript
+条件付きconstはifに入れるとスコープ無理だから、三項演算子など式で代入する必要ある。
+それでも無理なら即時関数＋returnで。
+
+,,,2019/10/30 #js
+user.jsでドメイン超えて、セッションID的なものが欲しい、クリックループを防ぐことができるし。
+historyは無理、リファラーでURLにハッシュでTIMEくっつければできそうだけど、URL汚すのは嫌や。
+Cookieかローカルストレージを調べてる。GM_*valueもできるけど、セッションIDは無理そう。
+
+,,,2019/10/30 #js
+jsでCookie追加すると後ろに追加されていく。
+
+,,,2019/10/29 #js
+window.unsafeWindow Wがキャメルコートで途中からのは大文字なので注意。
+// @grant none を指定してない場合。
+conDoW(window)をすると、window.unsafeWindow が見える。
+コンソールからwindowすると｛parent Window〜 alertでunsafeWindowが無い、これが本当のwindow
+偽物→window.unsafWindow←本物を一時避難
+//gmが終わったから？本物→偽物と上書きされ、unsafwindowが消える。
+
+,,,2019/10/29 #js
+スクリプトでwindow.)unsafeWindow.hoge←などプロパティに書くと、
+戻されたあとは、window.)hogeになる。
+
+,,,2019/10/29 #js
+user.jsが最後まで達すると？window = window.unsafeWindow となる。unが元々のwin。
+GM_関数はコンソールからは使えないが、定義済み関数からは使える。
+
+,,,2019/10/29 #js
+セミコロン省略すると変なとこで詰まる。次の行が()スタートだと関数実行とみなされる。
+
+,,,2019/10/29 #js
+importをすると、exp以外もすべて一回実行する。
+
+,,,2019/10/24 #js
+ブロックでスコープが見つからない。
+if (1) {
+	const a = 0
+}
+else {
+	const a = 1
+}
+conDoW(a)
+
+,,,2019/10/24 #js
+onclick=functionが正解,onclick=()=>は駄目ぽ。
+element.onclick()と呼ばれるので、アロー関数だとthisがwindowになってしまう。
+
+,,,2019/10/24 #js
+insertAdjacentText("beforbegin","外側")、textContent+=より速いらしい。記憶。
+
+,,,2019/10/24 #js
+user.jsで戻った時に実行したくない、自動ジャンプだと戻れなくなるから。
+history.replaceで#hogeとつけることで、実行回避できた。
+location+=#hogeでもできる、ただ失敗するとこっちはループする危険もある。
+
+,,,2019/01/07 #js
+firefox greasemonkey で@require したらcacheが出来て更新できない。
+拡張フォルダに作られるタイプで、cacheクリアとかほぼ無理
+もう嫌だと、ローカル鯖にしよう
+mac なら 公開したいフォルダに移動して python -m SimpleHTTPServer 8888
+終了はC-c
+http://localhost:8888/mypo.user.js
+
+,,,2019/11/16 #js
+htmlエンティティをデコードはDOMを使うと簡単らしい。&amp;←こいうの。
+function decodeHtml(html) {
+	var txt = document.createElement("textarea");
+	txt.innerHTML = html;
+	return txt.value;
+}
+
+,,,2019/11/16 #js
+JSZip.jsの読み込みに苦労うした。JsZipとタイポしてたから余計にきつかった。
+user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
+この場合、メインもreuireで読み込まなければ同じスコープにならない。
+commonjsのimportは対応してないぽい？
+
+,,,2019/11/18 #js
+functionにprototypeつけれない。
+function hoge(){}
+hoge.prototype.fn=function(){}
+console.log(hoge.fn) //undefined
+//const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
+けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
+
+,,,2019/11/20 #js
+importする場合、scriptタグにtype="module"が必要。
+
+,,,2019/12/03 #js
+arr.mapで返り値捨てるタイプで代入
+arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
+// arr.map(val => val=(' '.repeat(maxlen) + val).slice(-maxlen))
+//上は無理、valはobjじゃないから、参照無し、thisarray使えば出来る。
+
+,,,2019/12/03 #js
+for(const [key, value] of arr.entries()) 
+みたいに変換関数噛ますと、カーボンコピーだから代入は無理？
+
+,,,2019/12/03 #js
+プリミティブ型を変換するのに、String(111)とかやるけど、これnewが本当は必要ぽい。
+newつけたほうが速い。
+嘘ちがたった。
+newつけるとobject型になるし、遅い。
+
+,,,2019/12/03 #js
+後ろの引数だけを使いたい、前は空にしたいときはundefined、nullじゃ無理。hoge(,1)も駄目。
+hoge(undefined,10)
+
+,,,2019/12/03 #js
+全角の長さを2でカウントしたい。decodeURIは空白も変換して無理そう。
+正規表現で日本語を2文字に変換するのを予想。
+日本語が3バイトでUTF16で処理されてるらしい。
+関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
+str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
+str.length // => 17
+
+,,,2019/12/05 #js
+elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
+なので、cssセレクタでcss設定されたものは探せない。
+
+,,,2019/12/05 #js
+array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
+
+,,,2019/12/05 #js
+settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
+// setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
+// setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
+// setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
+// setTimeout(this.hoge.bind(this),100) //OK 行の時点で、固定した関数を返す
+Timeout.fn()的な実行される。this.hoge が呼べるのは、これが関数のアドレスだからだと予想。
+fn=0x2342 的な。
+こう見ると、アロー関数が特異なのが分かる、無名関数渡してるだけなのに。無名関数のthisを固定決定してる。
+アロー関数がthisを持ってないとネットに書いてあったが。
+hoge.bbb=100
+hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
+
+,,,2019/12/05 #js
+fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
+
+,,,2019/12/06 #js
+クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
+イメージ的にはスコープ繋がったけど、違った。
+let hoge=()=>{console.log(this.xxx)}で見れた。
+アロー関数はthisを束縛するってやつ。
+!(function() {log(typeof this)})() //undefined
+!(() =>      {log(typeof this)})() //object
+--分かりやすく
+this.a = 11
+let obj = {a: 22}
+obj.f = () =>      {log(this.a)}; obj.f() //11
+obj.f = function() {log(this.a)}; obj.f() //22
+thisは毎回混乱する、設計が悪いんや！
+
+,,,2019/12/06 #js
+asc desc が覚えられん、ascedは英語の「上がる」、階段を上がっていくイメージ
+
+,,,2019/12/06 #js
+textフォーマット構文から、出力する処理を書いた。
+最初はテンプレートリテラルぽいのを作ったけど、後ろ点で囲むと本物と混ざって混乱しそうで止めた。
+fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
+--次に、*hoge* みたいな奴にしてみた。エスケープでバッスラ考えたけど、苦しんで出来たけど、
+汚いしバッスラのバッスラどうすんだ問題（完璧主義）で止めた。
+そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
+fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
+
+,,,2019/12/07 #js #dom
+div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
+イベントの理解が低い。
+
+,,,2019/12/07 #js
+div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
+htmlをテキストで弄るの駄目
+div.appendChild(document.createTextNode("aaa"))
+
+,,,2019/12/07 #js
+node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
+とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
+
+,,,2019/12/08 #js #dom
+shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
+
+,,,2019/12/11 #js
+dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
+nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
+lastchildはノードなのでややこしい、lastElementChildがelement
+
+,,,2019/12/11 #js
+document以外からのセレクタ
+le=get~id(#hoge)
+let.query~(#hoge)→null
+let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
+
+,,,2019/12/13 #js
+document.boy.parentNode
+document.htmlElemmnt?
+
+,,,2019/12/13 #js
+知らなかった。
+>ES6のオブジェクトのメソッドは省略記法がある
+const obj = {
+	method() {
+		console.log(this);
 	}
-	else {
-		const a = 1
+}
+
+,,,2019/12/13 #js
+Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
+arr.__proto__:Array(0).entries()がある。
+arr.__proto__:Array(0).__proto__:Object()←には無い。
+arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
+ちなみに、
+arr.__proto__:Array(0).constructor()は、isArrayなどがある
+constructor()系は原型から呼ばないといけないぽ。
+
+,,,2019/12/13 #js
+Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
+
+,,,2019/12/16 #js
+functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
+
+,,,2019/12/18 #js #css
+中央画面MAX配置は
+position 相対的
+transform: translateX(-50%);
+left: 50%;
+ただ、動画を最上位MAXなら、position
+
+,,,2019/12/23 #js
+右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
+document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
+document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
+document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
+
+,,,2019/12/23 #js
+選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
+
+,,,2019/12/23 #js
+ブラウザのalertが最前面にならないから気づかない。
+window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
+
+,,,2019/12/23 #js
+cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
+
+,,,2019/12/23 #js
+あれば〜系はtryで囲ってエラーもみ消してええのか？
+ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
+//前に作ったやつ、あれば削除
+// const el = qs('#aaa')
+// if (el) el.remove()
+try {
+	qs('#aaa').remove()
+} catch (error) {}
+
+,,,2020/01/04 #js
+setTimeout等がバックグラウンドだと1s間隔まで遅くなる、のでカウントダウン系は進むのがすごく遅くなる。
+
+,,,2020/01/05 #js
+abema寝落ち対策でページ移動時に警告するbeforunloadEVENT使おうとしたら、無反応。
+リロードだけ反応、reactとか仮想DOM使ってるからEVENT発生しないぽい。
+
+,,,2020/01/05 #js
+JSON.stringfire？オブジェクト構造をJSONにしてくれる関数、似たようなの作ろうとブラウザjsを調べようとしたらNativeとだけ表示。
+node.jsなら多分表示できるぽい。もう作っちゃったけど。
+
+,,,2020/01/06 #js
+Loop処理のintervalもtimeoutも速度はほぼ変わらない
+//setInterval
+let i = 1
+let timer = setInterval(() => {
+	if (i == 1000) {
+		log(i)
+		clearInterval(timer)
+		return
 	}
-	conDoW(a)
-2019/10/24 #js onclick=functionが正解,onclick=()=>は駄目ぽ。
-	element.onclick()と呼ばれるので、アロー関数だとthisがwindowになってしまう。
-2019/10/24 #js insertAdjacentText("beforbegin","外側")、textContent+=より速いらしい。記憶。
-2019/10/24 #js user.jsで戻った時に実行したくない、自動ジャンプだと戻れなくなるから。
-	history.replaceで#hogeとつけることで、実行回避できた。
-	location+=#hogeでもできる、ただ失敗するとこっちはループする危険もある。
-2019/01/07 #js firefox greasemonkey で@require したらcacheが出来て更新できない。
-	拡張フォルダに作られるタイプで、cacheクリアとかほぼ無理
-	もう嫌だと、ローカル鯖にしよう
-	mac なら 公開したいフォルダに移動して python -m SimpleHTTPServer 8888
-	終了はC-c
-	http://localhost:8888/mypo.user.js
-2019/11/16 #js htmlエンティティをデコードはDOMを使うと簡単らしい。&amp;←こいうの。
-	function decodeHtml(html) {
-		var txt = document.createElement("textarea");
-		txt.innerHTML = html;
-		return txt.value;
+	++i
+})
+//timeout
+!function aaaa(i = 1) {
+	if (i == 1000) {
+		log(i, time.toFixed(1))
+		return
 	}
-2019/11/16 #js JSZip.jsの読み込みに苦労うした。JsZipとタイポしてたから余計にきつかった。
-	user.jsだから余計に大変でもあった。user.jsの @requireで読み込んだ。
-	この場合、メインもreuireで読み込まなければ同じスコープにならない。
-	commonjsのimportは対応してないぽい？
-2019/11/18 #js functionにprototypeつけれない。
-	function hoge(){}
-	hoge.prototype.fn=function(){}
-	console.log(hoge.fn) //undefined
-	//const hoge=functionでも同じ、関数にprototypeつけれない。プロパティはできる。
-	けどfunc＋プロパティじゃ、thisにアクセスできないから、ほぼ意味ない。
-2019/11/20 #js importする場合、scriptタグにtype="module"が必要。
-2019/12/03 #js arr.mapで返り値捨てるタイプで代入
-	arr= arr.map(val => (' '.repeat(maxlen) + val).slice(-maxlen))
-	// arr.map(val => val=(' '.repeat(maxlen) + val).slice(-maxlen))
-	//上は無理、valはobjじゃないから、参照無し、thisarray使えば出来る。
-2019/12/03 #js for(const [key, value] of arr.entries()) 
-	みたいに変換関数噛ますと、カーボンコピーだから代入は無理？
-2019/12/03 #js プリミティブ型を変換するのに、String(111)とかやるけど、これnewが本当は必要ぽい。
-	newつけたほうが速い。
-	嘘ちがたった。
-	newつけるとobject型になるし、遅い。
-2019/12/03 #js 後ろの引数だけを使いたい、前は空にしたいときはundefined、nullじゃ無理。hoge(,1)も駄目。
-	hoge(undefined,10)
-2019/12/03 #js 全角の長さを2でカウントしたい。decodeURIは空白も変換して無理そう。
-	正規表現で日本語を2文字に変換するのを予想。
-	日本語が3バイトでUTF16で処理されてるらしい。
-	関係で調べてると、4バイトの文字も混じってるらしく、lengthでも対応できない。
-	str = `𠮷野屋で𩸽頼んで𠮟られる😭`; //13文字
-	str.length // => 17
-2019/12/05 #js elemment.styleはcssの情報は無い。csstextの情報はある。凄いテキスト量。
-	なので、cssセレクタでcss設定されたものは探せない。
-2019/12/05 #js array.map array.forEach がほぼ同じ過ぎる、mapは[...返り値]で配列返す。
-2019/12/05 #js settimeoutのthis問題、わかってるつもりで、分かってなかった。ブラックボックスだから理解しにくい。
-	// setTimeout(function() {this.hoge()}, 100) //this==Timeout{}で関数が見つからない
-	// setTimeout(()=>this.hoge(),100) //OK 行の時点でthis固定される
-	// setTimeout(this.hoge,100) //呼び出せるが、先でthisがTimeout{},行の時点でTimeout.fn=this.hogeされる
-	// setTimeout(this.hoge.bind(this),100) //OK 行の時点で、固定した関数を返す
-	Timeout.fn()的な実行される。this.hoge が呼べるのは、これが関数のアドレスだからだと予想。
-	fn=0x2342 的な。
-	こう見ると、アロー関数が特異なのが分かる、無名関数渡してるだけなのに。無名関数のthisを固定決定してる。
-	アロー関数がthisを持ってないとネットに書いてあったが。
-	hoge.bbb=100
-	hoge.aaa=(fn)=>{fn()} //fn()先のthisはhogeてthisを持てるてる？
-2019/12/05 #js fn(hoge)関数の受け欄はlet hoge=arg[0] に近い。thisじゃない。
-2019/12/06 #js クラスメソッドの内に関数作り、this.xxxを見ようとしたら見れない。
-	イメージ的にはスコープ繋がったけど、違った。
-	let hoge=()=>{console.log(this.xxx)}で見れた。
-	アロー関数はthisを束縛するってやつ。
-	!(function() {log(typeof this)})() //undefined
-	!(() =>      {log(typeof this)})() //object
-	--分かりやすく
-	this.a = 11
-	let obj = {a: 22}
-	obj.f = () =>      {log(this.a)}; obj.f() //11
-	obj.f = function() {log(this.a)}; obj.f() //22
-	thisは毎回混乱する、設計が悪いんや！
-2019/12/06 #js asc desc が覚えられん、ascedは英語の「上がる」、階段を上がっていくイメージ
-2019/12/06 #js textフォーマット構文から、出力する処理を書いた。
-	最初はテンプレートリテラルぽいのを作ったけど、後ろ点で囲むと本物と混ざって混乱しそうで止めた。
-	fmt.replace(/\$\{.+?\}|[^$]+|\$/g, aaa)+'\n'
-	--次に、*hoge* みたいな奴にしてみた。エスケープでバッスラ考えたけど、苦しんで出来たけど、
-	汚いしバッスラのバッスラどうすんだ問題（完璧主義）で止めた。
-	そして閃いた、エスケープは**でええやんけ。めちゃ綺麗に書けた。
-	fmt.replace(/\*.*?\*|[^*]+/g, fn) + '\n'
-2019/12/07 #js #dom div-button1~9 で、ボタン全てにイベントつけてたが、divにつけてやると楽そうだけど失敗、
-	イベントの理解が低い。
-2019/12/07 #js div.innerHTML += "aaa" すると、divのEventListenerは残るぽいけど、中のボタンとかは消えてしまう。
-	htmlをテキストで弄るの駄目
-	div.appendChild(document.createTextNode("aaa"))
-2019/12/07 #js node.jsでimport使えない、--experimental-modulesのオプション＋ファイル名mjsで使える様になったけど。
-	とても実用的じゃない。documentも使えない、browser-envをインストールしてimportすりゃ良いらしいけど
-2019/12/08 #js #dom shadowDOMはappendChilは使えるが、insertElemは使えない、間に１つdiv挟めばできると思う。
-2019/12/11 #js dom ノードと要素elemmentは別物、nodeは改行やテキストノードも含むから使いにくい。
-	nodeプロパティのchildrenはelementのみで使いやすい、childnodesは改行とかテキストノードも引っ張ってくる。
-	lastchildはノードなのでややこしい、lastElementChildがelement
-2019/12/11 #js document以外からのセレクタ
-	le=get~id(#hoge)
-	let.query~(#hoge)→null
-	let.query~(#hoge>*)→見つかる、つまり見えるけどセレクトできない。
-2019/12/13 #js document.boy.parentNode
-	document.htmlElemmnt?
-2019/12/13 #js 知らなかった。
-	>ES6のオブジェクトのメソッドは省略記法がある
-	const obj = {
-		method() {
-			console.log(this);
-		}
-	}
-2019/12/13 #js Object.entries(obj)なのに、arr.entries()できる謎。Array.prototype.entiresがある。
-	arr.__proto__:Array(0).entries()がある。
-	arr.__proto__:Array(0).__proto__:Object()←には無い。
-	arr.__proto__:Array(0).__proto__:Object().constructor()←にある。
-	ちなみに、
-	arr.__proto__:Array(0).constructor()は、isArrayなどがある
-	constructor()系は原型から呼ばないといけないぽ。
-2019/12/13 #js Dateみたいに、インスタンスそのものが文字列返すとかやりたい。
-2019/12/16 #js functionのプロパティはリファクタリング出来ない。method作りたいなら、Objectかclassにすべきか？
-2019/12/18 #js #css 中央画面MAX配置は
-	position 相対的
-	transform: translateX(-50%);
-	left: 50%;
-	ただ、動画を最上位MAXなら、position
-2019/12/23 #js 右クリック禁止などを無効にする一例、stopi〜は特定のeventを全て無効にするぽい。
-	document.addEventListener('paste', event => event.stopImmediatePropagation(), true);
-	document.addEventListener('contextmenu', event => event.stopImmediatePropagation(), true);
-	document.addEventListener('drop', event => event.stopImmediatePropagation(), true);
-2019/12/23 #js 選択テキスト検索する機能は、selectionchangeだと連射しすぎ、mousupとかのほうが良さそう
-2019/12/23 #js ブラウザのalertが最前面にならないから気づかない。
-	window.open()で最前面出せる。通知も出来るけど、事前に設定必要で、表示も小さい。
-2019/12/23 #js cssでall:unsetなどはラッパー無いと無理、カーソル変更とかも全部消える。
-2019/12/23 #js あれば〜系はtryで囲ってエラーもみ消してええのか？
-	ちょっと調べてたら、負荷が大きいらしく結構おそくなるらしい。ベンチしてみたい。
-	//前に作ったやつ、あれば削除
-	// const el = qs('#aaa')
-	// if (el) el.remove()
-	try {
-		qs('#aaa').remove()
-	} catch (error) {}
-2020/01/04 #js setTimeout等がバックグラウンドだと1s間隔まで遅くなる、のでカウントダウン系は進むのがすごく遅くなる。
-2020/01/05 #js abema寝落ち対策でページ移動時に警告するbeforunloadEVENT使おうとしたら、無反応。
-	リロードだけ反応、reactとか仮想DOM使ってるからEVENT発生しないぽい。
-2020/01/05 #js JSON.stringfire？オブジェクト構造をJSONにしてくれる関数、似たようなの作ろうとブラウザjsを調べようとしたらNativeとだけ表示。
-	node.jsなら多分表示できるぽい。もう作っちゃったけど。
-2020/01/06 #js Loop処理のintervalもtimeoutも速度はほぼ変わらない
-	//setInterval
-	let i = 1
-	let timer = setInterval(() => {
-		if (i == 1000) {
-			log(i)
-			clearInterval(timer)
-			return
-		}
-		++i
-	})
-	//timeout
-	!function aaaa(i = 1) {
-		if (i == 1000) {
-			log(i, time.toFixed(1))
-			return
-		}
-		setTimeout(aaaa, 0, i + 1)
-	}()
-2020/01/06 #js benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
-2020/01/10 #js #css flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
-	そのごは簡単にできた。
-2020/01/14 #npm 久しぶりに使ってほぼ忘れてた。
-	package.jsonあるフォルダにcdして、nmp install -g でグローバルにそれをインストールする。
-	npm list --depth=0 -g で表示させて。名前をコピーして
-	nmp uninstall namae -g でアンインストール
-2020/01/14 #js shebangでnode.js
-	#!/usr/bin/env node
-	先頭にこれかく
-	https://qiita.com/tom-u/items/34cf26fa4fa129f93095
-	便利なものインストール
-	$ npm i commander co-prompt co shelljs --save
-	$ npm list --depth=0
-2020/01/15 #js shebangのnode.jsで引数
-	#!/usr/bin/env node
-	console.log(process.argv)
-	const args = process.argv.slice(2)
-2020/01/15 #js 分割代入でまた混乱、忘れすぎ。
-	const obj = {a: 10, b: 20, c: 30};
-	const {a: val1, c: val2} = obj;
-	console.log(val1); // 10
-	console.log(val2); // 30
-2020/01/15 #js #node node.jsのコードをデバッグで見るも、jsdocは無かった。
-2020/01/15 #js str.matchとregexp.execはほぼ同じ、
-	こういう、123,234,345みたいな事が出来ると書いてあったが、ゴツくすればmatchもindex返すし出来そう。
-	var str = '123456789';
-	var ex = /\d{3}/g;
-	while((arr = ex.exec(str)) != null){
-		console.log(arr);
-		ex.lastIndex -= 2;
-	}
-2020/01/15 #js "XaaaX".split('aa+')がnullで10分混乱した。/aa+/になってねえ。
-2020/01/15 #js const arr にしてたけど、arr=conv(arr) でだめだな、当然。
-2019/12/27 #ターミナル alias登録すると、どこでも短縮コマンド使える。
-	初回の登録面倒
-	◆ホームに移動、しなくてもいいが。
-	$ cd ~ 
-	◆以下追記、最後は改行必須
-	$ vi ~/.bashrc
-	alias renameEditor=/Users/kazoku/Desktop/code/py/renameUsingTextEditor.py
-	◆プロファイルに記述
-	$ vi ~/.bash_profile
-	source ~/.bashrc
-	◆プロファイルリロード
-	source ~/.bashrc
-	--
-	vi面倒だから追記もやってみたが、よりムズい
-	echo 'alias hoge=piyo -a' >> ~/.bashrc 
-	--
-	bash_profileはログインの時だけ、bashrcは毎回読み込まれるらしい、じゃあ全部bashrcで良いじゃん。
-	--
-	ln -s 対象 出力先 でシンボリックリンクでショートカット作ろうと思った。
-	作れたけど$ ~/hoge みたいにしか呼び出せない。コマンドじゃなくてファイル
-2019/12/28 #py 三項演算子が無い、or and 
-	print("aa") if False else print("bb") こんなのも、
-	val="aa" if False else "bb" #代入もできる
-	print(val) #bb
-2019/12/28 #ターミナル echo $PATH で表示するとごっちゃ、キレイに変換
-	$ echo $PATH | tr ':' '\n'
-	/usr/bin
-	/bin
-	/usr/sbin
-	/sbin
-	/usr/local/bin
-	/opt/X11/bin
-	/usr/local/share/dotnet
-	/Library/Frameworks/Mono.framework/Versions/Current/Commands
-	/Users/kazoku/.nodebrew/current/bin
-	/Users/kazoku/.nodebrew/current/bin
-	/Users/kazoku/.nodebrew/current/bin
-	/Users/kazoku/.nodebrew/current/bin
-	/Users/kazoku/.nodebrew/current/bin
-	なんかめちゃ重複してる。
-	--
-	trは一文字の置換しかできない。
-	sedは一行用らしく、改行の概念がない、
-	2文字以上で改行が必要ならawkを使う。
-	$ echo $PATH | awk '{ gsub(":", ":\n"); print }'
-	--
-	カレントフォルダをPATHに登録、一方に$が無いことに注意。
-	$ export PATH=$PATH:`pwd`
-	削除したいときはテキストに書き出して、削除してそれを登録
-2019/12/28 #ターミナル シンボリックリンクは絶対パスにすべき、相対パスでも作れるが、移動させたら終わり
-	ln -s 絶対パス 作る場所と名前
-	ハードリンクはほぼ同じだが、本体と判別が困難。
-2019/12/29 #mac #ターミナル winファイルショートカットの代わりが無い
-	alias が近いが、登録とか面倒、ln -s はデフォ引数とか無理
-2019/12/29 #ターミナル コマンドは./が無いやつ、つまりPATH限定。もしくはalias
-2019/12/29 #ターミナル コマンドを展開する、同じ
-	$ echo `pwd`
-	$ echo $(pwd)
-	変数を展開、結果同じ
-	$ echo ~+
-	$ echo $PWD
-2019/12/29 #ターミナル 戻る、両方同じ
-	$ cd ~-
-	$ cd $OLDPWD
-	環境変数を調べるprintenvで、いろいろ分かる
-	使うのは、HOME TMPDIR PWD PATHぐらいか？
-2020/01/15 #js メモ帳のフォーマットを弄る。
-	テキストのフォーマット変換プログラムを作る。
-	pyじゃなくてshebangのnode.jsでやったので凄い楽だった。
-	テキストエディタを使う：置換が簡単、コーディング中に書きやすい。日付が面倒
-	二重改行：エディターを選ばない。
-	タブ分け：そのままworkfloyに貼り付けれる、構造化出来る
-2020/01/15 #スプレッドシート csvをインポート。
-	.text拡張子だと弾かれる。txtにする。
-	ダブクォ無し、カンマ区切り、文字カンマエスケープじゃ、エスケープ無視でカンマ切られる。
-	ダブクオ無し、タブ区切り、成功。タブエスケは\<tab>は無理。
-		\t \nを復元すると、文字の\nも改行に変換してしまう。
-	\\n、\n を復元しようとすると、\\優先で、indexを同時進行しないと無理じゃね？
-	しんくぉで囲ってもOK,ばっくぉはNG、\もそのまま表示される。\nも当然そのまま。
-2020/01/16 #js #nodeJS 一行評価してプリント、$node -p "1+1"
-	-eオプだとevaluate評価のみ
-2020/01/16 #js ’と”の違い無し、phpだと’だとエスケープそのままとかだったかな。
-2020/01/16 #スプレッドシート タブは数式欄だとタブだが、ダブルクリック編集だとスペース8個ぐらいになってる
-	ペーストでタブに置き換えてもなんかスペースになったり安定しない。
-2020/01/16 #スプレッドシート 改行の入力で半日悩んだが、Download→csvにしたら、普通に生改行だった。インポートしても再現出来る。
-	ダウンロードcsv，改行かカンマがある場合のみダブクォ囲み、改行そのまま、ダブクォ→””、
-	tsvはタブ＋ダブクォ無し、再変換すると改行もタブも消えた。
-2020/01/16 #スプレッドシート #js シャローコピー、ディープコピー、ディープが完全なる別コピー。
-	objが入れ子になってると、表面だけスプレット演算とかでディープコピーしても、
-	内部のobjは同じ参照で、シャロコピーになる。
-	一旦テキストにする、JSONが使われるが、関数やNumberとか出来ない。
-	var variable2 = JSON.parse(JSON.stringify(variable1));
-	単純な一次元配列ならarr.slice()で良いと思う、一番速いし。
-2020/01/23 #js array.reduceはforeachで代用できるが、accumlator蓄電池を最初から用意してるのが使い所。
-2020/01/23 #js 文字のparseは正規表現が複雑になる、それを単純化してみた。
-	let [, date, tag, content] = val.match(/^([\d/]{10}) ((?:#\S+ )*)([\S\s]+)/)
-	↓
-	let v1, v2, v3
-	val
-		.replace(/^[\d/]{10} /, s => {v1 = s; return ''})
-		.replace(/^(#\S+ )*/, s => {v2 = s; return ''})
-		.replace(/^[\S\s]+/, s => {v3 = s; return ''})
-	行数は増えるが、正規表現はシンプルになる。
-	reduceも考えたけど、あんまり。
-2020/01/23 #js 文字をindexで切って配列で返す関数が無い、ぐぐったら
-	const splitAt = index => x => [x.slice(0, index), x.slice(index)]
-2020/01/23 #js #削除コード スクリプト読み込む
-	let s = document.createElement( 'script' );
-	s.type = 'text/javascript';
-	s.src = ( 'http://localhost:8888/mypo.user.js'); //+"?"+Date.now() //引数あるとvscodeで止まらない、logの行数だけは移動できた。
-	document.body.appendChild( s );
-2020/01/23 CANONの複合機、デバイスでwsがついてるのが、windowsに元から用意されたドライバ。スキャナは出来ない。
-	公式ドライバーをインストールして、プログラムにscanなんたら作られるからそれ実行でスキャン。
-	デバイスからは無理ぽい。
-2020/01/24 #js user.jsでサイト軽く弄るときは、qsより、css作って吐き出すほうが楽なこと多い。
-2020/01/24 #js js側でstyleでcss書く時、obj assignみたいなのが欲しい。
-2020/01/29 #js Clickイベントはelementにつけるが、追加読み込みやuser.jsの場合は、
-	ドキュメントにつけて、条件で割り振ると一個で済む。
-	あまりバブリングとかとは関係ない技術。
-	ただ、この方法の場合、表面の情報しか取れないので、
-	<a><img></a>で<a>条件だと、imgClickしても反応しない。
-	単純に<a>に直接イベントをつけた場合は、imgClickにも反応する。
-	なのでdocイベントの場合は、imgの親をたどって<a>があるか走査する必要がある。
-2020/02/03 #nodejs nodebrew使ってる場合の、バージョン管理
-	--古いものを削除
-	~$ nodebrew ls
-	v7.10.0
-	v13.2.0
-	current: v13.2.0
-	~$ nodebrew uninstall 7.10.0
-	--
-	--最新インストール
-	~ $ nodebrew install-binary latest 
-	######################################################################## 100.0%
-	Installed successfully
-	~ $ nodebrew ls
-	v13.2.0
-	v13.7.0
-	~ $ nodebrew use 13.7
-	use v13.7.0
-2020/02/03 #ターミナル ヘッダーを書き換え、長すぎると邪魔。
-	~ $ vi .bash_profile 
-	export PS1="[\W \$] "
-	~ $ source ~/.bash_profile
-2020/02/06 #css position: absolute;top: 0px;でどこの要素でも上に固定されるはずが。
-	divから出なくて悩む。
-	上のブロックでposition弄ってると、そこが起点になってしまうらしい。
-	jsからwindow.pageXOffsetで絶対座標を取って、それマイナスにゴリゴリ系で対応できるかも。やりたくない。
-	bodyにappendする従来。
-2020/02/24 #js downThemAllで失敗した時用に、ファイル書き出し。しかしtitle属性が消えてしまう。descは残ったのでそれに対応するuserjsを書いた。
-	しかしインポートするとその情報も読み込まれない。無意味だった。
-2020/02/26 #js docにクリックイベントを付けた場合
-	let el = ev.target
-	//qsa式、親まで走査しようとすると大変過ぎる？。でもcssセレクタ使える。css3ではhasが使えない。
-	const result = Array.from(document.querySelectorAll('img.lazyloaded'))
-		.some(v => v === el)
-	if (result) {}
-	//2式、条件が自在、処理が軽い、親までさん探せる
-	while (el) {
-		// conDoW([el.tagName, el.className])
-		//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
-		if (el.tagName == 'DIV' &&
-			el.className == 'post' &&
-			ev.ctrlKey === false) break
-		el = el.parentElement //上の要素へ
-		if (el.tagName === 'HTML')
-			return false //走査終了
-2020/02/26 #css 枠を付けて要素の最全面にする。zindexもできそう。
-	.className:after {
-	content: "";
-	position: absolute;
-	/* top: 0; */
-	left: 0;
-	width: 100%;
-	height: 100%;
-	/* display: block; */
-	border: 20px solid #f008;
-	}
-	--もっと簡単ぽいもの、対象要素にdivappendして。style以下
-	position: 'absolute',
-	height: '100%',
-	width: '100%',
-	border: '20px solid #f009',
-2020/07/07 #js googleフォト削除をujsでやろうと思う。
-	document.dispatchEvent(new KeyboardEvent('keypress',{keyCode:120})) 
-	↑やってみるも無理、ctrl:false,code,"K
-2020/07/29 #js addEventListenerで入れ子だとmouseupが伝わらないのでcaptchaが必要だった。
-	--
-	obj.存在しない←これを使おうとしてもエラーが出ない。
-	var a
-	console.log(a.b)
-	//Uncaught TypeError: Cannot read property 'b' of undefined
-	var a={}
-	console.log(a.b)
-	//undefined
-	--
-	el.onclickと el.addEventListener('click',f) の違いは、
-	プロパティは、nullでどこからでも消せる、一つしか登録できない、バブリングのみ。
-	addEventListenerは消すのに、関数名が必要なので、スコープ離れてる設計じゃ無理。
-	--
-	document.addEventListener('mousemove',f)のevent.targetはマウス直下のものになる。
-	event.currentTargetが最初の限定ぽい
-	--
-	addEventListener(click,f)でfに引数渡そうとすると
-	function(ev){f(ev,99)}とするあるある方法、しかし無名関数なので解除できない。
-	名前をつけたとて、スコープ外では解除できない。ハンドル二重にすればできるかも、酷いけど。
-	handleEventかbindを使いえば多少きれいになる。	
-	--
-	addEventListener('click',{handleEvent:f,arg1:999})
-	第二をオブジェクトにするとthis.arg1で参照できる、が一旦変数に入れないと、解除ができない。
-	addEventListener('clikc',obj)
-	removeEven~('click',obj)
-	みたいな
-	bindでも一緒、解除するなら変数必要、objだとthis使うから気持ち悪いかなあ。
-	event.currentTarget.removeEventListener('click', this); //解除
-	でも解除できるらしいけど試してない。
-	関数でグローバル変数使いたくない派としては厳しい。
-	bindでグローバルにハンドル変数作っておくのが良いかなあ。
-	bindすると、eventが最後になるのが良くない。
-	--
-	mousemoveでは飛び出すと効かなるなるのでdoc指定する必要あり、
-	ev.targetは直下、ev.currentTargetはdocになり、前者は外れると変わる
-	ので、evからの指定は安定しないので使えない。
-2020/08/02 #ターミナル history | grep cd →!番号 で履歴使える。
-	control+r でリバースサーチできる。
-	履歴初期値は500、重複も記録するからすぐ消えていく。
-	重複を消す設定にしてみた、過去ログは変化しない。
-	.bashrc .bash_profile でまた悩む、.bash_profileでいいや。
-2020/08/03 #js 開発用にクロスドメイン回避したい
-	chromeのセキュリティを外して起動
-	Windowsの場合
-	chrome.exe --disable-web-security --user-data-dir
-	Macの場合
-	open /Applications/Google\ Chrome.app/ --args --disable-web-security --user-data-dir
-2020/12/11 macの中身をバックアップして綺麗にした。
-2020/12/13 やる気 巻いてからやろうはやらないので、先にやってみる。
-2020/12/13 ボトラー 庭ボトしようとしたら、隣から回覧板来てどうしょうもなくなって出た。
-	初めて直接対面してしまった。聖人でもなければキモヒキと遭遇したと話題になったはず。
-	しかし庭ボト前のタイミングだったので、10秒早かったら地獄すぎる。それと比べれば天国かも。
-2020/12/13 昨日の午前中に注文した尼ドライヤーが、11時に届く一般会員。
-	臭いとレビューに書いてあった、しかしもう直ってるだろうと正常性バイアス。
-	開けてみるとめちゃ臭い。タイピングしてるだけで、指についた臭いが気持ち悪いレベル。
-	指につくことから、表面部分を中性洗剤＋マイクロファイバーで拭く。
-	裏のメッシュの給気口が特に臭い。中は拭けないしおわた。
-2020/12/13 久しぶりにVScodeを触れたが、知恵袋.jsの記憶が消えてる。
-	この程度のコメントじゃ記憶が戻らない。
-2020/12/13 #筋トレ 両足しゃがみちょい浮かし、筋肉にきまくり。10秒で疲れる。
-2020/12/13 #js #正規表現 matchは配列で返す。
-	全体は0、0を使いたい場合は、先読み、後ろ読みが必須。
-	(?<=後ろ読み)太郎(?=先読み)
-	機械目線なんで、前と後ろが逆な感じ。否定は=→！
-2020/12/13 #js "1,2,3,".split(',').pop()は空白
-	メソッドチェーンでsplit配列の最後をpopできない。
-	配列の最後を削除したつもりが、popは親の配列を削るだけで、戻り値は値なのではまる。
-	slice(0,-1)するしかない
-2020/12/21 #js Dateの罠に毎回ハマる
-	getDateが日付、getDayが曜日
-	getMonthは0が1月なので＋1する。
-2020/12/24 #dom スクロール位置はbodyじゃなくhtml
-	document.body.parentElement.scrollTop=100
-	document.documentElement.scrollTop=100
-	document.scrollingElement.scrollTop=1000
-	//だめ document.body.scrollTop=1000
-2020/12/24 #dom document.htmlは無い、document.documentElement
-	document.body.parentElement
-2020/12/24 #dom #js スクロールで発生イベントは多すぎなので減らす。
-	方法として、フラグでイベント発生中は即リターンと、
-	cleartimerでsettimeoutを消して再登録するタイプ。
-2020/12/24 #css visitedで色つけたろうとするも失敗
-	aタグの子のdiv等にcolorがしてされてるとimportantすら通らない。
-	340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926
-	340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926
-	340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926,341042,341035,341057,309649,324391,235888,286184,294571,222528,212689
-2020/12/25 #js googlephotoでujsエラー、cpsらしくinnerHTMLが使ったらあかんて出た。
-2021/01/01 #js ループでsettimeoutだと、return抜けが使えん。ネストが深くなる
-2021/01/01 #js よくわからんメモ
-	//※...スプレッド演算はチェーンの最後、
-	//entries()は[[k,v],[k,v]...]で返す,分割代入で[k,v]に入れる、
-	//キャストで整数化,アロー関数({})でオブジェクトを返す。
-	//mapなので返り値[obj,obj]
-	//...スプレッド演算でバラバラの引数になり、assign({},obj,obj)でnewObjを返す
-	//分割代入でlet value=newObj.value、counterは無ければデフォルト値
-	const query={a:"10",b:"30"}
-	let {a,b,c=0} = Object.assign({}, ...Object.entries(query).map(([k, v]) => ({[k]: v-0})));
-	if ('value' in query) {
-	counter++
-	↓
-	//es2019
-	let newObj = Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v * v]));
-2021/01/01 #日本語 王女、女王、分かりにくい。
-	王の息子→王子。王の娘→王女。
-	女の王→女王
+	setTimeout(aaaa, 0, i + 1)
+}()
+
+,,,2020/01/06 #js
+benchmarkclassでsettimeoutとか無理、全体asyncする必要ある。
+
+,,,2020/01/10 #js #css
+flexで配置した、最初は1時間ぐらい詰まったが、透明画像に気づかなかったから。
+そのごは簡単にできた。
+
+,,,2020/01/14 #npm
+久しぶりに使ってほぼ忘れてた。
+package.jsonあるフォルダにcdして、nmp install -g でグローバルにそれをインストールする。
+npm list --depth=0 -g で表示させて。名前をコピーして
+nmp uninstall namae -g でアンインストール
+
+,,,2020/01/14 #js
+shebangでnode.js
+#!/usr/bin/env node
+先頭にこれかく
+https://qiita.com/tom-u/items/34cf26fa4fa129f93095
+便利なものインストール
+$ npm i commander co-prompt co shelljs --save
+$ npm list --depth=0
+
+,,,2020/01/15 #js
+shebangのnode.jsで引数
+#!/usr/bin/env node
+console.log(process.argv)
+const args = process.argv.slice(2)
+
+,,,2020/01/15 #js
+分割代入でまた混乱、忘れすぎ。
+const obj = {a: 10, b: 20, c: 30};
+const {a: val1, c: val2} = obj;
+console.log(val1); // 10
+console.log(val2); // 30
+
+,,,2020/01/15 #js #node
+node.jsのコードをデバッグで見るも、jsdocは無かった。
+
+,,,2020/01/15 #js
+str.matchとregexp.execはほぼ同じ、
+こういう、123,234,345みたいな事が出来ると書いてあったが、ゴツくすればmatchもindex返すし出来そう。
+var str = '123456789';
+var ex = /\d{3}/g;
+while((arr = ex.exec(str)) != null){
+	console.log(arr);
+	ex.lastIndex -= 2;
+}
+
+,,,2020/01/15 #js
+"XaaaX".split('aa+')がnullで10分混乱した。/aa+/になってねえ。
+
+,,,2020/01/15 #js
+const arr にしてたけど、arr=conv(arr) でだめだな、当然。
+
+,,,2019/12/27 #ターミナル
+alias登録すると、どこでも短縮コマンド使える。
+初回の登録面倒
+◆ホームに移動、しなくてもいいが。
+$ cd ~ 
+◆以下追記、最後は改行必須
+$ vi ~/.bashrc
+alias renameEditor=/Users/kazoku/Desktop/code/py/renameUsingTextEditor.py
+◆プロファイルに記述
+$ vi ~/.bash_profile
+source ~/.bashrc
+◆プロファイルリロード
+source ~/.bashrc
+--
+vi面倒だから追記もやってみたが、よりムズい
+echo 'alias hoge=piyo -a' >> ~/.bashrc 
+--
+bash_profileはログインの時だけ、bashrcは毎回読み込まれるらしい、じゃあ全部bashrcで良いじゃん。
+--
+ln -s 対象 出力先 でシンボリックリンクでショートカット作ろうと思った。
+作れたけど$ ~/hoge みたいにしか呼び出せない。コマンドじゃなくてファイル
+
+,,,2019/12/28 #py
+三項演算子が無い、or and 
+print("aa") if False else print("bb") こんなのも、
+val="aa" if False else "bb" #代入もできる
+print(val) #bb
+
+,,,2019/12/28 #ターミナル
+echo $PATH で表示するとごっちゃ、キレイに変換
+$ echo $PATH | tr ':' '\n'
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+/usr/local/bin
+/opt/X11/bin
+/usr/local/share/dotnet
+/Library/Frameworks/Mono.framework/Versions/Current/Commands
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+/Users/kazoku/.nodebrew/current/bin
+なんかめちゃ重複してる。
+--
+trは一文字の置換しかできない。
+sedは一行用らしく、改行の概念がない、
+2文字以上で改行が必要ならawkを使う。
+$ echo $PATH | awk '{ gsub(":", ":\n"); print }'
+--
+カレントフォルダをPATHに登録、一方に$が無いことに注意。
+$ export PATH=$PATH:`pwd`
+削除したいときはテキストに書き出して、削除してそれを登録
+
+,,,2019/12/28 #ターミナル
+シンボリックリンクは絶対パスにすべき、相対パスでも作れるが、移動させたら終わり
+ln -s 絶対パス 作る場所と名前
+ハードリンクはほぼ同じだが、本体と判別が困難。
+
+,,,2019/12/29 #mac #ターミナル
+winファイルショートカットの代わりが無い
+alias が近いが、登録とか面倒、ln -s はデフォ引数とか無理
+
+,,,2019/12/29 #ターミナル
+コマンドは./が無いやつ、つまりPATH限定。もしくはalias
+
+,,,2019/12/29 #ターミナル
+コマンドを展開する、同じ
+$ echo `pwd`
+$ echo $(pwd)
+変数を展開、結果同じ
+$ echo ~+
+$ echo $PWD
+
+,,,2019/12/29 #ターミナル
+戻る、両方同じ
+$ cd ~-
+$ cd $OLDPWD
+環境変数を調べるprintenvで、いろいろ分かる
+使うのは、HOME TMPDIR PWD PATHぐらいか？
+
+,,,2020/01/15 #js
+メモ帳のフォーマットを弄る。
+テキストのフォーマット変換プログラムを作る。
+pyじゃなくてshebangのnode.jsでやったので凄い楽だった。
+テキストエディタを使う：置換が簡単、コーディング中に書きやすい。日付が面倒
+二重改行：エディターを選ばない。
+タブ分け：そのままworkfloyに貼り付けれる、構造化出来る
+
+,,,2020/01/15 #スプレッドシート
+csvをインポート。
+.text拡張子だと弾かれる。txtにする。
+ダブクォ無し、カンマ区切り、文字カンマエスケープじゃ、エスケープ無視でカンマ切られる。
+ダブクオ無し、タブ区切り、成功。タブエスケは\<tab>は無理。
+	\t \nを復元すると、文字の\nも改行に変換してしまう。
+\\n、\n を復元しようとすると、\\優先で、indexを同時進行しないと無理じゃね？
+しんくぉで囲ってもOK,ばっくぉはNG、\もそのまま表示される。\nも当然そのまま。
+
+,,,2020/01/16 #js #nodeJS
+一行評価してプリント、$node -p "1+1"
+-eオプだとevaluate評価のみ
+
+,,,2020/01/16 #js
+’と”の違い無し、phpだと’だとエスケープそのままとかだったかな。
+
+,,,2020/01/16 #スプレッドシート
+タブは数式欄だとタブだが、ダブルクリック編集だとスペース8個ぐらいになってる
+ペーストでタブに置き換えてもなんかスペースになったり安定しない。
+
+,,,2020/01/16 #スプレッドシート
+改行の入力で半日悩んだが、Download→csvにしたら、普通に生改行だった。インポートしても再現出来る。
+ダウンロードcsv，改行かカンマがある場合のみダブクォ囲み、改行そのまま、ダブクォ→””、
+tsvはタブ＋ダブクォ無し、再変換すると改行もタブも消えた。
+
+,,,2020/01/16 #スプレッドシート #js
+シャローコピー、ディープコピー、ディープが完全なる別コピー。
+objが入れ子になってると、表面だけスプレット演算とかでディープコピーしても、
+内部のobjは同じ参照で、シャロコピーになる。
+一旦テキストにする、JSONが使われるが、関数やNumberとか出来ない。
+var variable2 = JSON.parse(JSON.stringify(variable1));
+単純な一次元配列ならarr.slice()で良いと思う、一番速いし。
+
+,,,2020/01/23 #js
+array.reduceはforeachで代用できるが、accumlator蓄電池を最初から用意してるのが使い所。
+
+,,,2020/01/23 #js
+文字のparseは正規表現が複雑になる、それを単純化してみた。
+let [, date, tag, content] = val.match(/^([\d/]{10}) ((?:#\S+ )*)([\S\s]+)/)
+↓
+let v1, v2, v3
+val
+	.replace(/^[\d/]{10} /, s => {v1 = s; return ''})
+	.replace(/^(#\S+ )*/, s => {v2 = s; return ''})
+	.replace(/^[\S\s]+/, s => {v3 = s; return ''})
+行数は増えるが、正規表現はシンプルになる。
+reduceも考えたけど、あんまり。
+
+,,,2020/01/23 #js
+文字をindexで切って配列で返す関数が無い、ぐぐったら
+const splitAt = index => x => [x.slice(0, index), x.slice(index)]
+
+,,,2020/01/23 #js #削除コード
+スクリプト読み込む
+let s = document.createElement( 'script' );
+s.type = 'text/javascript';
+s.src = ( 'http://localhost:8888/mypo.user.js'); //+"?"+Date.now() //引数あるとvscodeで止まらない、logの行数だけは移動できた。
+document.body.appendChild( s );
+
+,,,2020/01/23 CANONの複合機、デバイスでwsがついてるのが、windowsに元から用意されたドライバ。スキャナは出来ない。
+公式ドライバーをインストールして、プログラムにscanなんたら作られるからそれ実行でスキャン。
+デバイスからは無理ぽい。
+
+,,,2020/01/24 #js
+user.jsでサイト軽く弄るときは、qsより、css作って吐き出すほうが楽なこと多い。
+
+,,,2020/01/24 #js
+js側でstyleでcss書く時、obj assignみたいなのが欲しい。
+
+,,,2020/01/29 #js
+Clickイベントはelementにつけるが、追加読み込みやuser.jsの場合は、
+ドキュメントにつけて、条件で割り振ると一個で済む。
+あまりバブリングとかとは関係ない技術。
+ただ、この方法の場合、表面の情報しか取れないので、
+<a><img></a>で<a>条件だと、imgClickしても反応しない。
+単純に<a>に直接イベントをつけた場合は、imgClickにも反応する。
+なのでdocイベントの場合は、imgの親をたどって<a>があるか走査する必要がある。
+
+,,,2020/02/03 #nodejs
+nodebrew使ってる場合の、バージョン管理
+--古いものを削除
+~$ nodebrew ls
+v7.10.0
+v13.2.0
+current: v13.2.0
+~$ nodebrew uninstall 7.10.0
+--
+--最新インストール
+~ $ nodebrew install-binary latest 
+######################################################################## 100.0%
+Installed successfully
+~ $ nodebrew ls
+v13.2.0
+v13.7.0
+~ $ nodebrew use 13.7
+use v13.7.0
+
+,,,2020/02/03 #ターミナル
+ヘッダーを書き換え、長すぎると邪魔。
+~ $ vi .bash_profile 
+export PS1="[\W \$] "
+~ $ source ~/.bash_profile
+
+,,,2020/02/06 #css
+position: absolute;top: 0px;でどこの要素でも上に固定されるはずが。
+divから出なくて悩む。
+上のブロックでposition弄ってると、そこが起点になってしまうらしい。
+jsからwindow.pageXOffsetで絶対座標を取って、それマイナスにゴリゴリ系で対応できるかも。やりたくない。
+bodyにappendする従来。
+
+,,,2020/02/24 #js
+downThemAllで失敗した時用に、ファイル書き出し。しかしtitle属性が消えてしまう。descは残ったのでそれに対応するuserjsを書いた。
+しかしインポートするとその情報も読み込まれない。無意味だった。
+
+,,,2020/02/26 #js
+docにクリックイベントを付けた場合
+let el = ev.target
+//qsa式、親まで走査しようとすると大変過ぎる？。でもcssセレクタ使える。css3ではhasが使えない。
+const result = Array.from(document.querySelectorAll('img.lazyloaded'))
+	.some(v => v === el)
+if (result) {}
+//2式、条件が自在、処理が軽い、親までさん探せる
+while (el) {
+	// conDoW([el.tagName, el.className])
+	//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
+	if (el.tagName == 'DIV' &&
+		el.className == 'post' &&
+		ev.ctrlKey === false) break
+	el = el.parentElement //上の要素へ
+	if (el.tagName === 'HTML')
+		return false //走査終了
+
+,,,2020/02/26 #css
+枠を付けて要素の最全面にする。zindexもできそう。
+.className:after {
+content: "";
+position: absolute;
+/* top: 0; */
+left: 0;
+width: 100%;
+height: 100%;
+/* display: block; */
+border: 20px solid #f008;
+}
+--もっと簡単ぽいもの、対象要素にdivappendして。style以下
+position: 'absolute',
+height: '100%',
+width: '100%',
+border: '20px solid #f009',
+
+,,,2020/07/07 #js
+googleフォト削除をujsでやろうと思う。
+document.dispatchEvent(new KeyboardEvent('keypress',{keyCode:120})) 
+↑やってみるも無理、ctrl:false,code,"K
+
+,,,2020/07/29 #js
+addEventListenerで入れ子だとmouseupが伝わらないのでcaptchaが必要だった。
+--
+obj.存在しない←これを使おうとしてもエラーが出ない。
+var a
+console.log(a.b)
+//Uncaught TypeError: Cannot read property 'b' of undefined
+var a={}
+console.log(a.b)
+//undefined
+--
+el.onclickと el.addEventListener('click',f) の違いは、
+プロパティは、nullでどこからでも消せる、一つしか登録できない、バブリングのみ。
+addEventListenerは消すのに、関数名が必要なので、スコープ離れてる設計じゃ無理。
+--
+document.addEventListener('mousemove',f)のevent.targetはマウス直下のものになる。
+event.currentTargetが最初の限定ぽい
+--
+addEventListener(click,f)でfに引数渡そうとすると
+function(ev){f(ev,99)}とするあるある方法、しかし無名関数なので解除できない。
+名前をつけたとて、スコープ外では解除できない。ハンドル二重にすればできるかも、酷いけど。
+handleEventかbindを使いえば多少きれいになる。	
+--
+addEventListener('click',{handleEvent:f,arg1:999})
+第二をオブジェクトにするとthis.arg1で参照できる、が一旦変数に入れないと、解除ができない。
+addEventListener('clikc',obj)
+removeEven~('click',obj)
+みたいな
+bindでも一緒、解除するなら変数必要、objだとthis使うから気持ち悪いかなあ。
+event.currentTarget.removeEventListener('click', this); //解除
+でも解除できるらしいけど試してない。
+関数でグローバル変数使いたくない派としては厳しい。
+bindでグローバルにハンドル変数作っておくのが良いかなあ。
+bindすると、eventが最後になるのが良くない。
+--
+mousemoveでは飛び出すと効かなるなるのでdoc指定する必要あり、
+ev.targetは直下、ev.currentTargetはdocになり、前者は外れると変わる
+ので、evからの指定は安定しないので使えない。
+
+,,,2020/08/02 #ターミナル
+history | grep cd →!番号 で履歴使える。
+control+r でリバースサーチできる。
+履歴初期値は500、重複も記録するからすぐ消えていく。
+重複を消す設定にしてみた、過去ログは変化しない。
+.bashrc .bash_profile でまた悩む、.bash_profileでいいや。
+
+,,,2020/08/03 #js
+開発用にクロスドメイン回避したい
+chromeのセキュリティを外して起動
+Windowsの場合
+chrome.exe --disable-web-security --user-data-dir
+Macの場合
+open /Applications/Google\ Chrome.app/ --args --disable-web-security --user-data-dir
+
+,,,2020/12/11 macの中身をバックアップして綺麗にした。
+
+,,,2020/12/13 やる気 巻いてからやろうはやらないので、先にやってみる。
+
+,,,2020/12/13 ボトラー 庭ボトしようとしたら、隣から回覧板来てどうしょうもなくなって出た。
+初めて直接対面してしまった。聖人でもなければキモヒキと遭遇したと話題になったはず。
+しかし庭ボト前のタイミングだったので、10秒早かったら地獄すぎる。それと比べれば天国かも。
+
+,,,2020/12/13 昨日の午前中に注文した尼ドライヤーが、11時に届く一般会員。
+臭いとレビューに書いてあった、しかしもう直ってるだろうと正常性バイアス。
+開けてみるとめちゃ臭い。タイピングしてるだけで、指についた臭いが気持ち悪いレベル。
+指につくことから、表面部分を中性洗剤＋マイクロファイバーで拭く。
+裏のメッシュの給気口が特に臭い。中は拭けないしおわた。
+
+,,,2020/12/13 久しぶりにVScodeを触れたが、知恵袋.jsの記憶が消えてる。
+この程度のコメントじゃ記憶が戻らない。
+
+,,,2020/12/13 #筋トレ
+両足しゃがみちょい浮かし、筋肉にきまくり。10秒で疲れる。
+
+,,,2020/12/13 #js #正規表現
+matchは配列で返す。
+全体は0、0を使いたい場合は、先読み、後ろ読みが必須。
+(?<=後ろ読み)太郎(?=先読み)
+機械目線なんで、前と後ろが逆な感じ。否定は=→！
+
+,,,2020/12/13 #js
+"1,2,3,".split(',').pop()は空白
+メソッドチェーンでsplit配列の最後をpopできない。
+配列の最後を削除したつもりが、popは親の配列を削るだけで、戻り値は値なのではまる。
+slice(0,-1)するしかない
+
+,,,2020/12/21 #js
+Dateの罠に毎回ハマる
+getDateが日付、getDayが曜日
+getMonthは0が1月なので＋1する。
+
+,,,2020/12/24 #dom
+スクロール位置はbodyじゃなくhtml
+document.body.parentElement.scrollTop=100
+document.documentElement.scrollTop=100
+document.scrollingElement.scrollTop=1000
+//だめ document.body.scrollTop=1000
+
+,,,2020/12/24 #dom
+document.htmlは無い、document.documentElement
+document.body.parentElement
+
+,,,2020/12/24 #dom #js
+スクロールで発生イベントは多すぎなので減らす。
+方法として、フラグでイベント発生中は即リターンと、
+cleartimerでsettimeoutを消して再登録するタイプ。
+
+,,,2020/12/24 #css
+visitedで色つけたろうとするも失敗
+aタグの子のdiv等にcolorがしてされてるとimportantすら通らない。
+340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926
+340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926
+340969,340970,340980,340985,340990,340988,341011,341019,341020,341022,341021,341026,340996,338696,339338,339190,339208,339380,339318,339359,339292,339293,339264,339213,339248,339317,339205,339339,339310,339319,339355,339367,339363,339348,338753,338753,338873,339419,339393,339246,339238,339199,315941,263687,197739,203404,298335,218669,178514,227829,316998,332571,316997,339455,330833,272198,290160,211356,164937,338966,338060,331323,330838,339256,305791,305789,305790,219276,197627,339379,339378,339493,339490,339469,339467,339468,339498,184959,165830,275511,307503,307504,325735,336251,339608,339596,339594,339582,339539,339541,339542,339543,339553,339564,339548,339547,339552,339546,339520,339507,339782,339749,339722,339693,339810,339826,339550,339735,339584,339737,339056,339603,339413,339894,339896,339893,339895,339886,339890,339888,339877,339878,339834,339830,339862,339872,339875,339880,339762,339682,339731,339802,339904,339915,339823,339814,339945,339947,339949,339951,339960,339928,339789,339812,339848,340010,340007,340029,339969,340083,340115,340091,340164,340167,340107,340415,340079,340279,340437,340235,340409,340441,340236,340224,340061,340048,339617,340062,340059,340054,340117,339651,340510,340507,340491,340482,340477,340470,340237,340233,340199,340193,340191,325753,325723,304828,265961,299833,299861,340500,340413,340414,130399,59128,115101,167876,193269,200732,215939,281224,315029,271186,241900,241901,271186,340542,340533,340534,340537,340541,340539,340546,340547,340545,340544,340543,336979,339557,338558,338216,337137,337312,339170,337069,338243,336974,338252,337745,338198,338454,338105,338149,338625,337155,336909,337399,337476,337240,337960,336846,337151,338199,338057,338053,338530,338438,338437,340584,340581,340555,340604,340606,340598,340621,340575,340596,340593,340592,340183,340604,340615,340614,340617,340644,340645,340650,340651,340653,340658,340656,340655,340654,340737,340732,340690,340754,340747,340749,340750,340760,340662,340665,340666,340668,340648,340637,340759,340761,340735,340681,340742,340753,340755,340680,340566,340714,340595,340590,340827,340825,340815,340805,340806,340885,340808,340807,283096,273973,283096,249314,255214,268784,305525,340751,340859,340789,340861,340823,340903,340902,340916,340923,340926,341042,341035,341057,309649,324391,235888,286184,294571,222528,212689
+
+,,,2020/12/25 #js
+googlephotoでujsエラー、cpsらしくinnerHTMLが使ったらあかんて出た。
+
+,,,2021/01/01 #js
+ループでsettimeoutだと、return抜けが使えん。ネストが深くなる
+
+,,,2021/01/01 #js
+よくわからんメモ
+//※...スプレッド演算はチェーンの最後、
+//entries()は[[k,v],[k,v]...]で返す,分割代入で[k,v]に入れる、
+//キャストで整数化,アロー関数({})でオブジェクトを返す。
+//mapなので返り値[obj,obj]
+//...スプレッド演算でバラバラの引数になり、assign({},obj,obj)でnewObjを返す
+//分割代入でlet value=newObj.value、counterは無ければデフォルト値
+const query={a:"10",b:"30"}
+let {a,b,c=0} = Object.assign({}, ...Object.entries(query).map(([k, v]) => ({[k]: v-0})));
+if ('value' in query) {
+counter++
+↓
+//es2019
+let newObj = Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v * v]));
+
+,,,2021/01/01 #日本語
+王女、女王、分かりにくい。
+王の息子→王子。王の娘→王女。
+女の王→女王
+
+,,,2021/01/02 #css #adb
+##から始まるのが要素隠蔽
+id=hogeを消す→###hoge
+aのclass=hoge ##a.hoge
+クラスの前方一一致
+##.__isboostLowerLeft→##[class^="__isboost"]
+
+,,,2021/01/02 #adb
+uBlockでallowができない、検索すると設定ミス多いから隠してるのこと。
+ctrl二回で復活、毎回めんどいなら filterAuthorMode true
+しかしnoopの意味が分からない。静的ルールを適用して許可てなに？
+調べた、簡単に言うと静的ルールは##からの文法のやつ、
+noopに設定すると、静的までジャンプして許可するって意味。
+つまりグローバル禁止にしてても、ローカルでnoopなら通るってこと。
+順番はURL→ローカル→グローバル
+URL filterが何かわからなかったが、ログから設定できるやつのこと。
+http://a-kuma3.hatenablog.com/entry/ublock_origin_again_at_firefox
+
+,,,2021/01/02 #論法
+あの店接客悪かったよ。と聞くと本当か？と疑うが。
+あの店接客よければもっと流行るのにな。と聞くと、接客の悪さを疑わなくなる。
+マインドコントロールの手法らしい。納得
+
+,,,2021/01/02 #食事
+ずっと朝きな粉ココアを続けてる、2週間ぐらい？
+朝外で遠くを見てるからか、視野ダブリが解消しつつあるので良いことだらけ。
+今日は昼食から大食いしてしまった。夜も満腹なのにお菓子が止まらない。
+
+,,,2021/01/02 #adb
+adb使ってるなら見せない系サイトの対処
+全許可して、要素隠すコスメフィルタ、ホワイトだとコスメも使えないから無理。
+
+,,,2021/01/03 #健康 #ビタミン
+ナイアシンが欠乏するとペレグラになる。
+皮膚が赤くなり剥がれる、日光に当たると悪化。
+ナイアシンをたくさん取るとナイアシンフラッシュになりる。
+適度に摂るとポカポカして気持ちいいらしい。
+
+,,,2021/01/01 #game
+スマホにelona来てやってみたらハマって、まずいと思い辞める。
+メモ
+最近elonaというゲームをやりはじめました
+「これはやっておけ!」みたいなことってありますか?
+あと信仰する神でオススメは誰ですか
+
+ゲーム・726閲覧
+
+共感した
+ベストアンサー
+hidedaisukiさん
+
+2016/1/24 21:24
+
+まず、初期洞窟の近くにあるヴェルニースの町には入ってはいけません。
+あそこの入るとエレア二人が消えて特定のアイテムが二度と手に入らなくなるからです。
+東にあるパルミアか、北西のポート・カプールに行って輸送依頼か簡単な護衛を受け、12000gpを集めましょう。
+集めたら、初期洞窟から南西にあるダルフィの町へ行きノエルという女性NPCに話しかけ、クエストを受けてください。
+そうすれば原子爆弾を12000gpで買えるので購入します。これは序盤ではまず持ち運びは不可能なので、ノエルに喧嘩を売って殺されましょう。
+すると自宅にワープするので持ち物を調べて原子爆弾を持ってることを確認して下さい。もし持ってなかったら、恐らくダルフィでの回収は不可能なので上の手順を成功するまで繰り返します。
+幸い洞窟まで原子爆弾を持ってこれたなら、その場で起爆します。
+エレア二人はレベル20と初心者はまず勝てませんが、HP1000以下なので核で死亡します。契約が無い限り自分も巻き添えで死にますが、這い上がってください。
+這い上がったら遺品を回収します。二人の弓と短剣は所謂固定アーティファクトであり、序盤では考えられないほど強力な武器で、これを手に入れられたなら、冒険がかなり楽になることでしょう。
+
+それでは頑張って下さい。
+ナイス！
+
+hidedaisukiさん
+
+2016/1/24 21:35
+
+信仰する神は、カスタムゴッドのGOがお勧めです。
+GO is GOD.
+
+質問者からのお礼コメント
+ありがとなす!
+
+お礼日時：2016/1/26 23:52
+
+その他の回答（2件）
+
+新しい順
+kar********さん
+
+2016/1/21 9:23
+
+まず、大前提に操作と街の場所を覚える事から始めましょう
+次に配達依頼を黙々とこなしお金を貯める事をおすすめしますが
+名声を下げるため、討伐依頼を受けて、外に出る
+収穫依頼を受けて、外に出る と言う作業を挟むと吉です
+理由としては税金が高くなるからです
+
+お金を貯めたら、☆が付いた装備を買ったり
+ランダムネフィア（安全な塔等のダンジョン）の低レベルな所を攻略して回ったりで装備を集めると良いでしょう。
+
+ハイリスクハイリターンなお金の稼ぎ方はやはり、交易です ただ儲けを出すには何がどこで高く売れるか覚えておく必要があります、おすすめの交易ルートは
+
+パルミアでお絵かきセット、絵画を買う、ポートカプールでそれを売る
+ポートカプールでロープと浮き輪を買う、ダルフィで売る
+ダルフィで棺桶、墓を買う（重いので注意）ヴェルニースで売る
+ヴェルニースでぬいぐるみ等おもちゃを買う、パルミアで売る 最初に戻る。
+
+が良いと思います、どれくらいリスクがあってリターンがあるのかは自分で試して見るといいでしょう
+
+最後、信仰ですが自分はオパ様が良いと思います
+他の回答者さんが書かれているようにルルウィもお勧めします
+
+共通点は捧げものが鉱石という事です、街で採掘スキルを覚えた後そこらじゅうの壁を掘っていると鉱石が出てきます、それに採掘スキルがあがる耐久力も上がり打たれ強くなります、なのでオパ様かルルウィを最初に信仰すると吉ですが
+
+オパ様だと採掘にボーナスがかかるのでイライラしないと思います。
+
+長文失礼しました
+ナイス！
+
+dab********さん
+
+2016/1/20 17:21
+
+序盤は何やっても行き詰まりがちなので
+投げ出してゲームをゴミ箱に捨てるまでが
+チュートリアルなんて言われてます
+全部記載するのは無理なので、重要な二点について書きます
+
+・何をしても進行していく死病、エーテル病への対策
+エーテル抗体ポーションは貴重品です
+店頭でも売りに出される事はまれにありますが
+投資できるほど資金がない序盤に頼るのは現実的ではありません
+
+その代わり、いくつかの具体的な入手手段があります
+ダルフィのポーカーで4連勝すると入手しやすかったり
+ペットとの結婚のご祝儀で確実に一つもらえる、などです
+ペットとの結婚には「魂の友」まで好感度を高める必要があり
+好感度を上げるには結婚指輪、首輪を贈ったり
+媚薬入りの食べ物を食べさせる、などあります
+つまり、ネフィアで結婚指輪・首輪を調達したり
+ポーションを売ってる店で媚薬を見かけたら確保しておく事が
+エーテル病に対抗する手段になるわけです
+
+・お金の調達手段
+これは本当に人によりけりです
+依頼をこなす正統スタイルから演奏で荒稼ぎする者
+効率のいい交易ルートを確立したり釣りに従事する者さまざまです
+
+大事なのは、時折発生するランダムイベントで
+「所持金の数％を強制的に失う」スリイベントが存在する事です
+お金を稼ぐほどに被害額が大きくなるため、これによく遭遇してると
+店を買うお金なんていつまで経っても貯まりません
+対策としては、○円貯金箱などにこまめにお金を入れておくか
+「スリを防ぐ」エンチャントの付いた装備を手に入れる事です
+どちらか、できれば後者を手に入れてからが
+お金稼ぎの始まりと言っていいでしょう
+
+信仰は速度の上がるルルウィが人気ですが
+捧げ物の調達難度と回復に特化した能力・宝珠の恩恵や
+プレイヤーやペットの死亡時に蘇生させてくれる神の僕がもらえる
+癒しのジュアが、最初にプレイするキャラの信仰としてはおすすめです
+クズ石は野外で拾えますし、鉱石系アイテムは店で簡単に買えます
+他の神へは捧げ物や信仰スキルが十分になってから宗旨替えしても
+遅くはありません
+(信仰スキルが高くないと信仰を深める事ができないので)
+
+,,,2021/01/07 #汎用メモ
+テキストでvscodeでインデント分けで書いてると、空行のインデントが作られない。
+“editor.trimAutoWhitespace”: false
+上に設定をすると、空白トリムが無効になり作れる。
+vscodeで空行はインデントされない設定変えても無理だった。
+一回でもインデントがゼロに戻ると、選択状態でタブ押しても増えない。	
+しかしインデントで分けるのは、良くないと今ごろ思う。
+短所、生文書にゴミが入る。バグりやすい。置換で消えるリスク。
+21:54
+なんで日付 タグ
+内容
+のフォーマットに変更してる。
+^\d\d\d\d\/\d\d/\d\d→@@@@$0 ;日付の前にマークを付ける、$0使えた。
+(^@@@@.+#\S+) ([^#]+)→$1\n\t$2 ;シャープタグだけ残して次の行へ。
+\t ;タブ消し、一個一個やるとcodeのインデントも消えてしまう。一括ならシフトタブみたいに一段下げれた。
+視認性めっちゃ悪い
+
+,,,2021/01/07 #防寒
+右手が冷たくて痛い。腕は温かい
+
+,,,2021/01/08 #js
+独自のテキストをparseする時、\nや\sを消す時はtrim()が楽できれい。
+/hoge ?/みたいなの使うより、trim()
+長い正規表現使うより、replace(/hoge/,(all)=>{val=all.trim(); return ''}).
+をメソッドチェーン。
+
+,,,2021/01/09 #汎用メモ
+workflowyの書き出しテキストのフォーマットを直してる大変。
+completeタグがついてるので、タグに変換
+(\[COMPLETE\] )([\d/]{10} )
+$2#COMPLETE 
+--
+日付は表題以外でもそこらじゅうで出てくる、やはり何かセパレート文字は必要
+--
+noteに書いたものはテキストエクスポートでは普通の行になってた。
+--
+20xx年まとめみたいに、インデントが深くなっているのを手修正してる。
+--
+workflowyにつけてた日付で、分からないのは20XX/00/00 にしてたけど、スプレッドシートにインポートしたらばぐりそう
+--
+日付 game名 #game
+とタグが後ろにあるパターンもあった。直すの大変そう。フォーマット遵守しなかったバツ
+^[\d/]{10} [^#]+#
+これでブラウジング、検索時に選択状態になるので、もちっと楽にできかも。しかし数が少ないからこれで十分
+--
+古いレコード見ると、タグぽいのにシャープ付いてない。まあシャープ要らんけど、内容と混ぜてたら必要。
+--
+スペース二重つぶし
+\s\sだとタブも引っかかるので駄目。__+←アンダーバーは半角すぺ
+全角を半角へも先にやる必要あり。
+codeや正規表現の記事を消しちゃう可能性あり。これはよくない。
+--
+後ろのスペースつぶし
+これは安全だった。
+--
+タグ付いてない奴にタグ
+(?<=\s)英語(?=\n|\s)
+--
+タグ無しの単語を抜き出して、たぐつけ
+(?<=^[\d/]{10} )([^# ]{1,8})(?=[ \n]) //[^# ]が改行前の何かを拾ってしまう。
+(?<=^[\d/]{10} )([^#\s]{1,9})(?=[ \n])
+#$1
+--
+正確にタグがついてない状態をどうしようか・・・。
+2021/01/13
+メモのフォーマット調整大変すぎる。
+
+
+
+
+
+
 

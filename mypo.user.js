@@ -2715,6 +2715,25 @@ const arr = [
 					base.innerHTML = hrefs
 				}
 			}
+			function _css_visited_highlight() {
+				let css_id = 'hoge1111'
+				let css_el = document.getElementById(css_id)
+				if (css_el === null) {
+					css_el = document.createElement('style')
+					css_el.id = css_id
+					document.head.appendChild(css_el)
+				}
+				css_el.insertAdjacentText('beforeend', `
+						a:before {
+							content: "◆";
+					}
+					a:visited {
+							color: tomato;
+					}
+				`)
+			}
+			//main
+			_css_visited_highlight()
 
 		},
 	},
