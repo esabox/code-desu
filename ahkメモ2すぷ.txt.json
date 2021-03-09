@@ -1,0 +1,172 @@
+[
+  {
+    "date": "2019/11/18",
+    "tag": "ahk",
+    "content": "fomatterが上手く動作しない、どれも、AutoFormat.ahkやつが一番マトモぽい。それでもおかしい。\nブロックコメント使わないと狂う、なんでや"
+  },
+  {
+    "date": "2019/11/14",
+    "tag": "ahk",
+    "content": "リロード中、一時的にホットキーを無効化しようと、suspend使ったが。クリックは通るので、目的は果たせず。\nhotkeyの条件を少し変えれば別物と認識されるらしく、offにしても消えなかった。解決\n解決したと思ったらしてなかった、グローバルにボタン名で関数登録してゴリ押し。"
+  },
+  {
+    "date": "2019/11/13",
+    "tag": "ahk",
+    "content": "ゲームの連射なのでツールチップをクリックすると失敗するので遠くに表示すべき"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "1.1.28のansiを使ってるぽい、バルーンで使えないのがあったからこれにした記憶。\nutf8で文字化けするからutf版に変えたい。\n31に変えた。utf8にして保存→開く、文字化け。なんでや。\nbom付きで保存したら出来た。"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "波括弧にブロックの効果はないぽい、デュ府エラー、formatterがインデント入れるぐらい。\n#if WinActive(\"ahk_exe sakura.exe\")\n{\n\t^q::myToolTip(\"sakura\")\n}\n^q::myToolTip(\"sakura2\")"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "IfWin~が非推奨らしいけど、日本語情報が無い。"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "#If が #if でも動く、やめて欲しい。"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "#If 0 ;と書くと、明示的に以下無意味、#IfWinactive だとグローバル登録"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "動的にホットキーを操作しやすい。\nh::hensu=1\n#If hensu\nh::ToolTip,hoge"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "ラベルは関数に置き換える、今の所すべて。\nただ両方ともダブルとエラー。"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "1つのキーで、連射ON OFFやろうとすると、スレッドが2つ必要になる。\n設定でスレッドを増やす方法。\nkeystateを監視する方法。←一番簡単\n別スレッドを呼び出す方法。←一番教科書ぽい。"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": "トレイにメニュー、関数だとリターンが不要なのでexec sctionで作れる。\nMenu, Tray, Add, テスト, labe\nlabe(){\n\tToolTip,labe\n}"
+  },
+  {
+    "date": "2019/11/12",
+    "tag": "ahk",
+    "content": ";ボタンA→連射→ボタンAで止める1\n!t::\nsleep,100 ;wwwwwwwwwwt\nwhile !GetKeyState(\"t\", \"P\") {\n\tsend,w\n\tsleep,500\n}\nreturn\n;ボタンA→連射→ボタンAで止める2\n!g::vs_togg() ;gggggggggg\nvs_togg(){\n\tStatic x := 0\n\tx := !x\n\tif x {\n\t\tSetTimer,vs_thread,1000 ;sleep\n\t} else {\n\t\tSetTimer,vs_thread, Off\n\t}\n}\nvs_thread(){\n\tsend,g\n}"
+  },
+  {
+    "date": "2019/11/11",
+    "tag": "ahk",
+    "content": ";トグルのコードのサンプル\nXButton1::ddd()\nddd(){\nStatic x := 1\nx := !x\nmyToolTip(x)\n}"
+  },
+  {
+    "date": "2019/11/11",
+    "tag": "ahk",
+    "content": "--\nホイール上下にホットキーを当てると挙動がおかしい。"
+  },
+  {
+    "date": "2019/11/08",
+    "tag": "ahk",
+    "content": "send, {click}が反応しない、setmousedelayで解消。\nsendはデフォがEvent、playは無反応なことが。"
+  },
+  {
+    "date": "2019/09/08",
+    "tag": "ahk",
+    "content": "押してる間ループの基本"
+  },
+  {
+    "date": "2019/09/08",
+    "tag": "ahk",
+    "content": "RButton::ca_hoge() ;~無しだととステータスも反映されないが、getstateのオプションPで物理判定を取れる\nca_hoge(){\nWhile GetKeyState(\"RButton\", \"P\"){\nToolTip, % \"A_Index=\" A_Index\n;send, {Click, 100}\n;Sleep, 100\n}\nToolTip\n}"
+  },
+  {
+    "date": "2019/09/07",
+    "tag": "ahk",
+    "content": "ラベルの基本、関数のほうが良いと思う。\nXButton1::Goto ラベルAA\nラベルAA:\nmyToolTip(\"aa\")\nreturn"
+  },
+  {
+    "date": "2019/09/07",
+    "tag": "ahk",
+    "content": "メモ帳は履歴が一件しか残らないから使えない。"
+  },
+  {
+    "date": "2018/10/13",
+    "tag": "ahk",
+    "content": "キーヒストリー窓がスクリプトリードをで閉じるのが面倒。\n#Persistent で待機させてみたが、キーを記録しない。\n紛らわしいから、iconの変更しようと思い、Base64にしようとLibraryの勉強\nスクリプト\\Lib←ここが自動検索される、includeがいらん。filename_funcNameみたいなのもできる。"
+  },
+  {
+    "date": "2018/10/13",
+    "tag": "ahk",
+    "content": "include使わない限りはデフォLibからしか読み込めない。\ninclude ファイル名なら、並列のファイルも検索できる。\nincludeすると実行される。Libからの自動読み込みなら関数だけを参照できる。"
+  },
+  {
+    "date": "2018/08/31",
+    "tag": "ahk",
+    "content": "初期設定リターン後にディレイを変更しても、終わったら初期設置地に戻る、\n設定は10ms単位で、最小が10？\nmyToolTip(A_KeyDelay)\nSetKeyDelay, 5\nmyToolTip(A_KeyDelay)"
+  },
+  {
+    "date": "2018/08/29",
+    "tag": "ahk",
+    "content": "半角ボタンは挙動が例外、上げてから押してる謎、vkは違うものになってる。\nF3  029\t \tu\t1.25\tnot found\nF4  029\t \td\t0.00\tnot found"
+  },
+  {
+    "date": "2018/08/27",
+    "tag": "ahk",
+    "content": "メモ帳だと全角セミコロンが判別できない。"
+  },
+  {
+    "date": "2018/08/27",
+    "tag": "ahk",
+    "content": "CapsLockをコントロールで置き換えようとしたが、押しっぱなし現象で諦めた\nsc03a で横取りできるが、アップキーが存在しないのでおしっぱ。\nレジストリから書き換えても、windows10が勝手に元にもどしたり。"
+  },
+  {
+    "date": "2018/08/24",
+    "tag": "ahk",
+    "content": "+a::F11;などはシフトコンビで発動すると、シフトが切れず機能しなかった。\n+a::send, {F11};みたく書く"
+  },
+  {
+    "date": "2018/08/24",
+    "tag": "ahk",
+    "content": "メモ帳を編集すると一度しか戻れない。"
+  },
+  {
+    "date": "2018/08/02",
+    "tag": "ahk",
+    "content": "func(hensu \"moji\"); 文字列と変数を繋げるのはスペース、もしくは . 両端陶ペースドット。"
+  },
+  {
+    "date": "2018/08/02",
+    "tag": "ahk",
+    "content": "SetKeyDelayはどこでも設定できる。"
+  },
+  {
+    "date": "2018/08/02",
+    "tag": "ahk",
+    "content": "■関数はどこに書いてもいいぽい。\nsettitlemodeなどは初期return前にに固定される。\n・win10でtraytipは使いにくくなった。邪魔くさい"
+  },
+  {
+    "date": "2018/08/02",
+    "tag": "ahk",
+    "content": "◆タスクトレイのクリック、追加メニュー、これがあると他に不具合でた。return位置が間違ってたポ\nリターンまでが初期実行ぽい。\nMenu, Tray, Click, 1\nMenu, Tray, Add, リロード, リロード\nMenu, Tray, Default, リロード\n;↑初期領域↓ラベル領域\nリロード:\nreload\nTrayTip, relo, A_ThisMenu:%A_ThisMenu%`nA_ThisMenuItem :%A_ThisMenuItem%\nreturn"
+  },
+  {
+    "date": "2018/07/31",
+    "tag": "ahk",
+    "content": "#IfWinActive, hoge ahk_class ;←ダブルクウォートで挟む×、スペースそのまま○、%は念の為エスケープ、コンマ使う。"
+  },
+  {
+    "date": "2018/07/31",
+    "tag": "ahk",
+    "content": "AutoHotkey_1.1.25.02_setup に落とした。1.1.29だとVolume_Upが効かなかった。\nブロックコメント閉じも行頭必須。"
+  }
+]

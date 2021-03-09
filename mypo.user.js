@@ -10,6 +10,7 @@
 // @include *
 // @exclude     https://docs.google.com/*
 // @exclude     https://mail.google.com/*
+// @exclude     https://script.google.com/
 // @grant	GM_registerMenuCommand
 // @grant 	GM_getValue
 // @grant 	GM_setValue
@@ -65,11 +66,14 @@ temp.srl = function() {
 //const log = console["log"];
 
 
-const qs = (s, o = document) => o.querySelector(s)
+//便利関数
 const qsa = (s, o = document) => o.querySelectorAll(s)
+const qsaa = (s, o = document) => [...o.querySelectorAll(s)]
+const qs = (s, o = document) => o.querySelector(s)
+const log = console.log
 
 let time = Date.now() //時間測定
-let nsMiiya = {gamen() { } } //オブジェクのプロパティは宣言しとかないとリファクタリングできない
+// let nsMiiya = {} //オブジェクのプロパティは宣言しとかないとリファクタリングできない
 
 /** el作成 parent無ければappendしない*/
 function createEl(parentEl, tagName, prop = {}, style = {}) {
@@ -78,43 +82,30 @@ function createEl(parentEl, tagName, prop = {}, style = {}) {
 	Object.assign(el.style, style || {})
 	if (parentEl)
 		parentEl.appendChild(el)
+	// const position = insert.position || 'beforeend'
+	// insert.parentEl.insertAdjacentElement(position, el)
 	return el
 }
-function createEl2(insert = {}, tagName, prop = {}, style = {}) {
-	const el = document.createElement(tagName)
-	Object.assign(el, prop || {})
-	Object.assign(el.style, style || {})
-	if (parentEl) {
-		const position = insert.position || 'beforeend'
-		insert.parentEl.insertAdjacentElement(position, el)
-	}
-	return el
-}
-// createEl2({pEl: document.body, pos: 'afterbeguin'})
-// createEl(a, 'abc')
+
 /** ボタンを作る*/
-function mkEle(pElem, tag, obj, loca = 'beforeend') {
+function make_button_elem(pElem, tag, obj, loca = 'beforeend') {
 	let elem = document.createElement(tag)
 	pElem.insertAdjacentElement(loca, elem) //appendChile
 	elem = Object.assign(elem, obj)
 	return elem
 }
-//prototype汚染
-Node.prototype.proMk2 = function(tag, obj) {
-	let elem = document.createElement(tag)
-	this.appendChild(elem)
-	elem = Object.assign(elem, obj)
-	return elem
-}
+
 /** リンクhtmlElementを返す */
-const create_href = function(url, text = false) {
+const create_href = function(url, text) {
 	let a_elem = document.createElement('a')
 	a_elem.href = url
 	a_elem.textContent = text || url
 	return a_elem
 }
 
-/** あればClick @param selector cssセレクタ */
+/** あればClick 
+ * @param {String} selector -cssセレクタ 
+ * */
 function arebaCli(selector, anzen_sec = 3, is_href = false) {
 	const el = document.querySelector(selector)
 
@@ -277,23 +268,7 @@ function ugoiteruka(str, sakujo) {
 		})()
 	}
 }
-const session_fn = function() {
-	let key = Date.now().toString().slice(-7, -3)//location.hostname + 
-	let val = `${location.href}`
 
-
-	conDoW('sessionStorage.his')
-	sessionStorage.his = Number(sessionStorage.his)
-
-	conDoW(sessionStorage.his)
-	// // sessionStorage.his = location.href
-	// if (typeof sessionStorage.his!=="number") {
-	// 	conDoW(typeof Number(sessionStorage.his),Number(sessionStorage.his))
-	// }
-	sessionStorage.his = sessionStorage.his == 'NaN'
-		? 1
-		: Number(sessionStorage.his) + 1
-}
 const video_top_play = function(video_elem = null, query = 'video') {
 	//let playerDiv = document.querySelector('#player-embed')
 
@@ -447,196 +422,155 @@ function emoji_rand() {
 	return String.fromCodePoint(emojiCode)
 }
 
-/** Console display on website ウェブ上にConsole.logする、複数なら配列で */
-function conDoW(msg, opt = {}) {
-	const opt_push = opt.push || false //追加で表示する
-	//引数が配列じゃないなら、配列にする。
-	const msg_arr = Array.isArray(msg)
-		? msg
-		: [msg]
-
-
-	/** 追加用 */
-	conDoW.add = function(msg) {
-		// console.log(arr)
-		// write(msg)
-		conDoW(msg, {push: true})
-	}
-	/** ログクリア、無理くりプロパティで作った */
-	function log_clear() {
-		//console.log(wakuElm, this)
-		mainElem.textContent = '' //shwdow挟んでると消えない
-		初期ボタン()
-		// conDoW('clear')
-		// mainElem.remove() //conDoW.shadow も削除する必要あり
-		// delete conDoW.el //こんなのおかしいよ！、div二重にしてshadowに触れないほがいい
-	}
-
-
-	//デバッグ用のlogしても、ここが表示されて、箇所が分からない。
-	//これをcos log に置き換えるから、中でlogすると無限ループ、それ回避用
-	const log = window['console'].log //省略不可、置換しないよう変則
-	console.log(...msg_arr)
+/** Console display on website ウェブ上にConsole.logする、複数なら配列で 
+ * @param {String} msg
+ * @param {Array} msg
+ * @param {Node} msg
+*/
+function conDoW(msg, opt = {addition: false}) {
+	if (conDoW.main) return conDoW.main(msg, opt)
+	const log = console.log
+	let debug = true
 
 	//GMあれば、設定を読み取る、無ければ終了
 	if (window.GM) {
-		let flag_name = 'my_alert_f'
-		let my_alert_f = GM_getValue(flag_name, false)
-		//メニュー登録、一度だけ、そのためにプロパティ利用
-		if (typeof conDoW.reg === 'undefined') {
-			conDoW.reg = 1
-			GM_registerMenuCommand('my_alert_f=' + my_alert_f, function() {
-				//alert('Put script\'s main function here');
-				GM_setValue(flag_name, !my_alert_f)
-			}, 'r')
-			//conDoW('my_alertのアイコン内メニュー作った')
-		}
+		let getConDowF = () => GM_getValue(getConDowF.name, false)
+		let s = `${getConDowF.name}=${getConDowF()}`
+
+		log('メニュー登録')
+		GM_registerMenuCommand(s, function() {
+			GM_setValue(getConDowF.name, !getConDowF())
+		}, 'a')
+
 		//表示の可否
-		if (!my_alert_f) {
-			return
-		}
+		if (!getConDowF()) {return log('conDow非表示', msg)}
 	}
 
-	let is_init = false //初期化するか？
-	//初期化
-	conDoW.elem = conDoW.elem || _init()
-	const mainElem = conDoW.elem
-	/**初期化して基礎エレメントを作る */
-	function _init() {
-		is_init = true
-		let parentEl
-
-		//shadow入れのdiv、shadowなけりゃ必要ない
-		const div1_id = 'div1desu'
-		const div1 = document.createElement('div')
-		div1.id = div1_id
-		div1.style.all = 'initial' //二重にして外側ブロックで初期化すると、全部リセット。車道ひつようないぽ。
-		document.body.appendChild(div1)
-		parentEl = div1
-
-		//shadowroot挟む
-		const shadowroot = parentEl.attachShadow({mode: 'open'})
-		parentEl = shadowroot
-
-		//メインwaku作る
-		const waku_id = 'waku'
-		const wakuElm = document.createElement('div')
-		wakuElm.id = waku_id
-		// wakuElm.style.opacity = 0 //初期透過
-		wakuElm.onclick = function(e) {
-			wakuElm.style.display = 'none'
-			// this.parentNode.removeChild(this)
-		}
-		wakuElm.onmouseenter = function(e) {
-			wakuElm.style.opacity = 1
-		}
-		wakuElm.onmouseleave = function() {
-			wakuElm.style.opacity = 0
-		}
-		parentEl.appendChild(wakuElm)
-
-		//css
-		const css_id = 'my_alert_css'
-		const css_el = document.createElement('style')
-		css_el.id = css_id
-		parentEl.appendChild(css_el)
-		css_el.insertAdjacentText('beforeend', ([`
-						/* #waku,#waku>*{all:initial} */
-			#${waku_id}{
-				background-color: ivory;
-				color:black;
-				/* transition: all 900ms ease 0s; */
-				border: 2px solid silver;
-				padding: 5px;
-				position: fixed;
-				right: 0px;
-				//top: 0px;
-				bottom: 0px;
-				z-index: 999;
-				font-size:12px;
-				overflow-x:auto;
-				width:300px;
-				max-height:90%;				
-				word-break: break-all;/* 文字に関係なくきっちり折り返す */
-				overflow-wrap: break-word;
-				white-space: pre-wrap;/* 開業・空白そのまま、しかし折り返す */
-
-								/* width: fit-content; */
-								height: auto;
-
-								transform-style: preserve-3d;
-								perspective: 900px;
-
-			}
-		`
-		])[0])
-
-		return wakuElm
+	/** 追加用 */
+	conDoW.add = function(msg) {
+		write(msg, {addition: true})//なんでこれ動く？
 	}
-
-	const kakikomi_waku = opt_push
-		? mainElem.lastElementChild || new_div()
-		: new_div()
-	function new_div() {
-		const el = document.createElement('div')
-		mainElem.appendChild(el)
-		el.style.backgroundColor = 'black'
-		el.style.transition = 'all 1000ms ease-out'
-		el.style.boxShadow = 'inset 0px 0px 5px 5px #29F'
-		el.style.borderBottom = ' 1px solid #999'
-		// el.style.transformOrigin= 'center bottom'
-		el.style.transform = 'rotateX(90deg)'
-		// el.style.position= 'absolute'
-
-		// window.requestAnimationFrame(() => el.style.backgroundColor = 'white', 1)
-		setTimeout(() => {
-			el.style.transform = 'none'
-			el.style.boxShadow = 'none'
-			el.style.backgroundColor = '#0000'
-		}, 50)
-		return el
+	/** 表示 */
+	conDoW.disp = function(msg) {
+		waku.style.display = 'block'
 	}
-	//追加の初期化、ボタンを追加
-	if (is_init) 初期ボタン()
-	function 初期ボタン() {
-		//非表示ボタン
-		const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
+	//書き込む
+	/** 
+	 * @param {array} msg - 書き込み内容
+	 */
+	const write = function(msg, opt = {addition: false}) {
+		//同じ要素に書き込むかどうか
+		let el = get_kakikomi_div(opt.addition)
 
-		//消さないボタン
-		const button2 = button_tukuru('消さない', (e) => {
-			mainElem.onmouseleave = null
-			mainElem.onclick = null
-		})
+		//引数が配列じゃないなら、配列にする。
+		msg = Array.isArray(msg) ? msg : [msg]
 
-		const button = button_tukuru('ログクリア', function(e) {
-			log_clear()
-			//my_alert(this)
-		})
-		write(button1, button2, button)
-
-	}
-
-	write(...msg_arr)
-	function write(...msg) {
-		let el = kakikomi_waku
-
-		//例外、第一引数がelemなら表示させる
+		//例外、elemなら表示させる
 		for (let [key, val] of Object.entries(msg)) {
 			if (val instanceof HTMLElement) {
 				//conDoW('is elm? ' + (val instanceof HTMLElement))
 				// log_el.insertAdjacentElement('beforeend', val)
 				el.appendChild(val)
 			} else {
-				//conDoW(key,typeof key)
-				if (key != '0') val = ', ' + val //obj entr はstring
-				val = document.createTextNode(val)
-				el.appendChild(val)
+				if (key !== '0') val = ', ' + val //obj entr はstring
+				const tn = document.createTextNode(val)
+				el.appendChild(tn)
 				// elem.insertAdjacentHTML('beforeend', val)
 			}
 		}
+		//スクロール位置調整
+		waku.scrollTop = waku.scrollHeight
 	}
-	//スクロール
-	mainElem.scrollTop = mainElem.scrollHeight
+	/** ログクリア、 */
+	const log_clear = function log_clear() {
+		//console.log(wakuElm, this)
+		let copyEl = waku.firstElementChild.cloneNode(true)
+		waku.textContent = '' //shwdow挟んでると消えない
+		waku.appendChild(copyEl)
+	}
+	/**初期化して基礎エレメントを作る 
+		 * @return {Node} shadow Node
+		*/
+	function get_baseElem() {
+		debug && log('get_baseElem')
+
+		//style="all: initial;"
+		const outerhtml = `<div id="div1desu" style="all:initial">
+		<div style="background-color: #F005;position: fixed;right: 0;bottom: 0;width: 1em;height: 1em;z-index: 1000;" id="mouse"></div><div id="waku" style="background-color: ivory; color: black; border: 2px solid silver; padding: 5px; position: fixed; right: 0px; bottom: 0px; z-index: 999; font-size: 12px; overflow-x: auto; width: 300px; max-height: 90%; word-break: break-all; overflow-wrap: break-word; height: auto; transform-style: preserve-3d; perspective: 900px; opacity: 1;">
+			<div class="kaki" style="background-color: rgba(0, 0, 0, 0); transition: all 1000ms ease-out 0s; box-shadow: none; border-bottom: 1px solid rgb(153, 153, 153); transform: none;">
+				<button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">👭ログ非表示</button><button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">🎙消さない</button><button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">🌻ログクリア</button> 2021/3/2
+				17:15:21 </div>
+				</div>
+	</div>`
+		const tmp = document.createElement('div')
+		tmp.innerHTML = outerhtml
+		let baseEl = tmp.children[0]
+		// parentEl.style.all = 'initial' //二重にして外側ブロックで初期化すると、全部リセット。車道ひつようないぽ。
+		debug && log(baseEl)
+		document.body.appendChild(baseEl)
+		// log(baseEl)
+		//shadowroot挟む
+		// const shadowroot = parentEl.attachShadow({mode: 'open'})
+		// parentEl = shadowroot
+		return baseEl
+	}
+
+	function get_kakikomi_div(add) {
+		if (add) return waku.lastElementChild
+		let el = kakidiv.cloneNode()
+		waku.appendChild(el)
+		return el
+	}
+
+
+	const baseEl = get_baseElem()
+	const waku = baseEl.querySelector('#waku')
+	const kakidiv = baseEl.querySelector('.kaki').cloneNode()
+	// waku.style.visibility = 'hidden' //初期透過
+	waku.style.display = 'none'
+	//イベント
+	{
+		baseEl.querySelector('#mouse').onmouseenter = function(e) {
+			// waku.style = {...waku.style,visibility: 'visible'}
+			// Object.assign(waku.style, {visibility: 'visible'})
+			// waku.style.visibility = 'visible'
+			waku.style.display = 'block' //初期透過
+
+
+
+		}
+		waku.onmouseleave = function() {
+			// waku.style.visibility = 'hidden' //初期透過
+			waku.style.display = 'none' //初期透過
+
+		}
+	}
+
+	//テンプレの中身を更地にする
+	{waku.textContent = null}
+
+	//追加の初期化、ボタンを追加
+	{
+		//非表示ボタン
+		const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
+
+		//消さないボタン
+		const button2 = button_tukuru('消さない', (e) => {
+			waku.onmouseleave = null
+			waku.onclick = null
+		})
+
+		const button = button_tukuru('ログクリア', function(e) {
+			log_clear()
+		})
+		write([button1, button2, button])
+		// write(1)
+	}
+
+
+	conDoW.main = write
+	// conDoW.main = (msg) => write(msg)
+	return conDoW.main(msg, opt)
 }
 
 /**日付関数 yyyy-MM-dd hh:mm:ss	 */
@@ -660,32 +594,16 @@ function mydate(format, zerofill = 1) {
 	return format
 }
 
-/** * cssを作って返す */
-function returnMyCss(cssId = 'miiyacss', cssText) {
-	const d = false
-	d && conDoW('cssつくっちゃう')
-	let el = document.getElementById(cssId)
-	//無ければ作る
-	if (!el) {
-		el = document.createElement('style')
-		el.id = cssId
-		document.head.appendChild(el)
-	}
-	//styElem.sheet.insertRule(', 0); //オプション2は挿入インデックスaddされるから0で良いぽい
-	//insertrだと1つづつしか出来ないぽい、初期化ならtextContentが良い、見えるし
-	if (cssText)
-		el.insertAdjacentText('beforeEnd', cssText)
-	return el
-}
-// 操作画面を作る
-nsMiiya.gamen = function() {
+
+// 操作画面を作る・2016年ごろ作った？古い左下の青っぽいGUI
+const hogehogehoge = function() {
 	let elementId = 'miiyabase'
 	// 既にあればリターン
-	let el = document.getElementById(elementId)
-	if (el) {
-		return el
-	};
+	let baseC = document.getElementById(elementId)
+	if (baseC) {return baseC};
+
 	//css 変数名がdomと違うから注意
+	//cssを作る、汚いから後で直す
 	let styElem = returnMyCss()
 	styElem.insertAdjacentText('afterbegin', `
 			#${elementId} {text-align:left;}
@@ -716,7 +634,8 @@ nsMiiya.gamen = function() {
 				border: 3px solid silver;
 			}
 		`)
-	const base = mkEle(document.body, 'div', {
+
+	const base = make_button_elem(document.body, 'div', {
 		id: elementId,
 		style: `
 				transition: all 300ms 0s ease;
@@ -737,23 +656,21 @@ nsMiiya.gamen = function() {
 			baseC.style.display = 'none'
 		},
 	})
-	const baseC = mkEle(base, 'div', {
+
+	//メインの要素、これを返す
+	baseC = make_button_elem(base, 'div', {
 		style: 'width:300px;display:none',
 		//style:'width:300px',
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: 'はっげ',
 		onclick: () => conDoW('えむ'),
 	})
-	baseC.proMk2('button', {
-		textContent: 'はっげ',
-		onclick: () => conDoW('えむ'),
-	})
-	mkEle(baseC, 'span', {
+	make_button_elem(baseC, 'span', {
 		textContent: 'v' + ver,
 		tyle: {fontSize: '8px'},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: '上下',
 		// style:{cssText:'all: initial;'},
 		onclick: function() {
@@ -769,7 +686,7 @@ nsMiiya.gamen = function() {
 			}
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: '←→',
 		// style:{cssText:'all: initial;'},
 		onclick: function() {
@@ -785,12 +702,12 @@ nsMiiya.gamen = function() {
 			}
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: 'いーなびボタン',
 		// style:{cssText:'all: initial;'},
 		onclick: nsMiiya.fnc2,
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: '最小化2',
 		// style:{cssText:'all: initial;'},
 		onclick: function() {
@@ -799,14 +716,14 @@ nsMiiya.gamen = function() {
 			nsMiiya.aloging('saisho')
 		},
 	})
-	mkEle(base, 'button', {
+	make_button_elem(base, 'button', {
 		textContent: '更新',
 		type: 'button',
 		onclick: function(event) {
 			location.reload()
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: '楽天毎日くじ',
 		type: 'button',
 		onclick: (event) => {
@@ -818,7 +735,7 @@ nsMiiya.gamen = function() {
 			// //http://www.rakuten.co.jp/?l2-id=shop_header_logo
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: 'GM_変数追加',
 		type: 'button',
 		onclick: (event) => {
@@ -826,7 +743,7 @@ nsMiiya.gamen = function() {
 			GM_setValue('日本語' + rand, '阿吽' + rand)
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: 'GM_変数表示',
 		type: 'button',
 		onclick: (event) => {
@@ -843,7 +760,7 @@ nsMiiya.gamen = function() {
 			//conDoW(GM_listValues());
 		},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: '小さくなる',
 		// style:'all: initial;',
 		// style: 'height:30px',
@@ -853,7 +770,7 @@ nsMiiya.gamen = function() {
 		},
 		//e=>{},
 	})
-	mkEle(baseC, 'button', {
+	make_button_elem(baseC, 'button', {
 		textContent: 'UA・Referer',
 		onclick: function() {
 			/**
@@ -879,7 +796,7 @@ nsMiiya.gamen = function() {
 		//e=>{},
 	})
 	// logを表示する場所
-	const logDisp = mkEle(baseC, 'div', {
+	const logDisp = make_button_elem(baseC, 'div', {
 		id: 'miiyalog',
 		textContent: '',
 		style: 'height:200px;overflow-y:  scroll;     height: 100px;  /*background-color: #CCF; */ border-style: ridge;',
@@ -897,31 +814,31 @@ nsMiiya.gamen = function() {
 		logDisp.scrollTop = logDisp.scrollHeight
 		logDisp.scrollLeft = logDisp.scrollWidth
 	}
+	/**おきにボタン */
+	function okiniButton(elem) {
+		//お気に入りのボタンつくっちゃうも
+		const okinis = [
+			['https://www.infoseek.co.jp/', 'Infoseekトップ'],
+			['http://www.rakuten.co.jp', '楽天トップ'],
+			['https://www.infoseek.co.jp/Luckylot'],
+			['https://isbingo.www.infoseek.co.jp/isbingo/getCard'],
+			['https://pointmail.rakuten.co.jp/subcard/complete', ''],
+			['http://192.168.0.1/userRpm/StatusRpm.htm?Connect=Connect&wan=1', 'IPリセット'],
+			['https://192.168.0.1/userRpm/StatusRpm.htm?Connect=Connect&wan=1', 'IPリセットs'],
+			//['',''],
+		]
+		for (let key in okinis) if (okinis.hasOwnProperty(key)) {
+			let el = okinis[key]
+			if (el[1] === undefined || el[1] === '') {
+				// let a = (new URL(location.href)).hostname.split('.')[0]
+				// a.hostname.split('.')[0]
+				el[1] = (new URL(el[0])).hostname.split('.')[0]
+			}
+			make_button_elem(elem, 'a', {href: okinis[key][0], target: '_blank', textContent: okinis[key][1] || 'hoge'})
+		}
+	}
 	okiniButton(baseC)
 	return baseC
-}// 画面作る関数終わり
-/**おきにボタン */
-function okiniButton(elem) {
-	//お気に入りのボタンつくっちゃうも
-	const okinis = [
-		['https://www.infoseek.co.jp/', 'Infoseekトップ'],
-		['http://www.rakuten.co.jp', '楽天トップ'],
-		['https://www.infoseek.co.jp/Luckylot'],
-		['https://isbingo.www.infoseek.co.jp/isbingo/getCard'],
-		['https://pointmail.rakuten.co.jp/subcard/complete', ''],
-		['http://192.168.0.1/userRpm/StatusRpm.htm?Connect=Connect&wan=1', 'IPリセット'],
-		['https://192.168.0.1/userRpm/StatusRpm.htm?Connect=Connect&wan=1', 'IPリセットs'],
-		//['',''],
-	]
-	for (let key in okinis) if (okinis.hasOwnProperty(key)) {
-		let el = okinis[key]
-		if (el[1] === undefined || el[1] === '') {
-			// let a = (new URL(location.href)).hostname.split('.')[0]
-			// a.hostname.split('.')[0]
-			el[1] = (new URL(el[0])).hostname.split('.')[0]
-		}
-		mkEle(elem, 'a', {href: okinis[key][0], target: '_blank', textContent: okinis[key][1] || 'hoge'})
-	}
 }
 /**GM valueを全部
  * ネームスペース単位じゃなくインストールスクリプトで分けられてるぽい
@@ -934,7 +851,7 @@ function gmValuesAll() {
 		vals.push(GM_getValue(key))
 		ob[key] = GM_getValue(key)
 	}
-	conDoW(ob)
+	return ob
 }
 /** * 毎日くじ */
 function maiKuji(start) {
@@ -1004,7 +921,7 @@ function maiJump(flagEdit) {
 	//ジャンプ実行フラグがついてなければ抜ける
 }
 /** ボタン作る */
-function button_tukuru(text, func) {
+const button_tukuru = function(text, func) {
 	// const css_ClassName = 'button_tukuru'
 	// const css_id = 'button_tukuru_css'
 
@@ -1028,13 +945,13 @@ function button_tukuru(text, func) {
 	// }
 	//ボタン作る,cssクラスで見た目を変えたが、インラインに変更、shadowにも対応出来る
 	const el = document.createElement('button')
-	el.style.cssText = ([`
-					margin: 2px;
-					box-shadow: 1px 2px 3px grey;
-					padding: 1px;
-					/* font-size: initial; */
-					border-width: thin;
-			`])[0]
+	Object.assign(el.style, {
+		margin: '2px',
+		boxShadow: '1px 2px 3px grey',
+		padding: '1px',
+		/* fontSize: 'initial',*/
+		borderWidth: 'thin',
+	})
 	el.textContent = emoji_rand() + text
 	// el.className = css_ClassName
 	//el_a.type = 'button'
@@ -1045,15 +962,48 @@ function button_tukuru(text, func) {
 		func.call(this, ev)
 		//!(func.bind(this, e))() //無名関数で動かなかったのはセミコロンなかったからや。
 		//!(func.bind(this))(e) //これは挙動おかしい
-	}, {once: false, passive: false, capture: true})
-	// el_a.onclick = function(ev) {
-	// 	ev.stopPropagation()
-	// 	ev.preventDefault()
-	// 	//func(e) //thisが伝わらない,引数側を、アロー関数にすりゃいい？駄目だった。
-	// 	func.call(this, ev)
-	// 	//!(func.bind(this, e))() //無名関数で動かなかったのはセミコロンなかったからや。
-	// 	//!(func.bind(this))(e) //これは挙動おかしい
-	// }
+	}, false)
+	return el
+}
+const getButtonWithFunc = function(callback, text) {
+	const className = 'BWF'
+	const css_id = 'BWFcss'
+	if (text) text = callback.name
+
+	// //css無ければ作る
+	let css_el = document.getElementById(css_id)
+	if (css_el === null) {
+		css_el = document.createElement('style')
+		css_el.id = css_id
+		document.body.appendChild(css_el)
+		css_el.textContent = `
+			.${css_ClassName}{
+				margin: 2px;
+				box-shadow: 1px 2px 3px grey;
+				padding: 1px;
+				/* font-size: initial; */
+				border-width: thin;
+			}`
+	}
+	//ボタン作る,cssクラスで見た目を変えたが、インラインに変更、shadowにも対応出来る
+	const el = document.createElement('button')
+	// Object.assign(el.style, {
+	// 	margin: '2px',
+	// 	boxShadow: '1px 2px 3px grey',
+	// 	padding: '1px',
+	// 	/* fontSize: 'initial',*/
+	// 	borderWidth: 'thin',
+	// })
+	el.textContent = emoji_rand() + text
+	el.className = className
+	el.addEventListener('click', function name(ev) {
+		ev.stopPropagation()
+		ev.preventDefault()
+		//func(e) //thisが伝わらない,引数側を、アロー関数にすりゃいい？駄目だった。
+		callback.call(this, ev)
+		//!(func.bind(this, e))() //無名関数で動かなかったのはセミコロンなかったからや。
+		//!(func.bind(this))(e) //これは挙動おかしい
+	}, false)
 	return el
 }
 /** utility obj 関数つまってる感じ */
@@ -1099,8 +1049,8 @@ const uo = {
 			conDoW([str, ev.buttons, ev.button])
 		}, false)
 	},
-	/** タッチパネルを作る */
-	入力パネル2() {
+	/** ドラッグ移動 */
+	移動パネル2() {
 		let ball = createEl(undefined, 'div', {
 			textContent: '移動',
 			onclick: function(ev) {
@@ -1155,20 +1105,17 @@ const uo = {
 	/** タッチパネルを作る */
 	入力パネル() {
 		let div = document.createElement('div')
-		div.style.fontSize = '6em'
+		div.style.fontSize = '5em'
 		div.style.fontFamily = 'monospace'
 		// let mojiban = [1, 2, 3, null, 4, 5, 6, null, 7, 8, 9, null, 0]
 		let mojiban = [1, 2, 3, 4, 5, null, 6, 7, 8, 9, 0]
 		//mojiban.forEach(v => {})
 		//for (let i = 0, l = mojiban.length; i < l; i++) {
 		for (let [key, val] of mojiban.entries()) {
-
-
 			if (val == null) {
 				div.appendChild(document.createElement('br'))
 				continue
 			}
-
 			const elem = document.createElement('button')
 			elem.textContent = val
 			//elem.href = i //これがあるとリンク下線つく
@@ -1195,7 +1142,7 @@ const uo = {
 			textContent: `window.open().document.body.innerHTML = "${str}"`
 		})
 	},
-	通知() {
+	通知2() {
 		setTimeout(function() {
 			Notification
 				.requestPermission()
@@ -1204,7 +1151,38 @@ const uo = {
 				})
 		}, 3000)
 	},
-	hoge() { },
+	通知(msg = '通知です') {
+		Notification.requestPermission().then(() => new Notification(msg))
+	},
+	copyTitleLfUrl() {
+		uo.copy(`${document.title}\n${location.href}`)
+	},
+	copyLinkAsMarkdown() {
+		uo.copy(`[${document.title}](${location.href})`)
+	},
+	copy(str) {
+		function copyText(text) {
+			var ta = document.createElement('textarea')
+			ta.value = text
+			document.body.appendChild(ta)
+			ta.select()
+			document.execCommand('copy')
+			ta.remove()
+			// ta.parentElement.removeChild(ta)
+		}
+
+
+
+		if (navigator.clipboard)
+			navigator.clipboard.writeText(str).then(
+				function() {console.log('copy')},
+				function() {alert('failed to copy')}
+			)
+		else {copyText(str)}
+	},
+	stopJump() {
+		window.onbeforeunload = function(event) {event.returnValue = '？'}
+	},
 	hoge() { },
 }
 function utility() {
@@ -1248,7 +1226,7 @@ function utility() {
 		),
 		button_tukuru('loop', () =>
 			!(function hoge(i = 0) {
-				conDoW(i, {push: true})
+				conDoW(i, {addition: true})
 				if (50 < i) return
 				setTimeout(() => hoge(i + 1), 1000)
 			})()
@@ -1262,22 +1240,23 @@ function sleep(msec) {
 }
 const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
 
-//main/////////////////////////////////////
-const log = conDoW
-conDoW(`\n${(new Date).toLocaleString()}`)
-conDoW(`${Date.now() - time}ms main ##########################`)
-conDoW('@version 2019.11.16.113733')
-ugoiteruka('.')
+
 
 /** サイト別の関数リスト */
 const arr = [
 	{/* 全部b */
 		name: '全部b',
-		url: ['^http',],
+		url: ['^',],
 		date: '',
-		func: function() {
-			conDoW(uo.入力パネル2())
+		func: function hoge() {
+			const nf = (fn) => [fn.name, fn]
+			conDoW(uo.移動パネル2())
 			conDoW(button_tukuru('Utility', utility))
+			conDoW([
+				button_tukuru(...nf(uo.stopJump)),
+				button_tukuru(...nf(uo.copyTitleLfUrl)),
+				button_tukuru(...nf(uo.copyLinkAsMarkdown)),
+			])
 		},
 	},
 	{/* テスト */
@@ -1290,16 +1269,22 @@ const arr = [
 	},
 	{/* 確認くん */
 		name: '確認くん',
-		url: ['^http://www.ugtop.com/spill.shtml',],
+		url: ['^https://www.ugtop.com/spill.shtml',],
 		date: '',
-		func: function() {conDoW('ugtop')},
+		func: function() {
+			uo.通知('ほげほげ')
+			setTimeout(function() {
+				alert(111)
+			}, 3000)
+
+		},
 	},
 	{/* workflowy */
 		name: 'workflowy',
 		url: ['^https://workflowy.com/',],
 		date: '',
 		func: function() {
-			//const base = nsMiiya.gamen();// 画面作っちゃう
+			//const base = hogehogehoge();// 画面作っちゃう
 			let dataSounyuF = function(s = '') {
 				document.activeElement.textContent += mydate('yyyy/MM/dd') + ' ' + s
 				/* フォーカス位置調整 */
@@ -1349,14 +1334,13 @@ const arr = [
 		url: ['^https?://192.168.\\d+.\\d+',],
 		date: '',
 		func: function() {
-			const base = nsMiiya.gamen()// 画面作っちゃう
 			function fff(params) {
 				document.getElementById('userName').value = 'admin'
 				document.getElementById('pcPassword').value = 'ttoomm99'
 				document.getElementById('loginBtn').click()
 			}
 			fff()
-			mkEle(base, 'button', {
+			make_button_elem(base, 'button', {
 				textContent: 'ルーター',
 				onclick: fff,
 			})
@@ -1366,54 +1350,11 @@ const arr = [
 		name: '楽天スーパーヒーロー',
 		url: ['^https://campaign.rakuten.jp/heroes/',],
 		date: '',
-		func: function() {
-			const base = nsMiiya.gamen()// 画面作っちゃう	
-			mkEle(base, 'button', {
-				textContent: 'callbtn',
-				onclick: (ev) => {
-					document.querySelector('.callbtn').click()
-				}
-			})
-			mkEle(base, 'button', {
-				textContent: '受け取らず',
-				onclick: (ev) => {
-					document.querySelector('img[alt="受け取らずに次へに進む"]').click()
-				}
-			})
-			let flag = true
-			mkEle(base, 'button', {
-				textContent: '受け取らず',
-				onclick: (ev) => {
-					if (flag) {
-						document.querySelector('.callbtn').click()
-						ev.target.textContent = '受け取らず'
-					} else {
-						document.querySelector('img[alt="受け取らずに次へに進む"]').click()
-						ev.target.textContent = 'スロット'
-					}
-					flag = !flag
-				}
-			})
-			//200円クーポンは3500円以上としょぼい
-			//https://campaign.rakuten.jp/heroes/?heroes_call=coupon&scid=wi_ich_gmx_coupongetcoupon
-			//限定クーポン↑でヒーローたくさん呼ぶ
-			//modal call-tappuri-hero active
-			/*
-				value: function() {
-					this.hitNumArr = [],
-					this.hitNumAccuracy = 1;
-					for (var e = 0; e < this.percent.length; e++)
-							for (var t = 0; t < this.percent[e] * this.hitNumAccuracy; t++)
-									this.hitNumArr.push(e);
-					this.hitNumArr = this.shuffle(this.hitNumArr)
-			 */
-		},
+		func: function() { },
 	},
 	{/* infoの報告 */
 		name: 'infoの報告',
-		url: [
-			'^https://pointmail.rakuten.co.jp/subcard/complete',
-		],
+		url: ['^https://pointmail.rakuten.co.jp/subcard/complete',],
 		date: '',
 		func: function() {
 			document.querySelector('#completionReportBtn').click()
@@ -1427,7 +1368,6 @@ const arr = [
 		date: '',
 		func: function() {
 			const title = 'メールポイント'
-			const base = nsMiiya.gamen()// 画面作っちゃう
 			// document.querySelector('.point_url').click()
 			let suteFunc = async function() {
 				arebaCli('.point_url>a') //spanClickしても数字減ったけど記録されず
@@ -1438,10 +1378,7 @@ const arr = [
 				// if (el !== null) click();
 				// document.querySelector('li.next>a').click()
 			}
-			mkEle(base, 'button', {
-				onclick: suteFunc,
-				textContent: 'mail de p',
-			})
+
 			new GM_registerMenuCommand(title + '2', suteFunc, 'C')
 			if (location.href.match('https://member.pointmail.rakuten.co.jp/box/ItemDetail/.+')) {
 				arebaCli('.point_url>a') //spanClickしても数字減ったけど記録されず
@@ -1453,7 +1390,6 @@ const arr = [
 		url: ['^https://www.rakuten-card.co.jp/*',],
 		date: '',
 		func: function() {
-			const base = nsMiiya.gamen()// 画面作っちゃう
 			async function enaviClick() {
 				let elemList = document.querySelectorAll('[id^="position"]')// cssセレクタでhasが使えないからloop検索
 				conDoW('クリック箇所=' + elemList.length)
@@ -1477,11 +1413,6 @@ const arr = [
 			};
 			//PV時に実行
 			enaviClick()
-			// ボタンを作る
-			mkEle(base, 'button', {
-				textContent: 'クリックde',
-				onclick: enaviClick,
-			})
 		},
 	},
 	{/* Infoseekのラッキーくじサッカー */
@@ -1501,7 +1432,6 @@ const arr = [
 			// 	conDoW('くじセット');
 			// 	GM_setValue('毎日くじ次へ', 1);
 			// }
-			const base = nsMiiya.gamen()// 画面作っちゃう
 			let fn = async function() {
 				await sleep(500) // sleep
 				document.querySelector('.isluckykuji_start').click()
@@ -1551,11 +1481,7 @@ const arr = [
 		],
 		date: '',
 		func: function() {
-			const base = nsMiiya.gamen()// 画面作っちゃう	
-			mkEle(base, 'button', {
-				textContent: '楽天くじ',
-				onclick: this.rakuTop2kuji,
-			})
+
 			// if (GM_getValue('raku')) {
 			// 	GM_setValue('raku', 0);
 			// 	rakutenTop2Kuji();
@@ -1574,11 +1500,11 @@ const arr = [
 			//var this.host;
 			for (let i = 0; i < this.host.length; i++) {
 				const s = this.host[i].replace(/[*?]/g, '') // g繰り返し
-				mkEle(base, 'a', {
+				make_button_elem(base, 'a', {
 					textContent: s,
 					href: s,
 				})
-				mkEle(base, 'br', {})
+				make_button_elem(base, 'br', {})
 			}
 			// rakuTop2kuji: function() {
 			// 	arebaCli('a[href^="https://rd.rakuten.co.jp/s/?R2=https%3A%2F%2Fkuji.rakuten.co.jp"]');
@@ -1616,7 +1542,7 @@ const arr = [
 		},
 	},
 	{/* kkonload */
-		name: 'kkonload',
+		name: 'kk onload',
 		url: ['^https://openloadpro.com/',],
 		date: '',
 		func: function() {
@@ -1662,12 +1588,8 @@ const arr = [
 
 			// const videoEl = qs('div[id="flash"]')
 			const videoEl = qs('div[preload="none"]')
-
-			//kill ad                
-
 			if (videoEl) {
 				qs('div.vjs-poster').remove()
-
 
 				video_top_play(videoEl)
 				conDoW(button_tukuru('video再生', video_top_play))//動かない？
@@ -1680,10 +1602,13 @@ const arr = [
 			//ついでにクリックも、html5プレーヤーの操作できんくなった。
 			// document.addEventListener('click', function(e) {e.stopPropagation()}, true)
 
-			//fix追従バーを動かさない
-			document.querySelectorAll('.top-nav,.navbar')
-				.forEach((el) => el.style.position = 'relative')
+			//fix追従バーを動かさない、追記、要素だとautoPageであかん。
+			// document.querySelectorAll('.top-nav,.navbar')
+			// 	.forEach((el) => el.style.position = 'relative')
 			//staticだと検索窓がクリックで消える、absoだと上に最上位にきてビデオの邪魔
+			let style = document.createElement('style')
+			style.textContent = ' .navbar,.top-nav{position: initial} '
+			document.body.appendChild(style)
 
 			//サムネイル画像を表示したい
 			//https://cdn.tokyo-motion.net/media/videos/tmb34/1090246/1.jpg
@@ -1709,34 +1634,37 @@ const arr = [
 					const vn4 = videoNum.slice(0, -3)
 					const thumb_url = `https://cdn.tokyo-motion.net/media/videos/vjsslides/${vn4}/${videoNum}_progressthumb.jpg`
 					// conDoW(videoNum)
-					conDoW(thumb_url)
+					// conDoW(thumb_url)
 
 					//ラッパー作って中に画像表示
 					const divIni = createEl(document.body, 'div', 0, {all: 'initial'})
-					divIni.onclick = function() {divIni.remove()}
+					//右クリック閉じイベント
+					divIni.oncontextmenu = function() {
+						ev.preventDefault()
+						divIni.remove()
+
+						return false
+					}
 
 					const div = createEl(divIni, 'div', undefined, {
 						// all:'initial',
 						position: 'fixed',
 						top: 0,
-						zIndex: 1111,
+						zIndex: 888,
 						backgroundColor: '#00F5',
 						padding: '0.6em',
 						// margin: '0.5em',
 						overflow: 'hidden',
 						height: '100vh',
 						//textAlign: 'center',
-
 						/* text-align: center; */
 						display: 'flex',
 						flexWrap: 'wrap',
 						alignItems: 'center',
 						alignContent: 'center',
 						justifyContent: 'center',
-
-
 					})
-					const style = createEl(div, 'style', {
+					const style = createEl(divIni, 'style', {
 						textContent: `
 														img.unoThumb{
 														outline: #0005 1px solid;
@@ -1766,7 +1694,7 @@ const arr = [
 					}
 
 					/** 巨大画像からサムネをクロッピング */
-					function thumb(num, div) {
+					function createThumb(num, div) {
 						const img = createEl(div, 'img', {
 							src: thumb_url,
 							className: 'unoThumb',
@@ -1791,21 +1719,45 @@ const arr = [
 						let av = thumMax / thumb_disp_max
 						for (let i = 1; i <= thumb_disp_max; i++) {
 							let num = Math.round(av * i - av / 2)
-							thumb(num, div)
+							createThumb(num, div)
 							console.log(num)
 						}
-
-
-						// const img2 = createEl(div, 'img', {
-						//     src: thumb_url,
-						// }, {})
+						// loop()
+					}
+					function loop() {
+						// let nodes = dive
+						//初期値を記憶
+						div.childNodes.forEach(node => {
+							node._sop = pxpx2arr(node.style.objectPosition)
+							// node._sop_ini=node._sop
+						})
+						loop2()
+						function loop2(i = 0) {
+							if (i > 3) i = 0
+							if (!divIni.parentNode) return
+							div.childNodes.forEach(node => {
+								let x = '0px '
+								let y = node._sop[1] - 108 * i + 'px'
+								node.style.objectPosition = x + y
+								// log(x+y)
+								// return
+							})
+							// log(divIni.parentNode)
+							conDoW(i + ',', {addition: true})
+							setTimeout(loop2.bind(null, i + 1), 1100)
+						}
+					}
+					//10px 20px みたいな文字列を配列にする。
+					function pxpx2arr(params, i) {
+						// log(params)
+						return params.split(' ').map(v => parseInt(v))
 					}
 				}
 			}, false)
 		},
 	},
 	{/* javmix大画面 */
-		name: 'javmix大画面',
+		name: 'kk javmix大画面',
 		url: ['^https://javmix.tv/video/*/',],
 		date: '',
 		func: function() {
@@ -1865,7 +1817,7 @@ const arr = [
 		},
 	},
 	{/* ファン座で自動再生 */
-		name: 'ファン座で自動再生',
+		name: 'kk ファン座で自動再生',
 		url: [
 			'^https://www.dmm.com/*/',
 			'^https://www.dmm.co.jp/',
@@ -1897,7 +1849,7 @@ const arr = [
 				// _lp()
 
 				!function _lp() {
-					conDoW('探し', {push: true})
+					conDoW('探し', {addition: true})
 					let el = qs('iframe#DMMSample_player_now')
 					if (el && qs('video', el.contentWindow.document))
 						hoge()
@@ -2118,7 +2070,7 @@ const arr = [
 				let time = new Date()
 				let el = document.querySelector('#downloadbtn')
 				// conDoW(time)
-				conDoW(el.disabled, {push: true})
+				conDoW(el.disabled, {addition: true})
 				if (!el.disabled) {
 					el.click()
 					return
@@ -2135,16 +2087,41 @@ const arr = [
 		],
 		date: '',
 		func: function() {
-			//入力欄を予めアクティブ化
-			let inputEl = document.querySelector('input.captcha_code')
-			if (inputEl) inputEl.focus()
+			conDoW.disp()
+			//時間待ちの場合
+			let err = document.querySelector('div.err')
+			if (err) {
+				//数秒後にリロード
+				setTimeout(() => location.reload(), 60 * 1000)
+			}
 
-			conDoW(uo.入力パネル())
+			//入力画面・入力欄を予めアクティブ化
+			let inputEl = document.querySelector('input.captcha_code')
+			if (inputEl) {
+				// if (document.hasFocus() !== false)
+				if (document.visibilityState === 'hidden')
+					uo.通知('認証コード待機')
+				conDoW(uo.入力パネル())
+				inputEl.focus()
+				//ループしてダウンロード
+				tryDownload()
+			}
+			//初期画面からのジャンプ
 			arebaCli('[type="submit"][value="Free Download"]')
-			arebaCli('#dd_link');
-			(function tryDownload() {
+
+			//入力後にダウンロードURLが出た後
+			arebaCli('#dd_link')
+
+
+			// if(!el)return alert('#downloadbtnボタンなし')
+			//待機時間回して待機
+			function tryDownload() {
+				tryDownload.el = tryDownload.el || document.querySelector('#downloadbtn')
+				let el = tryDownload.el
+				// uo.通知('認証コード待機')
+				// log('通知テスト')
 				let time = new Date()
-				let el = document.querySelector('#downloadbtn')
+
 				// conDoW(time)
 				conDoW.add(el.disabled)
 				if (!el.disabled) {
@@ -2152,7 +2129,7 @@ const arr = [
 					return
 				}
 				setTimeout(tryDownload, 5000)
-			}())
+			}
 		},
 	},
 	{/* rapidgator */
@@ -2179,7 +2156,7 @@ const arr = [
 				document.title = document.title.replace(/^\[.+?\]/, '')
 				document.title = `[${sec}]` + document.title
 
-				conDoW(sec + ',', {push: true})
+				conDoW(sec + ',', {addition: true})
 				if (sec < 2) {
 					uo.タブを開くインライン()
 					return
@@ -2204,7 +2181,7 @@ const arr = [
 		},
 	},
 	{/* z2icom */
-		name: 'z2icom',
+		name: '--off--z2icomダウンロード経由サイト',
 		url: [
 			'^https://z2i.com/',
 			'^https://im1.io/',
@@ -2307,7 +2284,7 @@ const arr = [
 		},
 	},
 	{/* dawnfun.com/ */
-		name: 'dawnfun.com/',
+		name: '--off--dawnfun.com/',
 		url: ['^あhttps://r18.dawnfun.com/',],
 		date: '',
 		func: async function() {
@@ -2523,7 +2500,7 @@ const arr = [
 				span.innerHTML = hrefs
 				return span
 			}
-			function _text_kaiseki(fullhtml, title) {
+			const _text_kaiseki = function(fullhtml, title) {
 				let _text = fullhtml
 				let arr_url = _text.match(/"https:\/\/r18\.manga314.+?"/g)
 				if (!arr_url) {
@@ -2575,7 +2552,7 @@ const arr = [
 			}
 
 			/** 生のウェブ上に書き出す、shadow使うとダウンロードツールが見れないから */
-			function _Export_on_the_raw_web(elem, pelm, flag) {
+			const _Export_on_the_raw_web = function(elem, pelm, flag) {
 				const clone = elem.cloneNode(true)
 				const color = flag
 					? '#f00'
@@ -2585,7 +2562,7 @@ const arr = [
 			}
 
 			/** promise gm_xmlで画像を一個ずつダウンロード */
-			function _GM_xhr_promise(url) {
+			const _GM_xhr_promise = function(url) {
 				const p = new Promise((resolve, reject) => {
 					GM_xmlhttpRequest({
 						method: 'GET',
@@ -2624,7 +2601,7 @@ const arr = [
 						saveAs(content, title + '.zip')
 					})
 			}
-			function zipka(imgData) {
+			const zipka = function(imgData) {
 				console.log(zip)
 
 				zip.file('blob_f.jpg', imgData, {blob: false})
@@ -2633,7 +2610,7 @@ const arr = [
 			//test用
 			//_js_xhr('https://manga314.com/c79-galaxist-blade-%e9%9b%b7%e7%b1%a0-%e3%83%84%e3%83%81%e3%83%8e%e3%82%ab%e3%82%b4-%e9%ad%94%e6%b3%95%e5%b0%91%e5%a5%b3%e3%83%aa%e3%83%aa%e3%82%ab%e3%83%ab%e3%81%aa%e3%81%ae%e3%81%af', 'asdf')
 
-			function atode_sakujo() {//画像のリンクを作る
+			const atode_sakujo = function() {//画像のリンクを作る
 				//document.querySelectorAll('img[original*="r18.dawnfun.com"]')
 				let els = document.querySelectorAll('img[original*="r18.dawnfun.com"]')
 				document.title = document.title.replace(' | manga314.com', '').replace(/.zip|.rar|\//, '')
@@ -2715,7 +2692,7 @@ const arr = [
 					base.innerHTML = hrefs
 				}
 			}
-			function _css_visited_highlight() {
+			const _css_visited_highlight = function() {
 				let css_id = 'hoge1111'
 				let css_el = document.getElementById(css_id)
 				if (css_el === null) {
@@ -2743,72 +2720,7 @@ const arr = [
 			'^https://www.circleksunkus.jp/mypage/coupon/index.html',
 		],
 		date: '',
-		func: async function() {
-			const d = !false
-			if (document.title.match('クーポン')) {
-				d && alert(document.title)
-			} else {
-				await new Promise((r) => setTimeout(r, 1000)) // sleep
-				location.reload()
-			}
-			function kuponKaiseki() {
-				let o = {}
-				let cCode, cjc
-				let el = document.querySelectorAll('.modal-open')
-				let i = 1
-				for (let key of el) {
-					cCode = key.getAttribute('data-scs') + ''
-					cjc = key.getAttribute('data-cjc') + ''
-					o[i] = {'cCode': cCode, 'cjc': cjc}
-					i++
-				}
-				return JSON.stringify(o)
-			}
-			const base = nsMiiya.gamen()// 画面作っちゃう	
-			const tA = mkEle(base, 'textarea', {
-				textContent: '{"1":{"cCode":"01098","cjc":"9830869000009"},"2":{"cCode":"01093","cjc":"9830867000001"}}',
-				style: 'height: 7em;',
-			})
-			mkEle(base, 'br', {})
-			//conDoW('t1', this);
-			mkEle(base, 'button', {
-				textContent: 'josn書き出し',
-				onclick: () => { //アロー関数定義でthis固定
-					conDoW(this, this.tA)
-					tA.textContent = kuponKaiseki()
-				},
-			})
-			mkEle(base, 'button', {
-				textContent: 'josn読み込み',
-				onclick: (event) => {
-					const obj = JSON.parse(tA.textContent)
-					conDoW(obj)
-					for (let key in obj) if (obj.hasOwnProperty(key)) {
-						conDoW(key + ':' + obj[key])
-						mkEle(base, 'button', {
-							textContent: key,
-							onclick: () => {
-								conDoW(obj[key])
-							}
-						})
-					}
-				}
-				,
-			})
-			mkEle(base, 'button', {
-				textContent: 'Kクーポン',
-				onclick: function(event) {
-					mkEle(document.body, 'div', {
-						id: 'loadtest',
-						style: 'height:44px;background:#EEE',
-					}, 'afterbegin')
-					/*	nsMiiya.aloging('くじ' + event);
-							let xx = document.querySelectorAll('a[href^="https://rd.rakuten.co.jp/s/?R2=https%3A%2F%2Fkuji.rakuten.co.jp"]');
-							nsMiiya.aloging(xx.length);
-							xx[0].click();*/
-				},
-			})
-		},
+		func: async function() { },
 	},
 	{/* --end-- サークルKスロット */
 		name: '--end-- サークルKスロット',
@@ -2899,7 +2811,7 @@ const arr = [
 		},
 	},
 	{/* abemaビデオの自動読み込みを禁止する */
-		name: 'abemaビデオの自動読み込みを禁止する',
+		name: '--off--abemaビデオの自動読み込みを禁止する',
 		url: ['https://abema.tv/',],
 		date: '',
 		func: () => {
@@ -2924,7 +2836,7 @@ const arr = [
 		},
 	},
 	{/* 当日の毛や木ヒルズを自動で開く、0時すぎると無理 */
-		name: '当日の毛や木ヒルズを自動で開く、0時すぎると無理',
+		name: '--off--当日の毛や木ヒルズを自動で開く、0時すぎると無理',
 		url: ['^https://abema.tv/timetable#keyaki',],
 		date: '2019/10/10',
 		func: async () => {
@@ -2986,49 +2898,9 @@ const arr = [
 		],
 		date: '2020/02/26',
 		func: function() {
-
 			//pngの場合もある、その場合でも最初と最後はjpgだったり。
 			//pngにしてダウンロードすると拡張子がjpegに自動書き換えされてた。謎。
 
-			uo.選択テキスト検索ボタン('/search/q_%word%')//https://ja.nyahentai.com/search/q_%E3%83%8D%E3%83%80%E3%82%AA%E3%83%AC
-			conDoW(button_tukuru('span削除', () => {
-				document.querySelectorAll('._uj_').forEach(v => v.remove())
-			}))
-			conDoW.add(button_tukuru('日本語フィルタ', () => {
-				document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.display = 'none')
-			}))
-			conDoW.add(button_tukuru('日本語フィルタ', () => {
-				document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
-			}))
-			conDoW.add(button_tukuru('ダウソ履歴', () => {
-				//let el =
-				document.querySelectorAll('.gallery').forEach(v => console.log(v.firstElementChild.href))
-				//console.log(el)
-			}))
-			// 右クリックも作ってみる
-			document.addEventListener('contextmenu', function(ev) {
-				//alt抜け
-				if (ev.altKey) return
-				//pngに変換してDL
-				const conv_png = (ev.ctrlKey)
-				console.log(conv_png)
-
-				let el = ev.target
-				//判定
-				while (el) {
-					// conDoW([el.tagName, el.className])
-					//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
-					if (el.tagName == 'A' &&
-						el.className == 'cover target-by-blank' &&
-						1) break
-					//上の要素へ
-					el = el.parentElement
-					//HTMLまで来たら終了
-					if (el.tagName === 'HTML') return false //走査終了	
-				}
-				ev.preventDefault()
-				_main(el, conv_png)
-			}, !false)
 			//ダウンロードのみPromise＋
 			const _xhr_promise = function(url) {
 				const p = new Promise((resolve, reject) => {
@@ -3056,7 +2928,7 @@ const arr = [
 				})
 				return p
 			}
-			function _text_kaiseki(fullhtml, png) {
+			const _text_kaiseki = function(fullhtml, png) {
 				let _text = fullhtml
 				//上コンマある方が誤爆が減る。
 				// let arr_url = _text.match(/"https:..search.pstatic.net.+?(\d+t).(png|jpg)"/g)
@@ -3093,7 +2965,7 @@ const arr = [
 				return arr_url
 			}
 			/** 生のウェブ上に書き出す、shadow使うとダウンロードツールが見れないから */
-			function _色つけ(elem, flag = 1) {
+			const _色つけ = function(elem, flag = 1) {
 				createEl(elem, 'div', null, {
 					position: 'absolute',
 					height: '100%',
@@ -3182,10 +3054,15 @@ const arr = [
 					.replace('t.png', '.png')
 				)
 			}
-			/** ダウンロード履歴 */
+			/** ダウンロード履歴 
+			 * @returns {LSclass}
+			*/
 			const LSclass = class {
 				constructor(storageKey) {
 					this.storageKey = storageKey
+				}
+				overwrite(csv) {
+					localStorage.setItem(this.storageKey, csv)
 				}
 				down履歴保存(str) {
 					let csv = localStorage.getItem(this.storageKey)
@@ -3197,16 +3074,18 @@ const arr = [
 				}
 				down履歴取り出しarr() {
 					let csv = localStorage.getItem(this.storageKey)
-					if (csv === null)
-						csv = ''
+					if (csv === null) csv = ''
 					let arr = csv.split(',')
 					console.log(arr)
 					return arr
 				}
-
 			}
-
-			async function _main(el, png = 0) {
+			const getPageId = (url) => url.match(/(?<=g\/)\d+/)
+			async function dl_from_view(el, png = 0) {
+				window.onbeforeunload = function(event) {
+					event = event || window.event
+					event.returnValue = 'ページから移動しますか？'
+				}
 				console.log('dofo')
 				_色つけ(el, 1)
 				const rootEL = el//.parentElement
@@ -3221,9 +3100,8 @@ const arr = [
 				//ダウンロード履歴
 				let hoo = downzumi
 				//https://ja.nyahentai.com/g/338113/list2/
-				const pageId = url.match(/(?<=g\/)\d+/)
 				hoo.down履歴取り出しarr()
-				hoo.down履歴保存(pageId)
+				hoo.down履歴保存(getPageId(url))
 
 				//追記、それ以外にもブラウザ表示出来るのにDownthemallでダウンロード失敗するファイルが存在する
 				//https://i0.nyacdn.com/galleries/1778723/75.jpg
@@ -3260,7 +3138,7 @@ const arr = [
 				rootEL.appendChild(span)
 			}
 			//elをリストアップして、ダウソ済みに色
-			const down済みに色 = function(el) {
+			const down済みに色 = function(el, downedIdArr) {
 				el.querySelectorAll('.gallery').forEach(v => {
 					//console.log(v.firstElementChild.href)
 					let el = v.firstElementChild
@@ -3280,16 +3158,101 @@ const arr = [
 					}
 				})
 			}
-
 			//日本語以外をフィルター
-			const japaneseFillter = (el) =>
+			const japaneseFillter = (el) => {
 				el.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
-
+			}
 			//main
 			const downzumi = new LSclass('downzumi')
-			let downedIdArr = downzumi.down履歴取り出しarr()
-			down済みに色(document)
+			let downIdList = downzumi.down履歴取り出しarr()
+			down済みに色(document, downIdList)
 			japaneseFillter(document)
+			uo.選択テキスト検索ボタン('/search/q_%word%')
+
+			// 右クリックにイベントつける
+			document.addEventListener('contextmenu', function(ev) {
+				//alt抜け
+				if (ev.altKey) return
+				//pngに変換してDL
+				const conv_png = (ev.ctrlKey)
+				console.log(conv_png)
+
+				let el = ev.target
+				//判定
+				while (el) {
+					// conDoW([el.tagName, el.className])
+					//条件に合えばbreak、while式内でも出来たが、否定にしたり読みにくいのでif break
+					if (el.tagName == 'A' &&
+						el.className == 'cover target-by-blank' &&
+						1) break
+					//上の要素へ
+					el = el.parentElement
+					//HTMLまで来たら終了
+					if (el.tagName === 'HTML') return false //走査終了	
+				}
+				ev.preventDefault()
+				dl_from_view(el, conv_png)
+			}, !false)
+
+			//専用ボタン
+			{
+				conDoW(button_tukuru('span削除', () => {
+					document.querySelectorAll('._uj_').forEach(v => v.remove())
+				}))
+				conDoW.add(button_tukuru('日本語フィルタ', () => {
+					document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.display = 'none')
+				}))
+				conDoW.add(getButtonWithFunc(function 日本語フィルタ(){
+					document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
+				}))
+				const buttonsEl = [
+					button_tukuru('ダウソ履歴', () => {
+						document.querySelectorAll('.gallery').forEach(v => console.log(v.firstElementChild.href))
+					}),
+					button_tukuru('履歴表示を重複削除して上書き', () => {
+						const oldlist = downzumi.down履歴取り出しarr()
+						conDoW(oldlist.length)
+						let tyoufukunashi = [...new Set(oldlist)]
+						conDoW(tyoufukunashi.length)
+						downzumi.overwrite(tyoufukunashi.join(','))
+					}),
+					button_tukuru('list2を一覧ぽく', () => {
+						const el = qsaa('#image-container')[0]
+						Object.assign(el.style, {
+							display: 'flex',
+							flexWrap: 'wrap',
+						})
+						let style = document.createElement('style')
+						style.textContent = '.list-img{width: 40px !important}' //優先順位負けるからimp必須
+						document.body.appendChild(style)
+					}),
+					button_tukuru('直接list2からリンク作成', () => {
+						//サムネイルからリストもやろうと思ったけど、サーバーに番号入ってて無理
+						//リスト作る
+						let el_list = qsaa('#image-container img')
+						let url_arr = el_list.map(v => v.src)
+
+						//caption
+						const caption = el_list[0].alt.replace(/ - Picture \d+$/, '')
+						conDoW(caption)
+
+						//ブラウザで表示されるとjpg png になる。svgはまだ。
+						let svg = url_arr.reduce((acc, v, i) =>
+							(v.indexOf('svg') > -1) ? acc += i + ',' : acc
+							, '')
+						//抜け svgがあるなら
+						if (svg.length) return conDoW(svg)
+
+						const span = _make_links(url_arr, caption)
+
+						downzumi.down履歴保存(getPageId(location.href))
+						conDoW(span)
+						return
+					}),
+
+				]
+				conDoW(buttonsEl, {addition: true})
+			}
 
 			//オートページャーで再発火
 			document.body.addEventListener('AutoPagerize_DOMNodeInserted', function(evt) {
@@ -3297,12 +3260,8 @@ const arr = [
 				//var requestURL = evt.newValue;
 				//var parentNode = evt.relatedNode;
 				japaneseFillter(node)
-				down済みに色(node)
+				down済みに色(node, downIdList)
 			}, false)
-
-
-
-
 		},
 	},
 	{/* ヤフコメ */
@@ -3354,7 +3313,7 @@ const arr = [
 		},
 	},
 	{/* seesaawiki.jp/spacebattleshipstory */
-		name: 'seesaawiki.jp/spacebattleshipstory',
+		name: '--off--seesaawiki.jp/spacebattleshipstory',
 		url: ['^https://seesaawiki.jp/spacebattleshipstory/',],
 		date: '2020/07/10',
 		func: () => {
@@ -3425,116 +3384,7 @@ const arr = [
 			console.log('タイピング')
 			console.log('https://vignette.wikia.nocookie.net/soul-knight/images/f/fe/Stub.png/revision/latest/smart/width/53/height/53?cb=20190306044310')
 
-			function w枠作る(aKey) {
-				const storageKey = aKey
-				let el_mouse_offset_Obj = {}
-				let handleEvMouseMove = {}
 
-				//div作る
-				let div1 = createEl(document.body, 'div',
-					{
-						// onmouseup: function(ev) {ev.stopPropagation()},
-						// onmouseenter: function() {},
-					},
-					{
-						position: 'absolute', zIndex: '99',
-						top: '10px',
-						backgroundColor: '#FFF0',
-
-						width: '100px',
-						height: '200px',
-						cursor: 'move',
-						resize: 'both',
-						overflow: 'hidden',//これが無いとresize発動しない
-						border: '3px solid #FF4A',
-						borderRadius: '5px',
-
-					}
-				)
-				//設定を読み込んで移動リサイズ
-				load_setting_move_resize(div1)
-
-				//ドロップする。mousemoveイベント解除
-				//doc指定しないと、最前面になにかあると反応しない。
-				document.addEventListener('mouseup', function() {
-					console.log('up2')
-					document.removeEventListener('mousemove', handleEvMouseMove)
-					save_setting(div1)
-				}, {capture: false, once: false})
-
-				//マウス押しイベント、プロパティで作る、バブリング。
-				div1.onmousedown = function(event) { // (1) 処理を開始
-					console.log('down')
-					let el = event.currentTarget
-
-					if (!event.shiftKey) {
-						event.preventDefault() //focus移動しないように
-						return
-					}
-					//右下10px以外なら抜ける、リサイズへ
-					if (el.clientHeight - event.offsetY < 15
-						&& el.clientWidth - event.offsetX < 15) return
-					//シフトコンビ
-
-					//イベント関数をグローバルに保存
-					//bind方式
-					// evBindFunc = mouseUgoku.bind(null, event.offsetX, event.offsetY, div1)
-					//handleEvent方式
-					handleEvMouseMove = {
-						handleEvent: mouseUgoku,
-						args: {
-							//対象el
-							el: div1,
-							//el基準で、マウス座標を記憶
-							offsetX: event.offsetX,
-							offsetY: event.offsetY,
-						}
-					}
-
-					// evBindFunc.handleEvent = mouseUgoku
-					// evBindFunc.args = {
-					// 	el: div1,
-					// 	offsetX: event.offsetX,
-					// 	offsetY: event.offsetY,
-					// }
-					// ドラッグ移動のイベントリスナー
-					document.addEventListener('mousemove', handleEvMouseMove)
-				}
-
-				//関数郡
-				function save_setting(el) {
-					console.log(el.style.height)
-					let obj = {
-						'left': el.style.left,
-						'top': el.style.top,
-						'height': el.style.height,
-						'width': el.style.width,
-					}
-					let setjson = JSON.stringify(obj)
-					localStorage.setItem(storageKey, setjson)
-				}
-				function load_setting_move_resize(el) {
-					let getjson = localStorage.getItem(storageKey)
-					if (!getjson) return
-					let obj = JSON.parse(getjson)
-					el.style.left = obj.left
-					el.style.top = obj.top
-					el.style.height = obj.height
-					el.style.width = obj.width
-				}
-				//マウスが動いた所に要素を移動、つまりドラッグ
-				// function mouseUgoku(x, y, el, event) {
-				function mouseUgoku(ev) {
-					//分割代入
-					const {el, offsetX, offsetY} = this.args
-					console.log(this.args, arguments)
-					el.style.left = ev.pageX - offsetX + 'px'
-					el.style.top = ev.pageY - offsetY + 'px'
-				}
-			}
-			//main
-			w枠作る('枠1個目')
-			w枠作る('枠2個目')
 
 			// スクロール位置記憶
 			let keyscroll = 'スクロール位置'
@@ -3551,11 +3401,86 @@ const arr = [
 					console.log(scrollPx)
 					localStorage.setItem(keyscroll, scrollPx)
 
-				}, 1000 / 60 * 10)
+				}, 1 * 1000)
 			}
 
 			document.addEventListener('scroll', func, {passive: true})
 
+			//ブラウザで作ったぼかしDIV
+
+			let outerHtml = localStorage.getItem('bodydiv_inner')
+			//ブラウザからコピーしてくる
+			if (!outerHtml) outerHtml = `
+			<div id="bodydiv">
+			<div style="position: absolute; z-index: 102; top: 511px; background-color: rgba(255, 255, 255, 0); width: 126px; height: 28px; cursor: move; resize: both; overflow: hidden; border: 3px solid rgba(255, 255, 68, 0.667); border-radius: 5px; left: 487px;"></div><div id="boka1" style="position: absolute; z-index: 97; top: 438px; width: 501px; height: 132px; cursor: move; resize: both; border: 3px solid rgba(255, 235, 59, 0.31); border-radius: 5px; left: 232px; backdrop-filter: blur(2.4px); overflow: auto;"></div><div style="position: absolute; z-index: 99; top: 511px; background-color: rgba(255, 255, 255, 0); width: 124px; height: 28px; cursor: move; resize: both; overflow: hidden; border: 3px solid rgba(255, 255, 68, 0.667); border-radius: 5px; left: 299px;"></div></div>
+			`
+
+			//el.outerHTMLは親要素無いと使えない。じゃあinnerと変わらん。
+			let tempEl = document.createElement('div')
+			tempEl.innerHTML = outerHtml
+			let bodydiv = tempEl.children[0] //nodesにすると改行やテキストも出てくる。
+
+			document.body.appendChild(bodydiv)
+
+			//便利関数
+			const log = console.log
+			const qsaa = (s, o = document) => [...o.querySelectorAll(s)]
+			const qs = (s, o = document) => o.querySelector(s)
+
+			//bodydivの下にDnDイベントを付ける
+			![...bodydiv.children].forEach(v => addEventDnD(v))
+
+			function addEventDnD(el) {
+				let _posX, _posY, _el = el, _deb = true
+				//グローバル変数、リスナーには基本、引数渡せないから・・・
+				let _g = {
+					posX: null,
+					posY: null,
+					el: el,
+				}
+				// let handle = { handleEvent: mouseMoveListener, }
+
+				function mouseMoveListener(ev) {
+					const {el, posX, posY} = _g
+					el.style.left = ev.pageX - posX + 'px'
+					el.style.top = ev.pageY - posY + 'px'
+					localStorage.setItem('bodydiv_inner', bodydiv.outerHTML)
+				}
+				function moDownLis(ev) {
+					//抜ける条件
+					{
+						//シフトコンビ
+						if (0 && !ev.shiftKey) {
+							ev.preventDefault() //focus移動しないように
+							return
+						}
+						//右下10px以外なら抜ける、リサイズへ
+						if (el.clientHeight - ev.offsetY < 15
+							&& el.clientWidth - ev.offsetX < 15) return
+					}
+
+					ev.preventDefault()
+					_posX = ev.offsetX
+					_posY = ev.offsetY
+					_g.posX = ev.offsetX
+					_g.posY = ev.offsetY
+
+					_deb && log([ev.target.id, ev.currentTarget.id])
+
+					//ドラッグイベント
+					document.addEventListener('mousemove', mouseMoveListener)
+
+					// //ドラッグイベント消すイベント
+					document.addEventListener('mouseup', (ev) => {
+						_deb && log(['UP', el.id, ev.target.id, ev.currentTarget.id])
+						document.removeEventListener('mousemove', mouseMoveListener)// this)//handle)
+					}, {once: true})
+
+				}
+				//マウス押した
+				el.addEventListener('mousedown', moDownLis, {passive: false})
+
+			}
 		},
 	},
 	{/* YouTubeのラジオダウンロード、YouTube Video and Audio Downloader */
@@ -3641,19 +3566,16 @@ const arr = [
 	},
 ]
 /*
-
-{// 
-	name: '',
-	url: ['^',],
-	date: '',
-	func:  () => {
+	{// 
+		name: '',
+		url: ['^',],
+		date: '',
+		func:  () => {
+		},
 	},
-},
-
 */
 
-//ここで走査しつつ実行
-sousa_do(arr)
+
 /** url専用関数の配列を、走査して実行 */
 function sousa_do(obj) {
 	//配列からpatternを作り、targetでRegExp.test
@@ -3686,47 +3608,57 @@ function sousa_do(obj) {
 	}
 }
 //xdo() //メイン
-ugoiteruka('#', 'sakujo')
 
 //整備用
-if (location.href.match('http://localhost:8888/favicon.ico')) {
+const 整備用 = function() {
+	if (location.href.match('http://localhost:8888/favicon.ico')) {
 
-	function arr_seibi() {
-		for (let i = 0, l = arr.length; i < l; i++) {
-			let v = arr[i]
-			//objの並び替えと初期値
-			arr[i] = {
-				// name: v[0],
-				// urls: v[1],
-				// ends: v[3] || 0,
-				// func: v[2],
-				// play: v.play,
-				// uniq: v.uniq,
-				// func: v.func
-				name: v.name,
-				url: v.url,
-				//end: v.end || 0,
-				date: v.date || '',
-				func: v.func,
+		function arr_seibi() {
+			for (let i = 0, l = arr.length; i < l; i++) {
+				let v = arr[i]
+				//objの並び替えと初期値
+				arr[i] = {
+					// name: v[0],
+					// urls: v[1],
+					// ends: v[3] || 0,
+					// func: v[2],
+					// play: v.play,
+					// uniq: v.uniq,
+					// func: v.func
+					name: v.name,
+					url: v.url,
+					//end: v.end || 0,
+					date: v.date || '',
+					func: v.func,
+				}
 			}
 		}
+		arr_seibi()
+
+		import('http://localhost:8888/js/mod.js')
+			.then((mod) => {
+				console.log(mod)
+				// インポートしたモジュールが、module にセットされています
+
+				let str = mod.obj_to_txt(arr)
+				mod.dom_copy('const arr=' + str)
+				// module を使った処理を記述します
+			})
+		// import * as lib from 'http://localhost:8888/js/mod.js'
 	}
-	arr_seibi()
-
-	import('http://localhost:8888/js/mod.js')
-		.then((mod) => {
-			console.log(mod)
-			// インポートしたモジュールが、module にセットされています
-
-			let str = mod.obj_to_txt(arr)
-			mod.dom_copy('const arr=' + str)
-			// module を使った処理を記述します
-		})
-	// import * as lib from 'http://localhost:8888/js/mod.js'
 }
-conDoW(`${Date.now() - time}ms エラー無し##########################`)
+const main = function() {
+	//main/////////////////////////////////////
+	// const log = conDoW
+	const log = console.log
+	conDoW(`\n${(new Date).toLocaleString()}`)
+	conDoW(`${Date.now() - time}ms main ##########################`)
+	conDoW('@version 2019.11.16.113733')
 
+	//ここで走査しつつ実行
+	sousa_do(arr)
 
-/*
-
-*/
+	整備用()
+	conDoW(`${Date.now() - time}ms エラー無し##########################`)
+}
+main()

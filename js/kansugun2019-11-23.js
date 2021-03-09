@@ -104,7 +104,7 @@ const arr = [
 			console.log(x)
 		},
 	},//proto実験、記憶にない,
-	{
+	{//hoge
 		name: 'プロトタイプを切ると',
 		date: '',
 		play: 0,

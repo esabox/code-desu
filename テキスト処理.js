@@ -3,16 +3,16 @@
 //読み込んでparseしたり、csvに書き出したり。
 //ex
 //$./ shebangNode.js workfメモ全書き出し.txt debug
-
+// const log=console.log
 function parse連続改行分け(text) {
 	const arr = text.trim().split(/\n\n+/)
 	return arr
 }
 function parse先頭文字列で分け(text, separator) {
-	let reStr=separator + '(?=\\d{4})'
+	let reStr = separator + '(?=\\d{4})'
 	// reStr.replace('\\','\\\\') //バッすらエスケープ
 	let re = new RegExp(reStr)
-	console.log(reStr,re)
+	console.log(reStr, re)
 	// const arr = text.trim().split(/,,,(?=\d{4})/)
 	const arr = text.trim().split(re)
 	arr.shift()
@@ -52,31 +52,24 @@ function convタグを付ける(arr) {
 }
 
 function convGoogleスプレッドシート用csv(arr) {
+	let hoge = []
 	arr.forEach((val, i) => {
 		// let date = val.split(/^[\d/]{10}/)
 		//let [, date, tag, content] = val.match(/^([\d/]{10}) ((?:#\S+ )*)([\S\s]+)/)
 
 		//時間 #タグ? 本文 の形式を変数に分ける
-		let date, tag = '', content = ''
-		val
-			.replace(/^[\d/]{10} ?/, all => {date = all.trim(); return ''})
-			.replace(/^(#\S+ ?)*/, s => {tag = s.trim(); return ''})
-			// .replace(/^\n/, '')
-			.replace(/^[\S\s]+/, s => {content = s.trim(); return ''})
-		// console.log('---', date, 'tag@' + tag, 'con@' + content)
-
-		// content = content.replace(/\n/g, '\\n').replace(/\t/g, '\\t')
-
+		let {date, tag , content} = val
+		
 		tag = tag.replace(/#/g, '') //タグシャープ消す
 		date = date.replace(/\/00/g, '/01') // /00/00のありえない時間は01/01に
 
 		//googleインポート用にエスケープ、CSVのメタがだぶくぉ
 		content = content.replace(/"/g, '""')//.replace(/\t/g, '\\t')
-		arr[i] = `"${date}","${tag}","${content}"`
+		hoge[i] = `"${date}","${tag}","${content}"`
 
 		debug && console.log([date, tag, content])
 	})
-	return arr
+	return hoge.join('\n')
 }
 //339+3280 = 3619
 let debug = false
@@ -87,42 +80,86 @@ async function main() {
 	const args = process.argv.slice(2)
 	// console.log('args', args)
 
-	const filePath = args[0] || 'memo.txt'
+	const filePath = args[0]
 	const output_path = filePath + '.out.txt'
 	if (args[1]) debug = true
 	console.log(`filePath=${filePath}`)
-
+	let buff = ''
 	//文字列として読み込み
-	const text = await fs.readFile(filePath, 'utf-8')
-	let lastDate
+	let text = await fs.readFile(filePath, 'utf-8')
+	// console.log(text)
+	console.log(text.length)
+	// text = text.replace(/^\s+(?=\n)/mg, () => console.log('hit') || '')
+	let arr = []
+	//全行trim
+	if (1) {
+		let arr = text.trim().split(/\n/)
+		arr = arr.map(v => v.trimEnd())
+		text = arr.join('\n')
+	}
 
-	//Parseして配列に
-	let arr
-	if (0) arr = parse連続改行分け(text)
-	if (0) arr = parseインデント(text)
-	if (1) arr = parse先頭文字列で分け(text,',,,')
-	if (debug) arr = arr.slice(0, 4) //デバッグ用に配列を小さくする
-	// console.log(arr[0], arr[1])
-	//  console.log(arr)
+	//2連続改行で分け
+	arr = text.trim().split(/\n\n+/)
+	// console.log(arr)
 
-	//変換
-	// if (!0) conv日付なければ上の日付(arr) //参照渡しだから、式にする必要無いけど、
-	// if (0) convタグを付ける(arr) //参照渡しだから、式にする必要無いけど、
+	//日付無い要素に前のを付ける
+	if (!1) {
+		let date
+		arr.forEach((v, i) => {
+			let d = v.match(/^\d\d\d\d\/\d\d\/\d\d/)
+			if (d) {
+				// console.log(d)
+				date = d[0]
+			} else {
+				arr[i] = date + '\n' + arr[i]
+			}
+		})
+	}
+
+	//日付の次の行にタグ行をつける
+	if (1) {
+		arr = arr.map(v => v.replace(/\n/, '\n__tag__ ahk\n'))
+	}
+
+	//日付、タグ、本文、に分ける
+	let ArrObj
+	if (1) {
+		ArrObj = arr.map(v => {
+			let vdate, vtag, vcontent
+			//replaceでやってみた。
+			// v
+			// 	.replace(/.+?\n/, (all) => {vdate = all.trim(); return ''})
+			// 	.replace(/.+?\n/, (all) => {
+			// 		all = all.trim().split(' ')
+			// 		all.shift()
+			// 		vtag = all.join(' ');
+			// 		return ''
+			// 	})
+			// 	.replace(/.*/s, (all) => {vcontent = all; return ''})
+			let ar = v.split('\n')
+			vdate = ar[0]
+			// vtag = ar[1].slice(ar[1].indexOf(" ")+1)
+			vtag = ar[1].split(' ').slice(1).join(' ')
+			vcontent = ar.slice(2).join('\n')
+			return {date: vdate, tag: vtag, content: vcontent}
+		})
+	}
+	//JSONで保存
+	if (1) {
+		let buff=JSON.stringify(ArrObj, 2, '  ')
+		fs.writeFile(filePath + '.json', buff)//
+	}
 	if (1) {
 		//スプレッドシート用csvを書き出す
-		const newArr = convGoogleスプレッドシート用csv(arr.slice())
-		const buff = newArr.join('\n')
+		const buff = convGoogleスプレッドシート用csv(ArrObj)
 		fs.writeFile(filePath + '.google.csv', buff)//
 	}
-	if (!0) convインデント分け(arr)
-	if (0) conv二重改行にする(arr)
 
 	//書き出す
-	let buff
-	buff = arr.join('\n')
+	buff = arr.join('\n\n')
+	// console.log(buff)
 	await fs.writeFile(filePath + '.out.txt', buff)// 
-
-	console.log(arr.length, '#'.repeat(20))
+	// console.log( buff,'#'.repeat(20))
 }
 main()
 

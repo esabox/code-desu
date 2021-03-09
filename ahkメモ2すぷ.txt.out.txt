@@ -1,0 +1,227 @@
+[樽戸アキ×しょぼんぬ×姐川] 農民関連のスキルばっか上げてたら何故か強くなった。（コミック） 第01-06巻
+
+
+2019/11/18
+__tag__ ahk
+fomatterが上手く動作しない、どれも、AutoFormat.ahkやつが一番マトモぽい。それでもおかしい。
+ブロックコメント使わないと狂う、なんでや
+
+2019/11/14
+__tag__ ahk
+リロード中、一時的にホットキーを無効化しようと、suspend使ったが。クリックは通るので、目的は果たせず。
+hotkeyの条件を少し変えれば別物と認識されるらしく、offにしても消えなかった。解決
+解決したと思ったらしてなかった、グローバルにボタン名で関数登録してゴリ押し。
+
+2019/11/13
+__tag__ ahk
+ゲームの連射なのでツールチップをクリックすると失敗するので遠くに表示すべき
+
+2019/11/12
+__tag__ ahk
+1.1.28のansiを使ってるぽい、バルーンで使えないのがあったからこれにした記憶。
+utf8で文字化けするからutf版に変えたい。
+31に変えた。utf8にして保存→開く、文字化け。なんでや。
+bom付きで保存したら出来た。
+
+2019/11/12
+__tag__ ahk
+波括弧にブロックの効果はないぽい、デュ府エラー、formatterがインデント入れるぐらい。
+#if WinActive("ahk_exe sakura.exe")
+{
+	^q::myToolTip("sakura")
+}
+^q::myToolTip("sakura2")
+
+2019/11/12
+__tag__ ahk
+IfWin~が非推奨らしいけど、日本語情報が無い。
+
+2019/11/12
+__tag__ ahk
+#If が #if でも動く、やめて欲しい。
+
+2019/11/12
+__tag__ ahk
+#If 0 ;と書くと、明示的に以下無意味、#IfWinactive だとグローバル登録
+
+2019/11/12
+__tag__ ahk
+動的にホットキーを操作しやすい。
+h::hensu=1
+#If hensu
+h::ToolTip,hoge
+
+2019/11/12
+__tag__ ahk
+ラベルは関数に置き換える、今の所すべて。
+ただ両方ともダブルとエラー。
+
+2019/11/12
+__tag__ ahk
+1つのキーで、連射ON OFFやろうとすると、スレッドが2つ必要になる。
+設定でスレッドを増やす方法。
+keystateを監視する方法。←一番簡単
+別スレッドを呼び出す方法。←一番教科書ぽい。
+
+2019/11/12
+__tag__ ahk
+トレイにメニュー、関数だとリターンが不要なのでexec sctionで作れる。
+Menu, Tray, Add, テスト, labe
+labe(){
+	ToolTip,labe
+}
+
+2019/11/12
+__tag__ ahk
+;ボタンA→連射→ボタンAで止める1
+!t::
+sleep,100 ;wwwwwwwwwwt
+while !GetKeyState("t", "P") {
+	send,w
+	sleep,500
+}
+return
+;ボタンA→連射→ボタンAで止める2
+!g::vs_togg() ;gggggggggg
+vs_togg(){
+	Static x := 0
+	x := !x
+	if x {
+		SetTimer,vs_thread,1000 ;sleep
+	} else {
+		SetTimer,vs_thread, Off
+	}
+}
+vs_thread(){
+	send,g
+}
+
+2019/11/11
+__tag__ ahk
+;トグルのコードのサンプル
+XButton1::ddd()
+ddd(){
+Static x := 1
+x := !x
+myToolTip(x)
+}
+
+2019/11/11
+__tag__ ahk
+--
+ホイール上下にホットキーを当てると挙動がおかしい。
+
+2019/11/08
+__tag__ ahk
+send, {click}が反応しない、setmousedelayで解消。
+sendはデフォがEvent、playは無反応なことが。
+
+2019/09/08
+__tag__ ahk
+押してる間ループの基本
+
+2019/09/08
+__tag__ ahk
+RButton::ca_hoge() ;~無しだととステータスも反映されないが、getstateのオプションPで物理判定を取れる
+ca_hoge(){
+While GetKeyState("RButton", "P"){
+ToolTip, % "A_Index=" A_Index
+;send, {Click, 100}
+;Sleep, 100
+}
+ToolTip
+}
+
+2019/09/07
+__tag__ ahk
+ラベルの基本、関数のほうが良いと思う。
+XButton1::Goto ラベルAA
+ラベルAA:
+myToolTip("aa")
+return
+
+2019/09/07
+__tag__ ahk
+メモ帳は履歴が一件しか残らないから使えない。
+
+2018/10/13
+__tag__ ahk
+キーヒストリー窓がスクリプトリードをで閉じるのが面倒。
+#Persistent で待機させてみたが、キーを記録しない。
+紛らわしいから、iconの変更しようと思い、Base64にしようとLibraryの勉強
+スクリプト\Lib←ここが自動検索される、includeがいらん。filename_funcNameみたいなのもできる。
+
+2018/10/13
+__tag__ ahk
+include使わない限りはデフォLibからしか読み込めない。
+include ファイル名なら、並列のファイルも検索できる。
+includeすると実行される。Libからの自動読み込みなら関数だけを参照できる。
+
+2018/08/31
+__tag__ ahk
+初期設定リターン後にディレイを変更しても、終わったら初期設置地に戻る、
+設定は10ms単位で、最小が10？
+myToolTip(A_KeyDelay)
+SetKeyDelay, 5
+myToolTip(A_KeyDelay)
+
+2018/08/29
+__tag__ ahk
+半角ボタンは挙動が例外、上げてから押してる謎、vkは違うものになってる。
+F3  029	 	u	1.25	not found
+F4  029	 	d	0.00	not found
+
+2018/08/27
+__tag__ ahk
+メモ帳だと全角セミコロンが判別できない。
+
+2018/08/27
+__tag__ ahk
+CapsLockをコントロールで置き換えようとしたが、押しっぱなし現象で諦めた
+sc03a で横取りできるが、アップキーが存在しないのでおしっぱ。
+レジストリから書き換えても、windows10が勝手に元にもどしたり。
+
+2018/08/24
+__tag__ ahk
++a::F11;などはシフトコンビで発動すると、シフトが切れず機能しなかった。
++a::send, {F11};みたく書く
+
+2018/08/24
+__tag__ ahk
+メモ帳を編集すると一度しか戻れない。
+
+2018/08/02
+__tag__ ahk
+func(hensu "moji"); 文字列と変数を繋げるのはスペース、もしくは . 両端陶ペースドット。
+
+2018/08/02
+__tag__ ahk
+SetKeyDelayはどこでも設定できる。
+
+2018/08/02
+__tag__ ahk
+■関数はどこに書いてもいいぽい。
+settitlemodeなどは初期return前にに固定される。
+・win10でtraytipは使いにくくなった。邪魔くさい
+
+2018/08/02
+__tag__ ahk
+◆タスクトレイのクリック、追加メニュー、これがあると他に不具合でた。return位置が間違ってたポ
+リターンまでが初期実行ぽい。
+Menu, Tray, Click, 1
+Menu, Tray, Add, リロード, リロード
+Menu, Tray, Default, リロード
+;↑初期領域↓ラベル領域
+リロード:
+reload
+TrayTip, relo, A_ThisMenu:%A_ThisMenu%`nA_ThisMenuItem :%A_ThisMenuItem%
+return
+
+2018/07/31
+__tag__ ahk
+#IfWinActive, hoge ahk_class ;←ダブルクウォートで挟む×、スペースそのまま○、%は念の為エスケープ、コンマ使う。
+
+2018/07/31
+__tag__ ahk
+AutoHotkey_1.1.25.02_setup に落とした。1.1.29だとVolume_Upが効かなかった。
+ブロックコメント閉じも行頭必須。
