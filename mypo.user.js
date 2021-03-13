@@ -67,7 +67,6 @@ temp.srl = function() {
 
 
 //便利関数
-const qsa = (s, o = document) => o.querySelectorAll(s)
 const qsaa = (s, o = document) => [...o.querySelectorAll(s)]
 const qs = (s, o = document) => o.querySelector(s)
 const log = console.log
@@ -137,109 +136,7 @@ function arebaCli(selector, anzen_sec = 3, is_href = false) {
 		return false
 	}
 }
-/** xpath表示、ネットコピペ */
-function xpath_finder() {
-	var doc = document
-	function create(target, tagName, attr = {}, style = {}) {
-		const el = document.createElement(tagName)
-		for (const [key, val] of Object.entries(attr)) {
-			el.setAttribute(key, val)
-			// el[key]=val
-		}
-		for (const [key, val] of Object.entries(style)) {
-			el.style[key] = val
-		}
-		target.appendChild(el)
-		return el
-	}
-	function create(parentEl, tagName, prop = {}, style = {}) {
-		let el = document.createElement(tagName)
-		Object.assign(el, prop || {})
-		Object.assign(el.style, style || {})
-		parentEl.appendChild(el)
-		return el
-	}
-	/**/
-	var searchForm, text, numberMatched, overlayContainer
-	var overlays = []
-	// function getElmPosition(elm) {
-	//     var left = 0
-	//     var top = 0
-	//     while (elm.offsetParent) {
-	//         left += elm.offsetLeft
-	//         top += elm.offsetTop
-	//         elm = elm.offsetParent
-	//     }
-	//     return {
-	//         'left': left, 'top': top
-	//     }
-	// }
-	function getElmPosition(elm) {
-		var left = 0
-		var top = 0
-		var clientRect = elm.getBoundingClientRect()
-		// ページ内の位置
-		var left = window.pageXOffset + clientRect.left
-		var top = window.pageYOffset + clientRect.top
-		return {'left': left, 'top': top}
-	}
 
-	function selectByXPath(xpath) {
-		try {
-			return doc.evaluate(xpath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
-		}
-		catch (e) {return null}
-	}
-	function removeOld() {
-		if (overlays.length > 0) {
-			for (var a = 0; a < overlays.length; a++) {
-				var elem2 = overlays[a]
-				if (elem2.parentNode) {
-					elem2.parentNode.removeChild(elem2)
-				}
-			}
-		}
-	}
-	function highlightElements(result) {
-		if (result === null) {
-			numberMatched.innerHTML = 'invalid'
-			return
-		}
-		else
-			if (result.snapshotLength <= 0) {
-				numberMatched.innerHTML = 'not matched'
-				return
-			}
-		numberMatched.innerHTML = result.snapshotLength
-		for (var a = 0, l = result.snapshotLength; a < l; a++) {
-			var elem = result.snapshotItem(a)
-			var pos = getElmPosition(elem)
-			var borderWidth = 2
-			var overlay = create(overlayContainer, 'div', undefined, {position: 'absolute', border: 'solid red', borderWidth: borderWidth + 'px', left: (pos.left - borderWidth) + 'px', top: (pos.top - borderWidth) + 'px', width: elem.offsetWidth + 'px', height: elem.offsetHeight + 'px', opacity: '0.5'})
-			create(overlay, 'div', undefined, {border: 'solid 1px', borderColor: '#fff #000 #000 #fff', width: (elem.offsetWidth - 2) + 'px', height: (elem.offsetHeight - 2) + 'px'})
-			overlays.push(overlay)
-		}
-	}
-	function refresh() {
-		removeOld()
-		highlightElements(selectByXPath(text.value))
-	}
-	/**/
-	searchForm = create(doc.body, 'div', undefined, {position: 'fixed', left: '0', top: '0', zIndex: '1000'})
-	text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
-	// text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
-	text.focus()
-	numberMatched = create(searchForm, 'span', {'innerHTML': 100}, {background: '#fff', color: '#000', border: 'solid 1px #888'})
-	overlayContainer = create(doc.body, 'div', undefined, {zIndex: '1000', position: 'absolute', left: '0', top: '0'})      /**/
-	var refreshTimer = null
-	text.addEventListener('keydown', function() {
-		if (refreshTimer) {
-			clearTimeout(refreshTimer)
-		}
-		refreshTimer = setTimeout(refresh, 500)
-	}, false)
-
-}
 //スクリプトが動いてるか確認する目立たないもの、タイトルの一文字目を使う案も
 function ugoiteruka(str, sakujo) {
 	let id = 'ugoiteruka'
@@ -268,7 +165,6 @@ function ugoiteruka(str, sakujo) {
 		})()
 	}
 }
-
 const video_top_play = function(video_elem = null, query = 'video') {
 	//let playerDiv = document.querySelector('#player-embed')
 
@@ -281,7 +177,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 
 	//
 	//conDoW(1)
-	conDoW(button_tukuru('0deg', () => {
+	conDoW(getButtonWithFunc('0deg', () => {
 		Object.assign(elem.style, {
 			transform: 'rotate(0deg)',
 			width: '100vw',
@@ -291,7 +187,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 			transformOrigin: '0 0',
 		})
 	}))
-	conDoW.add(button_tukuru('90deg', () => {
+	conDoW.add(getButtonWithFunc('90deg', () => {
 		Object.assign(elem.style, {
 			transform: 'rotate(90deg)',
 			width: '100vh',
@@ -301,7 +197,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 			transformOrigin: '0% 0%',
 		})
 	}))
-	conDoW.add(button_tukuru('180deg', () => {
+	conDoW.add(getButtonWithFunc('180deg', () => {
 		Object.assign(elem.style, {
 			transform: 'rotate(180deg)',
 			width: '100vw',
@@ -311,7 +207,7 @@ const video_top_play = function(video_elem = null, query = 'video') {
 			transformOrigin: '0 0',
 		})
 	}))
-	conDoW.add(button_tukuru('270deg', () => {
+	conDoW.add(getButtonWithFunc('270deg', () => {
 		Object.assign(elem.style, {
 			transform: 'rotate(270deg)',
 			width: '100vh',
@@ -393,35 +289,48 @@ const cookie_view_del = function() {
 	}
 	const panel = () => {
 		//Cookie削除ボタン
-		let btn1 = button_tukuru('表示', () => {cookie_view()})
+		let btn1 = getButtonWithFunc('表示', () => {cookie_view()})
 		//Cookie削除ボタン
-		let btn = button_tukuru('全削除', () => {deleteAll(); panel()})
+		let btn = getButtonWithFunc('全削除', () => {deleteAll(); panel()})
 		conDoW([`Cookie[${count()}] `, btn1, btn])
 	}
 
 	//main
 	panel()
 }
+
+/**
+ * @param {Array.<{selector: String, deco: Object}>} cssRules
+ */
+const create_css_without_css = function(...cssRules) {
+	// log(aa, bb)
+	// const css_id = 'adf'
+	// let css_el = document.getElementById(css_id)
+	// if (css_el === null) { }
+	const css_el = document.createElement('style')
+	// css_el.id = css_id
+	document.body.appendChild(css_el)//appendしないとsheetにならない
+	const sheet = css_el.sheet
+
+	for (const v of cssRules) {
+		sheet.insertRule(`${v.selector}{}`)
+		Object.assign(sheet.cssRules[0].style, v.deco)
+	}
+	return css_el
+}
+// create_css_without_css(['a',12],{id:'as'})
 //css作って書き込む、あれば追記
-const css_instant = function(_css_id, css_text) {
-	let css_id = _css_id
+const create_css_without_css_old = function(css_id, css_text) {
 	let css_el = document.getElementById(css_id)
 	if (css_el === null) {
 		css_el = document.createElement('style')
 		css_el.id = css_id
-		document.head.appendChild(css_el)
+		document.body.appendChild(css_el)
 	}
+	//textContent注入
 	css_el.insertAdjacentText('beforeend', css_text)
 	return css_el
 }
-//ランダムなEmojiを返す
-function emoji_rand() {
-	//大部分コピペ、数字の範囲は文字コードを整数化したやつ。
-	const rand_mm = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min
-	const emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
-	return String.fromCodePoint(emojiCode)
-}
-
 /** Console display on website ウェブ上にConsole.logする、複数なら配列で 
  * @param {String} msg
  * @param {Array} msg
@@ -496,11 +405,12 @@ function conDoW(msg, opt = {addition: false}) {
 
 		//style="all: initial;"
 		const outerhtml = `<div id="div1desu" style="all:initial">
-		<div style="background-color: #F005;position: fixed;right: 0;bottom: 0;width: 1em;height: 1em;z-index: 1000;" id="mouse"></div><div id="waku" style="background-color: ivory; color: black; border: 2px solid silver; padding: 5px; position: fixed; right: 0px; bottom: 0px; z-index: 999; font-size: 12px; overflow-x: auto; width: 300px; max-height: 90%; word-break: break-all; overflow-wrap: break-word; height: auto; transform-style: preserve-3d; perspective: 900px; opacity: 1;">
-			<div class="kaki" style="background-color: rgba(0, 0, 0, 0); transition: all 1000ms ease-out 0s; box-shadow: none; border-bottom: 1px solid rgb(153, 153, 153); transform: none;">
-				<button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">👭ログ非表示</button><button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">🎙消さない</button><button style="margin: 2px; box-shadow: grey 1px 2px 3px; padding: 1px; border-width: thin;">🌻ログクリア</button> 2021/3/2
-				17:15:21 </div>
-				</div>
+		<style>.kaki{color: black;
+word-break: break-all;
+overflow-wrap: break-word;
+border-bottom: 1px solid rgb(153, 153, 153);
+transform: none;}</style><div id="waku" style="box-shadow: rgba(0, 0, 0, 0.61) 0px 0px 5px 1px;background: linear-gradient(rgb(255, 255, 255) 0%, rgb(190, 204, 255) 100%);color: black;padding: 5px;position: fixed;right: 0px;bottom: 12px;font-size: small;overflow-x: auto;width: 300px;max-height: 90%;word-break: break-all;overflow-wrap: break-word;display: block;transition: all 1000ms ease-out 0s;"><div class="kaki"><button class="BWF">👏ログ非表示</button><button class="BWF">🍌消さない</button><button class="BWF">🎓ログクリア</button></div><div class="kaki">
+2021/3/10 16:50:11</div><div class="kaki">6ms main ##########################</div><div class="kaki">@version 2019.11.16.113733</div><div class="kaki">全部b $$$$$$$$$$$$$$$$$$$</div><div class="kaki"><div style="background-color: red; font-size: 1em;">移動</div></div><div class="kaki"><button class="BWF">🍪Utility</button></div><div class="kaki"><button class="BWF">👛stopJump</button><button class="BWF">👹copyTitleLfUrl</button><button class="BWF">🎪copyLinkAsMarkdown</button></div><div class="kaki">localhostとfile:/// $$$$$$$$$$$$$$$$$$$</div><div class="kaki">はじめまして！</div><div class="kaki">history.length</div><div class="kaki">9ms エラー無し##########################</div></div><div style="background-color: #F005;position: fixed;right: 0;bottom: 0;width: 1em;height: 1em;z-index: 1000;" id="mouse"></div>
 	</div>`
 		const tmp = document.createElement('div')
 		tmp.innerHTML = outerhtml
@@ -526,18 +436,23 @@ function conDoW(msg, opt = {addition: false}) {
 	const baseEl = get_baseElem()
 	const waku = baseEl.querySelector('#waku')
 	const kakidiv = baseEl.querySelector('.kaki').cloneNode()
+
+	//style
+
 	// waku.style.visibility = 'hidden' //初期透過
 	waku.style.display = 'none'
 	//イベント
 	{
+		//フォーカス受けない
+		baseEl.onmousedown = function(ev) {
+			ev.preventDefault()
+			// return false
+		}
 		baseEl.querySelector('#mouse').onmouseenter = function(e) {
 			// waku.style = {...waku.style,visibility: 'visible'}
 			// Object.assign(waku.style, {visibility: 'visible'})
 			// waku.style.visibility = 'visible'
 			waku.style.display = 'block' //初期透過
-
-
-
 		}
 		waku.onmouseleave = function() {
 			// waku.style.visibility = 'hidden' //初期透過
@@ -552,15 +467,15 @@ function conDoW(msg, opt = {addition: false}) {
 	//追加の初期化、ボタンを追加
 	{
 		//非表示ボタン
-		const button1 = button_tukuru('ログ非表示', () => {GM_setValue(flag_name, false)})
+		const button1 = getButtonWithFunc('ログ非表示', () => {GM_setValue(flag_name, false)})
 
 		//消さないボタン
-		const button2 = button_tukuru('消さない', (e) => {
+		const button2 = getButtonWithFunc('消さない', (e) => {
 			waku.onmouseleave = null
 			waku.onclick = null
 		})
 
-		const button = button_tukuru('ログクリア', function(e) {
+		const button = getButtonWithFunc('ログクリア', function(e) {
 			log_clear()
 		})
 		write([button1, button2, button])
@@ -593,8 +508,6 @@ function mydate(format, zerofill = 1) {
 	}
 	return format
 }
-
-
 // 操作画面を作る・2016年ごろ作った？古い左下の青っぽいGUI
 const hogehogehoge = function() {
 	let elementId = 'miiyabase'
@@ -920,8 +833,7 @@ function maiJump(flagEdit) {
 	//今いるURLから次にジャンプする、
 	//ジャンプ実行フラグがついてなければ抜ける
 }
-/** ボタン作る */
-const button_tukuru = function(text, func) {
+const getButtonWithFunc_old = function(text, func) {
 	// const css_ClassName = 'button_tukuru'
 	// const css_id = 'button_tukuru_css'
 
@@ -952,7 +864,7 @@ const button_tukuru = function(text, func) {
 		/* fontSize: 'initial',*/
 		borderWidth: 'thin',
 	})
-	el.textContent = emoji_rand() + text
+	el.textContent = uo.emoji_rand() + text
 	// el.className = css_ClassName
 	//el_a.type = 'button'
 	el.addEventListener('click', function name(ev) {
@@ -965,26 +877,87 @@ const button_tukuru = function(text, func) {
 	}, false)
 	return el
 }
-const getButtonWithFunc = function(callback, text) {
+/** ボタン作る */
+const getButtonWithFunc = function(param1, param2) {
+	// const callback, text
+	const [callback, text] = (typeof param1 === 'function')
+		? [param1, param1.name]
+		: [param2, param1]
+
 	const className = 'BWF'
 	const css_id = 'BWFcss'
-	if (text) text = callback.name
+	if (getButtonWithFunc.init === undefined) {
+		getButtonWithFunc.init = true
+		log('BWF初期化')
+		create_css_without_css(
+			{
+				selector: `.${className}`,
+				deco: {
+					height: '2em',
+					borderRadius: '5px',
+					background: 'linear-gradient(#ffffff 50%, #beccff 100%)',
+					textShadow: '1px 1px 1px rgb(255 255 255 / 66%)',
+					boxShadow: '1px 1px 2px rgb(0 0 0 / 63%)',
+					borderWidth: 'thin',
+					margin: '2px',
+				}
+			},
+			{
+				selector: `.${className}:active`,
+				deco: {transform: 'translateY(2px)', }
+			}
+		)
+	}
+	// console.log(text, Boolean(text), callback.name)
+	// if (!text) text = callback.name
 
 	// //css無ければ作る
-	let css_el = document.getElementById(css_id)
-	if (css_el === null) {
-		css_el = document.createElement('style')
-		css_el.id = css_id
-		document.body.appendChild(css_el)
-		css_el.textContent = `
-			.${css_ClassName}{
-				margin: 2px;
-				box-shadow: 1px 2px 3px grey;
-				padding: 1px;
-				/* font-size: initial; */
-				border-width: thin;
-			}`
-	}
+	// let css_el = document.getElementById(css_id)
+	// if (css_el === null) {
+	// 	css_el = document.createElement('style')
+	// 	css_el.id = css_id
+	// 	document.body.appendChild(css_el)
+	// 	// css_el.textContent = `
+	// 	// 	.${className}{
+	// 	// 		/*margin: 2px;
+	// 	// 		box-shadow: 1px 2px 3px grey;
+	// 	// 		padding: 1px;
+	// 	// 		border-width: thin;*/
+
+	// 	// 		height: 2em;
+	// 	// 		border-radius: 5px;
+	// 	// 		background: linear-gradient(#ffffff 50%, #beccff 100%);
+	// 	// 		text-shadow: 1px 1px 1px rgb(255 255 255 / 66%);
+	// 	// 		box-shadow: 1px 1px 2px rgb(0 0 0 / 63%);
+	// 	// 		border-width: thin;
+	// 	// 		margin: 2px;
+	// 	// 	}
+	// 	// 	.${className}:active { transform: translateY(2px); }`
+	// 	const sheet = css_el.sheet
+	// 	sheet.insertRule(`.${className}{}`)
+	// 	// const deco=sheet.cssRules[0].style
+	// 	Object.assign(sheet.cssRules[0].style, {
+	// 		height: '2em',
+	// 		borderRadius: '5px',
+	// 		background: 'linear-gradient(#ffffff 50%, #beccff 100%)',
+	// 		textShadow: '1px 1px 1px rgb(255 255 255 / 66%)',
+	// 		boxShadow: '1px 1px 2px rgb(0 0 0 / 63%)',
+	// 		borderWidth: 'thin',
+	// 		margin: '2px',
+	// 	})
+	// 	sheet.insertRule(`.${className}:active{}`)
+	// 	Object.assign(sheet.cssRules[0].style, {
+	// 		transform: 'translateY(2px)',
+	// 	})
+	// 	// const stylesheet = document.styleSheets[1];
+	// 	// let boxParaRule;
+
+	// 	// for (let i = 0; i < stylesheet.cssRules.length; i++) {
+	// 	// 	if (stylesheet.cssRules[i].selectorText === '.box p') {
+	// 	// 		boxParaRule = stylesheet.cssRules[i];
+	// 	// 	}
+	// 	// }
+	// }
 	//ボタン作る,cssクラスで見た目を変えたが、インラインに変更、shadowにも対応出来る
 	const el = document.createElement('button')
 	// Object.assign(el.style, {
@@ -994,18 +967,22 @@ const getButtonWithFunc = function(callback, text) {
 	// 	/* fontSize: 'initial',*/
 	// 	borderWidth: 'thin',
 	// })
-	el.textContent = emoji_rand() + text
+	el.textContent = uo.emoji_rand() + text
 	el.className = className
 	el.addEventListener('click', function name(ev) {
-		ev.stopPropagation()
 		ev.preventDefault()
+		// ev.stopPropagation()
 		//func(e) //thisが伝わらない,引数側を、アロー関数にすりゃいい？駄目だった。
-		callback.call(this, ev)
+		let result = callback()//別にevもthisもいらんなあ
+		if (result !== undefined) conDoW(result)
+		// callback.call(this, ev)
 		//!(func.bind(this, e))() //無名関数で動かなかったのはセミコロンなかったからや。
 		//!(func.bind(this))(e) //これは挙動おかしい
+		return false
 	}, false)
 	return el
 }
+
 /** utility obj 関数つまってる感じ */
 const uo = {
 	選択テキスト検索ボタン(fmt = '/?s=%word%') {
@@ -1112,7 +1089,7 @@ const uo = {
 		//mojiban.forEach(v => {})
 		//for (let i = 0, l = mojiban.length; i < l; i++) {
 		for (let [key, val] of mojiban.entries()) {
-			if (val == null) {
+			if (val === null) {
 				div.appendChild(document.createElement('br'))
 				continue
 			}
@@ -1133,7 +1110,7 @@ const uo = {
 		}
 		return div
 	},
-	タブを開く(str = '') {
+	タブを開く(str = 'aaa') {
 		const popwin = window.open()
 		popwin.document.body.innerHTML = str
 	},
@@ -1155,10 +1132,17 @@ const uo = {
 		Notification.requestPermission().then(() => new Notification(msg))
 	},
 	copyTitleLfUrl() {
-		uo.copy(`${document.title}\n${location.href}`)
+		let url = decodeURI(location.href).replaceAll(' ', '+')
+		return uo.copy(`${document.title}\n${url}`)
 	},
 	copyLinkAsMarkdown() {
-		uo.copy(`[${document.title}](${location.href})`)
+		let url = decodeURI(location.href).replaceAll(' ', '+')
+
+		return uo.copy(`[${document.title}](${url})`)
+	},
+	copy_string_for_cookie_settings() {
+		const domain = location.host.split('.').reverse().reduce((acc, v) => acc.length < 6 ? v + '.' + acc : acc)
+		return uo.copy(`[*.]${domain}`)
 	},
 	copy(str) {
 		function copyText(text) {
@@ -1171,26 +1155,157 @@ const uo = {
 			// ta.parentElement.removeChild(ta)
 		}
 
-
-
 		if (navigator.clipboard)
+			//httpsのみ
 			navigator.clipboard.writeText(str).then(
 				function() {console.log('copy')},
 				function() {alert('failed to copy')}
 			)
 		else {copyText(str)}
+		return str
 	},
 	stopJump() {
 		window.onbeforeunload = function(event) {event.returnValue = '？'}
 	},
-	hoge() { },
+	sound(type='sine', sec=0.5) {
+		const ctx = new AudioContext()
+		const osc = ctx.createOscillator()
+		osc.type = type
+		osc.connect(ctx.destination)
+		osc.start()
+		osc.stop(sec)
+		// sound("sine", 0.3)
+	},
+	/** xpath表示、ネットコピペ改変 */
+	xpath_finder() {
+		var doc = document
+		function create(target, tagName, attr = {}, style = {}) {
+			const el = document.createElement(tagName)
+			for (const [key, val] of Object.entries(attr)) {
+				el.setAttribute(key, val)
+				// el[key]=val
+			}
+			for (const [key, val] of Object.entries(style)) {
+				el.style[key] = val
+			}
+			target.appendChild(el)
+			return el
+		}
+		function create(parentEl, tagName, prop = {}, style = {}) {
+			let el = document.createElement(tagName)
+			Object.assign(el, prop || {})
+			Object.assign(el.style, style || {})
+			parentEl.appendChild(el)
+			return el
+		}
+		/**/
+		var searchForm, text, numberMatched, overlayContainer
+		var overlays = []
+		// function getElmPosition(elm) {
+		//     var left = 0
+		//     var top = 0
+		//     while (elm.offsetParent) {
+		//         left += elm.offsetLeft
+		//         top += elm.offsetTop
+		//         elm = elm.offsetParent
+		//     }
+		//     return {
+		//         'left': left, 'top': top
+		//     }
+		// }
+		function getElmPosition(elm) {
+			var left = 0
+			var top = 0
+			var clientRect = elm.getBoundingClientRect()
+			// ページ内の位置
+			var left = window.pageXOffset + clientRect.left
+			var top = window.pageYOffset + clientRect.top
+			return {'left': left, 'top': top}
+		}
+
+		function selectByXPath(xpath) {
+			try {
+				return doc.evaluate(xpath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+			}
+			catch (e) {return null}
+		}
+		function removeOld() {
+			if (overlays.length > 0) {
+				for (var a = 0; a < overlays.length; a++) {
+					var elem2 = overlays[a]
+					if (elem2.parentNode) {
+						elem2.parentNode.removeChild(elem2)
+					}
+				}
+			}
+		}
+		function highlightElements(result) {
+			if (result === null) {
+				numberMatched.innerHTML = 'invalid'
+				return
+			}
+			else
+				if (result.snapshotLength <= 0) {
+					numberMatched.innerHTML = 'not matched'
+					return
+				}
+			numberMatched.innerHTML = result.snapshotLength
+			for (var a = 0, l = result.snapshotLength; a < l; a++) {
+				var elem = result.snapshotItem(a)
+				var pos = getElmPosition(elem)
+				var borderWidth = 2
+				var overlay = create(overlayContainer, 'div', undefined, {position: 'absolute', border: 'solid red', borderWidth: borderWidth + 'px', left: (pos.left - borderWidth) + 'px', top: (pos.top - borderWidth) + 'px', width: elem.offsetWidth + 'px', height: elem.offsetHeight + 'px', opacity: '0.5'})
+				create(overlay, 'div', undefined, {border: 'solid 1px', borderColor: '#fff #000 #000 #fff', width: (elem.offsetWidth - 2) + 'px', height: (elem.offsetHeight - 2) + 'px'})
+				overlays.push(overlay)
+			}
+		}
+		function refresh() {
+			removeOld()
+			highlightElements(selectByXPath(text.value))
+		}
+		/**/
+		searchForm = create(doc.body, 'div', undefined, {position: 'fixed', left: '0', top: '0', zIndex: '1000'})
+		text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
+		// text = create(searchForm, 'input', {value: '//'}, {width: '300px'})
+		text.focus()
+		numberMatched = create(searchForm, 'span', {'innerHTML': 100}, {background: '#fff', color: '#000', border: 'solid 1px #888'})
+		overlayContainer = create(doc.body, 'div', undefined, {zIndex: '1000', position: 'absolute', left: '0', top: '0'})      /**/
+		var refreshTimer = null
+		text.addEventListener('keydown', function() {
+			if (refreshTimer) {
+				clearTimeout(refreshTimer)
+			}
+			refreshTimer = setTimeout(refresh, 500)
+		}, false)
+
+	},
+	uo全部ボタン化() {
+		conDoW(Object.values(uo).map(v => getButtonWithFunc(v)))
+	},
+	google_url_simple() {
+		const obj = [...new URLSearchParams(location.search).entries()]
+			.reduce((obj, e) => ({...obj, [e[0]]: e[1]}), {})
+		let url = location.origin + location.pathname + '?q=' + obj.q
+		url = decodeURI(url).replaceAll(' ', '+')
+		location.href = url
+		return url
+	},
+	//ランダムなEmojiを返す
+	emoji_rand() {
+		//大部分コピペ、数字の範囲は文字コードを整数化したやつ。
+		const rand_mm = (min, max) => Math.floor(Math.random() * (max + 1 - min)) + min
+		const emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
+		return String.fromCodePoint(emojiCode)
+	},
+	a() { },
 }
+
 function utility() {
 	function fn_localStorage() {
 		let count = `localStorage[${localStorage.length}]`
-		let btn = button_tukuru('clera', () => {localStorage.clear()})
+		let btn = getButtonWithFunc('clera', () => {localStorage.clear()})
 		//og(btn)
-		let btn2 = button_tukuru('view all', () => {
+		let btn2 = getButtonWithFunc('view all', () => {
 			let str = ''
 			for (let [key, value] of Object.entries(localStorage)) {
 				str += (`${key}: ${value}\n`)
@@ -1202,9 +1317,9 @@ function utility() {
 	fn_localStorage()
 	function fn_sessionStorage() {
 		let count = `sessionStorage[${sessionStorage.length}]`
-		let btn = button_tukuru('clera', () => {sessionStorage.clear()})
+		let btn = getButtonWithFunc('clera', () => {sessionStorage.clear()})
 		//og(btn)
-		let btn2 = button_tukuru('view all', () => {
+		let btn2 = getButtonWithFunc('view all', () => {
 			let str = ''
 			for (let [key, value] of Object.entries(sessionStorage)) {
 				str += (`${key}: ${value}\n`)
@@ -1217,14 +1332,14 @@ function utility() {
 	cookie_view_del()
 	conDoW(uo.入力パネル())
 	conDoW(
-		[button_tukuru('loop2', () =>
+		[getButtonWithFunc('loop2', () =>
 			!(function hoge(i = 0) {
 				conDoW(i, {push: false})
 				if (50 < i) return
 				setTimeout(() => hoge(i + 1), 1000)
 			})()
 		),
-		button_tukuru('loop', () =>
+		getButtonWithFunc('loop', () =>
 			!(function hoge(i = 0) {
 				conDoW(i, {addition: true})
 				if (50 < i) return
@@ -1232,8 +1347,7 @@ function utility() {
 			})()
 		),
 		])
-	conDoW(button_tukuru('xpath', () => xpath_finder()))
-	conDoW.add(button_tukuru('タブを開くインライン', () => uo.タブを開くインライン()))
+	conDoW.add(getButtonWithFunc('タブを開くインライン', () => uo.タブを開くインライン()))
 }
 function sleep(msec) {
 	return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
@@ -1251,11 +1365,13 @@ const arr = [
 		func: function hoge() {
 			const nf = (fn) => [fn.name, fn]
 			conDoW(uo.移動パネル2())
-			conDoW(button_tukuru('Utility', utility))
+			conDoW(getButtonWithFunc('Utility', utility))
 			conDoW([
-				button_tukuru(...nf(uo.stopJump)),
-				button_tukuru(...nf(uo.copyTitleLfUrl)),
-				button_tukuru(...nf(uo.copyLinkAsMarkdown)),
+				getButtonWithFunc(uo.uo全部ボタン化),
+				getButtonWithFunc(uo.stopJump),
+				getButtonWithFunc(uo.copy_string_for_cookie_settings),
+				getButtonWithFunc(uo.copyTitleLfUrl),
+				getButtonWithFunc(uo.copyLinkAsMarkdown),
 			])
 		},
 	},
@@ -1563,12 +1679,12 @@ const arr = [
 		date: '',
 		func: function() {
 			video_top_play()
-			conDoW(button_tukuru('video再生', video_top_play))//動かない？
-			conDoW(button_tukuru('video再生arr', () => video_top_play()))
-			conDoW(button_tukuru('head saku', () => {
+			conDoW(getButtonWithFunc('video再生', video_top_play))//動かない？
+			conDoW(getButtonWithFunc('video再生arr', () => video_top_play()))
+			conDoW(getButtonWithFunc('head saku', () => {
 				document.head.remove() //狂って酷いことに
 			}))
-			conDoW(button_tukuru('videoのみ', () => {
+			conDoW(getButtonWithFunc('videoのみ', () => {
 				let video = document.querySelector('video')
 				document.body.parentNode.remove()
 				document.appendChild(video)
@@ -1592,8 +1708,8 @@ const arr = [
 				qs('div.vjs-poster').remove()
 
 				video_top_play(videoEl)
-				conDoW(button_tukuru('video再生', video_top_play))//動かない？
-				conDoW(button_tukuru('video再生arr', () => video_top_play()))
+				conDoW(getButtonWithFunc('video再生', video_top_play))//動かない？
+				conDoW(getButtonWithFunc('video再生arr', () => video_top_play()))
 				document.body.style.padding = 0
 			}
 
@@ -1811,7 +1927,7 @@ const arr = [
 				}
 			}
 			sc_del()
-			conDoW(button_tukuru('script削除', () => sc_del()))
+			conDoW(getButtonWithFunc('script削除', () => sc_del()))
 
 			//css_instant('saidcss', '::-webkit-scrollbar {width: 0px;}')
 		},
@@ -1865,7 +1981,7 @@ const arr = [
 			//await sleep(2000)
 
 			//hoge()
-			conDoW(button_tukuru('iframe', hoge))
+			conDoW(getButtonWithFunc('iframe', hoge))
 
 
 			//let url = document.querySelector('.openload-link > a').href
@@ -2884,7 +3000,7 @@ const arr = [
 		date: '2020/02/10',
 		func: function() {
 			//http://jump.5ch.net/?https://i.imgur.com/7B0BPhC.jpg
-			const links = qsa('a[href^="http://jump.5ch.net"]')
+			const links = qsaa('a[href^="http://jump.5ch.net"]')
 			links.forEach((val, key) => {
 				links[key].href = links[key].href.replace('http://jump.5ch.net/?', '')
 			})
@@ -3159,10 +3275,20 @@ const arr = [
 				})
 			}
 			//日本語以外をフィルター
-			const japaneseFillter = (el) => {
-				el.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
+			const japaneseFillter = (el, callbak) => {
+				callbak = callbak || ((v) => v.style.opacity = 0.4)
+				const selector = '.gallery:not([data-tags*="6346"]),.gallery[data-tags*="29963"],.gallery[data-tags*="12227"]'
+				el.querySelectorAll(selector).forEach(callbak)
+				// 12227
 			}
 			//main
+			create_css_without_css(
+				{selector: 'a:before', deco: {content: '"■"'}, },
+				{selector: 'a', deco: {color: 'blueviolet'}},
+				// {selector: 'a:visited', deco: {coler: 'red !important'}},
+				// ['a:visited', {coler: 'red !important'}],
+				// ['a:befor', {content:'■'}]
+			)
 			const downzumi = new LSclass('downzumi')
 			let downIdList = downzumi.down履歴取り出しarr()
 			down済みに色(document, downIdList)
@@ -3196,27 +3322,21 @@ const arr = [
 
 			//専用ボタン
 			{
-				conDoW(button_tukuru('span削除', () => {
-					document.querySelectorAll('._uj_').forEach(v => v.remove())
-				}))
-				conDoW.add(button_tukuru('日本語フィルタ', () => {
-					document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.display = 'none')
-				}))
-				conDoW.add(getButtonWithFunc(function 日本語フィルタ(){
-					document.querySelectorAll('.gallery:not([data-tags*="6346"])').forEach(v => v.style.opacity = 0.4)
-				}))
 				const buttonsEl = [
-					button_tukuru('ダウソ履歴', () => {
+					getButtonWithFunc(function スパン削除() {document.querySelectorAll('._uj_').forEach(v => v.remove())}),
+					getButtonWithFunc(japaneseFillter.bind(null, document)),
+					getButtonWithFunc(japaneseFillter.bind(null, document, v => v.style.display = 'none')),
+					getButtonWithFunc('ダウソ履歴', () => {
 						document.querySelectorAll('.gallery').forEach(v => console.log(v.firstElementChild.href))
 					}),
-					button_tukuru('履歴表示を重複削除して上書き', () => {
+					getButtonWithFunc('履歴表示を重複削除して上書き', () => {
 						const oldlist = downzumi.down履歴取り出しarr()
 						conDoW(oldlist.length)
 						let tyoufukunashi = [...new Set(oldlist)]
 						conDoW(tyoufukunashi.length)
 						downzumi.overwrite(tyoufukunashi.join(','))
 					}),
-					button_tukuru('list2を一覧ぽく', () => {
+					getButtonWithFunc('list2を一覧ぽく', () => {
 						const el = qsaa('#image-container')[0]
 						Object.assign(el.style, {
 							display: 'flex',
@@ -3226,7 +3346,7 @@ const arr = [
 						style.textContent = '.list-img{width: 40px !important}' //優先順位負けるからimp必須
 						document.body.appendChild(style)
 					}),
-					button_tukuru('直接list2からリンク作成', () => {
+					getButtonWithFunc('直接list2からリンク作成', () => {
 						//サムネイルからリストもやろうと思ったけど、サーバーに番号入ってて無理
 						//リスト作る
 						let el_list = qsaa('#image-container img')
@@ -3285,7 +3405,7 @@ const arr = [
 				// baseNode.insertAdjacentElement('beforeend', el)
 				const frameNew = `<iframe class="news-comment-plguin-iframe" scrolling="yes" frameborder="0" src="${frameURL}" style="width: 100%; height: ${frame_height}; border: none;"></iframe>`
 				baseNode.insertAdjacentHTML('beforeend', frameNew)
-				conDoW(button_tukuru(times, () => insertFrame(times - 1, page + 1, baseNode)))
+				conDoW(getButtonWithFunc(times, () => insertFrame(times - 1, page + 1, baseNode)))
 				// setTimeout(() => {insertFrame(times - 1, page + 1, baseNode)}, sleep_time)
 			}
 			const replaceFrame = () => {
@@ -3296,7 +3416,7 @@ const arr = [
 				baseNode.setAttribute('data-comment-num', comment_num)
 				insertFrame(page_times, start_page, baseNode)
 			}
-			conDoW(button_tukuru('time', () => replaceFrame()))
+			conDoW(getButtonWithFunc('time', () => replaceFrame()))
 			// replaceFrame()
 
 		},
@@ -3508,13 +3628,13 @@ const arr = [
 				return str
 			}
 
-			conDoW.add(button_tukuru('日付＋7', () => {
+			conDoW.add(getButtonWithFunc('日付＋7', () => {
 				let url = decodeURI(window.location.href)
 				console.log(url)
 				url = _文字列の日付ぽいものに7日足す(url)
 				window.location.href = url
 			}))
-			conDoW.add(button_tukuru('ボックス日付＋7', () => {
+			conDoW.add(getButtonWithFunc('ボックス日付＋7', () => {
 				let url = decodeURI(window.location.href)
 				let el = document.querySelector('input.ytd-searchbox')
 				el.value = _文字列の日付ぽいものに7日足す(el.value)
@@ -3650,7 +3770,6 @@ const 整備用 = function() {
 const main = function() {
 	//main/////////////////////////////////////
 	// const log = conDoW
-	const log = console.log
 	conDoW(`\n${(new Date).toLocaleString()}`)
 	conDoW(`${Date.now() - time}ms main ##########################`)
 	conDoW('@version 2019.11.16.113733')
