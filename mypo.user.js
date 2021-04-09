@@ -63,8 +63,6 @@ temp.srl = function() {
 		src: 'http://localhost:8888/mypo.user.js'
 	}))
 }
-//const log = console["log"];
-
 
 //便利関数
 const qsaa = (s, o = document) => [...o.querySelectorAll(s)]
@@ -75,16 +73,26 @@ let time = Date.now() //時間測定
 // let nsMiiya = {} //オブジェクのプロパティは宣言しとかないとリファクタリングできない
 
 /** el作成 parent無ければappendしない*/
-function createEl(parentEl, tagName, prop = {}, style = {}) {
+function createEl(parentEl, tagName, attribute, style) {
 	let el = document.createElement(tagName)
-	Object.assign(el, prop || {})
-	Object.assign(el.style, style || {})
-	if (parentEl)
-		parentEl.appendChild(el)
+	if (attribute) Object.assign(el, attribute)
+	if (style) Object.assign(el.style, style)
+	if (parentEl) parentEl.appendChild(el)
 	// const position = insert.position || 'beforeend'
 	// insert.parentEl.insertAdjacentElement(position, el)
 	return el
 }
+//objで作り直し
+const createEl2 = ({parentEl, tagName, attribute, style, insertPosition}) => {
+	if (!insertPosition) insertPosition = 'beforeEnd'
+	let el = document.createElement(tagName)
+	if (attribute) Object.assign(el, attribute)
+	if (style) Object.assign(el.style, style)
+	if (parentEl) parentEl.insertAdjacentElement(insertPosition, el)
+	return el
+}
+
+
 
 /** ボタンを作る*/
 function make_button_elem(pElem, tag, obj, loca = 'beforeend') {
@@ -174,9 +182,6 @@ const video_top_play = function(video_elem = null, query = 'video') {
 
 	if (!elem) return //ネスト深くしないための脱出
 
-
-	//
-	//conDoW(1)
 	conDoW(getButtonWithFunc('0deg', () => {
 		Object.assign(elem.style, {
 			transform: 'rotate(0deg)',
@@ -302,33 +307,27 @@ const cookie_view_del = function() {
 /**
  * @param {Array.<{selector: String, deco: Object}>} cssRules
  */
-const create_css_without_css = function(...cssRules) {
-	// log(aa, bb)
-	// const css_id = 'adf'
-	// let css_el = document.getElementById(css_id)
-	// if (css_el === null) { }
+const create_css_with_deco = function(...cssRules) {
 	const css_el = document.createElement('style')
-	// css_el.id = css_id
 	document.body.appendChild(css_el)//appendしないとsheetにならない
 	const sheet = css_el.sheet
 
+	let innerText = ''
 	for (const v of cssRules) {
 		sheet.insertRule(`${v.selector}{}`)
 		Object.assign(sheet.cssRules[0].style, v.deco)
+		innerText += sheet.cssRules[0].cssText + '\n'
 	}
+	//タグに内容を書き込む、無くても動くが、空になる。
+	css_el.append(document.createTextNode(innerText))
 	return css_el
 }
 // create_css_without_css(['a',12],{id:'as'})
 //css作って書き込む、あれば追記
-const create_css_without_css_old = function(css_id, css_text) {
-	let css_el = document.getElementById(css_id)
-	if (css_el === null) {
-		css_el = document.createElement('style')
-		css_el.id = css_id
-		document.body.appendChild(css_el)
-	}
-	//textContent注入
+const create_Style_with_cssText = function(css_text) {
+	let css_el = document.createElement('style')
 	css_el.insertAdjacentText('beforeend', css_text)
+	document.body.appendChild(css_el)
 	return css_el
 }
 /** Console display on website ウェブ上にConsole.logする、複数なら配列で 
@@ -403,14 +402,13 @@ function conDoW(msg, opt = {addition: false}) {
 	function get_baseElem() {
 		debug && log('get_baseElem')
 
-		//style="all: initial;"
-		const outerhtml = `<div id="div1desu" style="all:initial">
+		//outerコピーして貼り付け
+		const outerhtml = `<div class="#########9" id="div1desu" style="all:initial;z-index: 100000;position: relative;/* position: fixed; */">
 		<style>.kaki{color: black;
 word-break: break-all;
 overflow-wrap: break-word;
 border-bottom: 1px solid rgb(153, 153, 153);
-transform: none;}</style><div id="waku" style="box-shadow: rgba(0, 0, 0, 0.61) 0px 0px 5px 1px;background: linear-gradient(rgb(255, 255, 255) 0%, rgb(190, 204, 255) 100%);color: black;padding: 5px;position: fixed;right: 0px;bottom: 12px;font-size: small;overflow-x: auto;width: 300px;max-height: 90%;word-break: break-all;overflow-wrap: break-word;display: block;transition: all 1000ms ease-out 0s;"><div class="kaki"><button class="BWF">👏ログ非表示</button><button class="BWF">🍌消さない</button><button class="BWF">🎓ログクリア</button></div><div class="kaki">
-2021/3/10 16:50:11</div><div class="kaki">6ms main ##########################</div><div class="kaki">@version 2019.11.16.113733</div><div class="kaki">全部b $$$$$$$$$$$$$$$$$$$</div><div class="kaki"><div style="background-color: red; font-size: 1em;">移動</div></div><div class="kaki"><button class="BWF">🍪Utility</button></div><div class="kaki"><button class="BWF">👛stopJump</button><button class="BWF">👹copyTitleLfUrl</button><button class="BWF">🎪copyLinkAsMarkdown</button></div><div class="kaki">localhostとfile:/// $$$$$$$$$$$$$$$$$$$</div><div class="kaki">はじめまして！</div><div class="kaki">history.length</div><div class="kaki">9ms エラー無し##########################</div></div><div style="background-color: #F005;position: fixed;right: 0;bottom: 0;width: 1em;height: 1em;z-index: 1000;" id="mouse"></div>
+transform: none;}</style><div id="waku" style="box-shadow: rgba(0, 0, 0, 0.61) 0px 0px 5px 1px;background: linear-gradient(rgb(255, 255, 255) 0%, rgb(190, 204, 255) 100%);color: black;padding: 5px;position: fixed;right: 0px;bottom: 12px;font-size: small;overflow-x: auto;width: 300px;max-height: 90%;word-break: break-all;overflow-wrap: break-word;display: block;transition: all 1000ms ease-out 0s;/* z-index: 2147483647; */"><div class="kaki"><button class="BWF">🎒ログ非表示</button><button class="BWF">💊消さない</button><button class="BWF">🎰ログクリア</button></div></div><div style="background-color: #F005;position: fixed;right: 0;bottom: 0;width: 1em;height: 1em;/* z-index: 1000; */" id="mouse"></div>
 	</div>`
 		const tmp = document.createElement('div')
 		tmp.innerHTML = outerhtml
@@ -418,6 +416,15 @@ transform: none;}</style><div id="waku" style="box-shadow: rgba(0, 0, 0, 0.61) 0
 		// parentEl.style.all = 'initial' //二重にして外側ブロックで初期化すると、全部リセット。車道ひつようないぽ。
 		debug && log(baseEl)
 		document.body.appendChild(baseEl)
+
+		//shadow
+		const host = document.createElement('div')
+		host.id = 'shodow-dom-host'
+
+		var sroot = host.attachShadow({mode: 'open'})
+		// sroot.innerHTML = '<slot></slot>'
+		sroot.appendChild(baseEl)
+		document.body.append(host)
 		// log(baseEl)
 		//shadowroot挟む
 		// const shadowroot = parentEl.attachShadow({mode: 'open'})
@@ -878,21 +885,22 @@ const getButtonWithFunc_old = function(text, func) {
 	return el
 }
 /** ボタン作る */
-const getButtonWithFunc = function(param1, param2) {
+const getButtonWithFunc = function(p1, p2) {
 	// const callback, text
-	const [callback, text] = (typeof param1 === 'function')
-		? [param1, param1.name]
-		: [param2, param1]
+	const [callback, text] = (typeof p1 === 'function')
+		? [p1, p1.name]
+		: [p2, p1]
 
 	const className = 'BWF'
 	const css_id = 'BWFcss'
 	if (getButtonWithFunc.init === undefined) {
 		getButtonWithFunc.init = true
 		log('BWF初期化')
-		create_css_without_css(
+		create_css_with_deco(
 			{
 				selector: `.${className}`,
 				deco: {
+					// all: 'initial',
 					height: '2em',
 					borderRadius: '5px',
 					background: 'linear-gradient(#ffffff 50%, #beccff 100%)',
@@ -1167,7 +1175,7 @@ const uo = {
 	stopJump() {
 		window.onbeforeunload = function(event) {event.returnValue = '？'}
 	},
-	sound(type='sine', sec=0.5) {
+	sound(type = 'sine', sec = 0.5) {
 		const ctx = new AudioContext()
 		const osc = ctx.createOscillator()
 		osc.type = type
@@ -1297,6 +1305,46 @@ const uo = {
 		const emojiCode = Math.random(10) > 7.75 ? rand_mm(128512, 128592) : rand_mm(127744, 128318)
 		return String.fromCodePoint(emojiCode)
 	},
+	//visitedを強制分かりやすく。
+	visited({outline, color} = {}) {
+
+		createEl2({
+			parentEl: document.body, tagName: 'style', attribute: {
+				textContent:
+					`a {
+						--vNc: ${color || '#FFF4'};
+						--vYc: red;
+						--width: 6px;
+						text-decoration: underline solid 4px var(--vNc) !important;
+						/* text-decoration: underline wavy 2px var(--vNc) !important; */
+						text-decoration-skip-ink: none;
+					}
+					${outline ? `
+					a img{
+						outline: var(--width) #000 outset;
+					}
+					a:visited img{
+						outline: var(--width) #f00 outset;
+					}
+					a:hover {
+						outline-width: var(--width) !important;
+					}
+					`: ''}
+					a:visited{
+						text-decoration-color: var(--vYc) !important;
+						outline-color: var(--vYc);
+					}
+						`,
+				// outline-color: #00F4;
+				/*    --hoge: dodgerblue;
+		color: var(--hoge) !important;
+		font-weight: bold !important;
+		outline: 3px dodgerblue solid;
+		outline-color: #00F; */
+			}
+		})
+		return '強制visited色つけ'
+	},
 	a() { },
 }
 
@@ -1353,7 +1401,42 @@ function sleep(msec) {
 	return new Promise(r => setTimeout(r, msec)) // returnが無くてうまく動かなかった。
 }
 const sleep2 = msec => new Promise(resolve => setTimeout(resolve, msec))
-
+/** ダウンロード履歴 * @returns {LSclass} */
+const LSclass = class {
+	constructor(storageKey) {
+		this.storageKey = storageKey
+		// this.init() //_getに||''すりゃ要らないけど
+	}
+	// init() {if (this._get() === null) this._set('')}
+	add(str) {
+		this._set(this._get() + str + ',')
+	}
+	_get = () => localStorage.getItem(this.storageKey) || ''
+	_set(s) {localStorage.setItem(this.storageKey, s)}
+	set = this._set
+	toArray() {
+		let csv = this._get().slice(0, -1) //''をsliceしても問題ないぽ
+		return csv.split(',')
+	}
+	toJSON() {return JSON.parse(this._get())}
+}
+const LocalStrageJSON = class {
+	constructor(storageKey) {
+		this.storageKey = storageKey
+		// this.init() //_getに||''すりゃ要らないけど
+	}
+	// init() {if (this._get() === null) this._set('')}
+	add(str) {
+		this._set(this._get() + str + ',')
+	}
+	_get = () => localStorage.getItem(this.storageKey) || ''
+	_set(s) {localStorage.setItem(this.storageKey, s)}
+	set = _set
+	toArray() {
+		let csv = this._get().slice(0, -1) //''をsliceしても問題ないぽ
+		return csv.split(',')
+	}
+}
 
 
 /** サイト別の関数リスト */
@@ -1372,6 +1455,7 @@ const arr = [
 				getButtonWithFunc(uo.copy_string_for_cookie_settings),
 				getButtonWithFunc(uo.copyTitleLfUrl),
 				getButtonWithFunc(uo.copyLinkAsMarkdown),
+				getButtonWithFunc(uo.visited),
 			])
 		},
 	},
@@ -1586,7 +1670,7 @@ const arr = [
 		},
 	},
 	{/* 楽天系の毎日くじ */
-		name: '楽天系の毎日くじ',
+		name: '--end-- 楽天系の毎日くじ',
 		url: [
 			'^https://www.infoseek.co.jp/',
 			'^https://kuji.rakuten.co.jp/',
@@ -1629,16 +1713,9 @@ const arr = [
 	},
 	{/* 楽天系のくじの自動Click */
 		name: '楽天系のくじの自動Click',
-		url: ['^https?://kuji.rakuten.co.jp/',],
+		url: ['^https://kuji.rakuten.co.jp/',],
 		date: '',
 		func: async function() {
-			// if (GM_getValue('毎日くじ次へ')) {
-			// 	GM_setValue('毎日くじ次へ', null);
-			// 	location.href = 'https://www.infoseek.co.jp/Luckylot';
-			// } else {
-			// 	conDoW('くじセット');
-			// 	GM_setValue('毎日くじ次へ', 1);
-			// }
 			await sleep(1500) // sleep
 			arebaCli('#entry')
 		},
@@ -1701,6 +1778,8 @@ const arr = [
 		func: function() {
 			document.title = document.title.replace('VIDEOS - Search Results For ', '')
 			uo.選択テキスト検索ボタン('/search?search_query=%word%&search_type=videos')
+			uo.visited()
+
 
 			// const videoEl = qs('div[id="flash"]')
 			const videoEl = qs('div[preload="none"]')
@@ -2173,26 +2252,53 @@ const arr = [
 		url: ['^https://wupfile.com/',],
 		date: '',
 		func: function() {
+			class CountdownDL{
+				constructor() {
+					this.sec=sec = qs('#countdown>span').textContent
+					let sDate = new Date
+					let el = document.querySelector('#downloadbtn')
+				}
+			}
 			let d = !true
 			d && conDoW('zippys')
-			arebaCli('#method_free');
-			//downloadbtn
-			//document.querySelector("#downloadbtn").click()
-			//document.querySelector('#downloadbtn').removeAttribute('disabled')
+			arebaCli('#method_free', 0)
+			conDoW.disp()
+	
 			//disabled消してクリックしても巻き戻るだけ。
 			//2019/09/02 自動ダウンロードを簡易的に
 			//setintarval→clearinでもできるけど、settimeoutのほうが見やすい？
-			(function tryDownload() {
-				let time = new Date()
+
+
+			//このDLサイトはボタンは常に押せるので注意
+
+			//入力画面・入力欄を予めアクティブ化
+			let inputEl = document.querySelector('input.captcha_code')
+			if (inputEl) {
+				document.title = '⏱' + document.title
+				inputEl.focus()
+				//タブが最前面じゃないなら
+				if (document.visibilityState === 'hidden')
+					uo.通知('認証コード待機')
+				conDoW(uo.入力パネル())
+				//残り時間 これはバックグランドにすると描画が遅れ狂う、実際の時間でクリックすれば大丈夫。
+				let sec = qs('#countdown>span').textContent
+				let sDate = new Date
 				let el = document.querySelector('#downloadbtn')
-				// conDoW(time)
-				conDoW(el.disabled, {addition: true})
-				if (!el.disabled) {
-					el.click()
-					return
-				}
-				setTimeout(tryDownload, 5000)
-			}())
+				conDoW(sec)
+				//ループしてダウンロード
+				!function checkDate() {
+					// conDoW(time)
+					let jSa = sec - (Date.now() - sDate) / 1000
+					jSa=~~jSa
+					conDoW.add(jSa+',')
+					if (jSa <0) {
+						conDoW('おわり')
+						el.click()
+						return
+					}
+					setTimeout(checkDate, 5000)
+				}()
+			}
 		},
 	},
 	{/* jolinfile */
@@ -2480,8 +2586,7 @@ const arr = [
 
 			/** スタイルシートをオーバーライド */
 			!function _sss() {
-				if (!location.href.match('category|tag')) return
-
+				if (!location.href.match('category|tag|s=')) return
 				createEl(document.body, 'style', {
 					//tagA+tagB 直後の兄弟B
 					textContent:
@@ -2499,22 +2604,11 @@ const arr = [
 				})
 			}()
 
-			//altクリック、中クリックにイベント仕込もうと思ったけど、ホイールスクロール表示されて困って止めた。
-			document.addEventListener('click', function(ev) {
-				do {
-					if (!ev.altKey) break
-					//conDoW(e.buttons, e.button, e.target.tagName, e.target.rel)
-					//Aが大文字な謎
-					if (ev.target.tagName == 'A' && ev.target.rel == 'bookmark') {
-						ev.preventDefault()
-						conDoW('これじゃ' + ev.target.innerHTML)
-						_GM_xhr(ev.target.href, ev.target.innerHTML)
-					}
-				} while (false)
-			}, false)
+			//配列関数を文字じ結合して返す。
+			const t = (p) => log(p.map(v => v + ':' + v()).join('\n'))
 
 			// 右クリックも作ってみる
-			document.addEventListener('contextmenu', function(ev) {
+			document.addEventListener('_contextmenu', function(ev) {
 				let el = ev.target
 				while (el) {
 					// conDoW([el.tagName, el.className])
@@ -2527,7 +2621,7 @@ const arr = [
 					if (el.tagName === 'HTML')
 						return false //走査終了
 				}
-				//ev.preventDefault()
+				ev.preventDefault()
 				if (ev.ctrlKey === false) {
 					// ev.stopPropagation()
 					// conDoW('◆' + el.innerHTML)
@@ -2639,7 +2733,6 @@ const arr = [
 				// ブラウザで圧縮ダウンロード完結、遅い・・・
 				if (zip) _url_arr_down(url_arr, title)
 			}
-
 			/**
 			 * クリック後の処理を一つの関数に、asyncでコールバック無し
 			 * @param {*} url 
@@ -2738,7 +2831,7 @@ const arr = [
 					urls += url + '\n'
 					hrefs += `<a href="${url}" title="${document.title}">link</a> `
 				}
-				conDoW(hrefs)
+				// conDoW(hrefs)
 
 				//専用の枠に表示
 				let waku_id = 'wakuwaku'
@@ -2825,9 +2918,161 @@ const arr = [
 					}
 				`)
 			}
-			//main
-			_css_visited_highlight()
 
+			//画像のリストを作る、履歴も作る、汎用的にしようと試みた。
+			//カスタム、
+			//クリックする場所、基準要素,id、url、title、 html解析
+			class Hoge {
+				constructor(key, custom) {
+					this.key = key
+					// this.csv = new LSclass(key)
+					this.custom = {
+						getEls: custom.getEls,
+						getId: custom.getId,
+						getTitle: custom.getTitle,
+						getUrl: custom.getUrl,
+						kaiseki: custom.kaiseki,
+					}
+					this.log = this.getLog()
+				}
+				getLog() {
+					let json = localStorage.getItem(this.key) || '[]'
+					return JSON.parse(json)
+				}
+				setLog(obj) {
+					this.log=this.getLog()
+					this.log.push(obj)
+					let json = JSON.stringify(this.log)
+					// let json = localStorage.getItem(this.key) || '[]'
+					localStorage.setItem(this.key, json)
+				}
+				要素に色1(el, color) {
+					color = color || '#F004'
+					// el.classList.add('dled')
+					Object.assign(el.style, {
+						outline: `20px ${color} ridge`,
+						outlineOffset: '-20px',
+					})
+				}
+				z判定して色つけ3(node) {
+					let log = this.log
+					let els = this.custom.getEls(node)
+					// let r = els.filter((v, i) => arr.includes(this.custom.getId(v)))
+					let r = els.forEach((v) => {
+						let id = this.custom.getId(v)
+						let hit = log.find(v => v[0] === id)
+						if (!hit) return
+						if (hit[1] === 1) this.要素に色1(v)
+						if (hit[1] === 0) this.要素に色1(v, '#00f3')
+					})
+				}
+
+				//ダウンロードのみPromise＋
+				_xhr_promise(url) {
+					const p = new Promise((resolve, reject) => {
+						let xhr = new XMLHttpRequest()
+						xhr.open('GET', url, true)
+						//xhr.responseType = 'text';
+						xhr.onload = function() {
+							resolve(xhr.response)
+						}
+						xhr.send()
+					})
+					return p
+				}
+
+				/** リンク群のエレメントを作る */
+				_make_links(arr, title) {
+					title = title
+						.replace(/\//g, '@スラ')
+						.replace(/~/g, '〜')
+						.replace(/.zip|.rar|\//, '')
+
+					var folder = mydate('@yyyyMMddhhmmss-') + title + '/'
+					let rel = 'rel="noreferrer" '
+					// let hrefs = ''
+					var frag = document.createDocumentFragment()
+					for (let [key, val] of arr.entries()) {
+						const url = val
+						const ext = url.substring(url.lastIndexOf('.'))
+						const fileName = ('0'.repeat(4) + (key + 1)).slice(-4) + ext
+
+						let a = document.createElement('a')
+						a.href = url
+						a.title = folder + fileName
+						a.textContent = 'i'
+						frag.appendChild(a)
+						// console.dir(frag)
+					}
+					const span = document.createElement('span')
+					span.textContent = arr.length
+					console.dir(frag)
+					span.appendChild(frag)
+					return span
+				}
+
+				async submain(el) {
+					let c = this.custom
+					let title = c.getTitle(el)
+					let url = c.getUrl(el)
+					let id = c.getId(el)
+
+					//url先htmlをDL
+					const fullhtml = await this._xhr_promise(url)
+					//htmlからurl抽出
+					const url_arr = c.kaiseki(fullhtml)
+					if (url_arr === false) {
+						this.setLog([id, 0])
+						this.要素に色1(el, '#00f5')
+						return
+					} else {
+						this.要素に色1(el, '#F228')
+						this.setLog([id, 1])
+					}
+
+					let span = this._make_links(url_arr, title)
+					el.insertAdjacentElement('afterbegin', span)
+					return
+				}
+			}
+
+			!function main() {
+				//汎用型リンクダウンローダー用設定値
+				var custom = {
+					getEls: (node) => [...node.querySelectorAll('div[id^=post-]')],
+					getId: (el) => el.id.slice(5),
+					getTitle: (el) => el.querySelector('h3>a').textContent,
+					getUrl: (el) => el.querySelector('h3>a').href,
+					kaiseki: (fullhtml) => {
+						let arr_url = fullhtml.match(/"https:\/\/r18\.manga314.+?"/g)
+						if (!arr_url) {return false}
+						arr_url = arr_url.map((ite) => ite.slice(1, -1)) //resu.mapなんてプロパティ無いとエラー、matchがNULLだった。
+						return arr_url
+					}
+				}
+				var ho = new Hoge('manga314csv', custom)
+
+				uo.visited()
+				//右クリックハンドラ
+				const migiHandle = function(ev) {
+					if (ev.target.tagName !== 'IMG') return
+					ev.preventDefault()
+					let el = ev.target.parentElement.parentElement.parentElement
+					this.ho.submain(el)
+				}
+
+				document.addEventListener('contextmenu', {handleEvent: migiHandle, ho})
+
+				ho.z判定して色つけ3(document)
+
+				//オートページャーで再発火
+				document.body.addEventListener('AutoPagerize_DOMNodeInserted', function(evt) {
+					let node = evt.target
+					//var requestURL = evt.newValue;
+					//var parentNode = evt.relatedNode;
+					ho.z判定して色つけ3(node)
+				}, false)
+			}()
 		},
 	},
 	{/* --end-- サークルKクーポン */
@@ -3192,7 +3437,7 @@ const arr = [
 					let csv = localStorage.getItem(this.storageKey)
 					if (csv === null) csv = ''
 					let arr = csv.split(',')
-					console.log(arr)
+					// console.log(arr)
 					return arr
 				}
 			}
@@ -3261,16 +3506,14 @@ const arr = [
 					let id = v.firstElementChild.href.match(/\d+/)[0]
 					let result = downedIdArr.includes(id)
 					if (result) {
-						console.log(id)
-
+						// console.log(id)
 						// _色つけ(v.firstElementChild)
-						createEl(el, 'div', null, {
+						createEl(el, 'div', {className: '_down'}, {
 							position: 'absolute',
 							height: '100%',
 							width: '100%',
-							border: '20px solid #0f09',
+							border: '20px solid #F00a',
 						})
-
 					}
 				})
 			}
@@ -3282,13 +3525,10 @@ const arr = [
 				// 12227
 			}
 			//main
-			create_css_without_css(
-				{selector: 'a:before', deco: {content: '"■"'}, },
-				{selector: 'a', deco: {color: 'blueviolet'}},
-				// {selector: 'a:visited', deco: {coler: 'red !important'}},
-				// ['a:visited', {coler: 'red !important'}],
-				// ['a:befor', {content:'■'}]
-			)
+			// create_css_with_deco(
+			// 	{selector: 'a:before', deco: {content: '"■"'}, },
+			// )
+			uo.visited({outline: true, color: '#000F'})
 			const downzumi = new LSclass('downzumi')
 			let downIdList = downzumi.down履歴取り出しarr()
 			down済みに色(document, downIdList)
@@ -3684,6 +3924,78 @@ const arr = [
 
 		},
 	},
+	{/* youtube */
+		name: 'youtube',
+		url: ['^https://teratail.com/',],
+		date: '2021/03/17',
+		func: () => {
+			uo.visited()
+		},
+	},
+	{/* youtube */
+		name: 'ニコ生自動再生overflowの質問',
+		url: ['^https://*.nicovideo.jp/',],
+		date: '2021/03/20',
+		func: () => {
+			if (location.href.startsWith('https://live.nicovideo.jp/watch/')) {
+				const f = () => log('クリック') || qs('[aria-label="再生"]').click()
+				setTimeout(f, 5000)
+				conDoW(getButtonWithFunc(f))
+			}
+			if (location.href.startsWith('https://com.nicovideo.jp/community/')) {
+				const f = () => log('クリック') || qs('.now_live_playButton').click()
+				setTimeout(f, 5000)
+				conDoW(getButtonWithFunc(f))
+			}
+
+		},
+	},
+	{/* youtube */
+		name: 'kk idol-aiv.com',
+		url: ['^http://idol-aiv.com/',],
+		date: '2021/03/20',
+		func: () => {
+			var iframes = qsaa('iframe[src*=google]')
+			var divs = iframes.map(v => {
+				var div = document.createElement('div')
+				div.classList = 'myvideo'
+				v.classList = 'myiframe'
+
+				v.insertAdjacentElement('beforebegin', div)
+				div.insertAdjacentElement('afterbegin', v)
+				//     console.log(123)
+
+				return div
+			}
+			)
+
+			var style = document.createElement('style')
+			style.textContent = `
+			.myvideo {
+				position: relative;
+				width: 1284px;
+				box-shadow: #f005 0px 0px 20px 6px;
+				height: 738px;
+				z-index: 111;
+				left: -40px;
+		}
+.myiframe{
+  width: inherit;
+  height: inherit;
+}
+body {
+    overflow-y: overlay;
+    overflow-x: hidden;
+}
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-thumb { background-color: #0005; }
+body::-webkit-scrollbar-track { background: transparent; }
+  `
+			document.body.appendChild(style)
+
+
+		},
+	},
 ]
 /*
 	{// 
@@ -3715,6 +4027,8 @@ function sousa_do(obj) {
 		if (!date) {
 			date = new Date().toLocaleString()
 		}
+		//名前の先頭が下なら抜け
+		if (name.indexOf('--end--') === 0) continue
 
 		if (!arr2ReStr(url, location.href)) continue
 		//例外処理
@@ -3722,7 +4036,7 @@ function sousa_do(obj) {
 			conDoW('exc->', exc)
 			continue
 		}
-		conDoW(`${name} $$$$$$$$$$$$$$$$$$$`)
+		conDoW(`${name} $$$$$$$$$$`)
 		//val.func() //objから実行でスコープ固定、のつもりがthisつかわないし。
 		func()
 	}
